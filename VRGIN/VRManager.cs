@@ -63,6 +63,7 @@ namespace VRGIN.Core
                 }
 
                 Mode = VRCamera.Instance.gameObject.AddComponent<T>();
+                ModeType = typeof(T);
             }
         }
 
@@ -72,6 +73,8 @@ namespace VRGIN.Core
             private set;
         }
 
+        private static Type ModeType;
+        
 
         protected override void OnStart()
         {
@@ -81,6 +84,11 @@ namespace VRGIN.Core
         protected override void OnLevel(int level)
         {
             VRCamera.Instance.Copy(Camera.main);
+
+            if(ModeType != null && ModeType.IsSubclassOf(typeof(ControlMode)))
+            {
+                Mode = VRCamera.Instance.gameObject.AddComponent(ModeType) as ControlMode;
+            }
         }
     }
 

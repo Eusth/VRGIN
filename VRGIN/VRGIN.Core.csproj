@@ -40,10 +40,12 @@
     <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Libs\UnityEngine.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.UI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Libs\UnityEngine.UI.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -111,10 +113,14 @@
     <Compile Include="VRSettings.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Libs\UnityEngine.dll" />
-    <Content Include="Libs\UnityEngine.UI.dll" />
-    <Content Include="Libs\x86\openvr_api.dll" />
-    <Content Include="Libs\x86_64\openvr_api.dll" />
+    <Content Include="Libs\Data\Managed\UnityEngine.dll" />
+    <Content Include="Libs\Data\Managed\UnityEngine.UI.dll" />
+    <Content Include="Libs\Data\Plugins\x86\openvr_api.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Libs\Data\Plugins\x86_64\openvr_api.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="SteamVR\Textures\arrow.png" />
     <Content Include="SteamVR\Textures\background.png" />
     <Content Include="SteamVR\Textures\logo.png" />

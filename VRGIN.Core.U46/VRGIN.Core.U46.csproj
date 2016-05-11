@@ -20,7 +20,8 @@
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>TRACE;DEBUG;UNITY_4_5</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <WarningLevel>2</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -192,8 +193,19 @@
     <None Include="SteamVR\Textures\overlay.renderTexture" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Libs\UnityEngine.dll" />
-    <Content Include="Libs\UnityEngine.UI.dll" />
+    <Content Include="..\VRGIN\Libs\Data\Plugins\x86\openvr_api.dll">
+      <Link>Libs\Data\Plugins\x86\openvr_api.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\VRGIN\Libs\Data\Plugins\x86_64\openvr_api.dll">
+      <Link>Libs\Data\Plugins\x86_64\openvr_api.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Libs\Data\Managed\UnityEngine.dll" />
+    <Content Include="Libs\Data\Managed\UnityEngine.UI.dll" />
+    <Content Include="Libs\dxgi.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="SteamVR\Textures\arrow.png" />
     <Content Include="SteamVR\Textures\background.png" />
     <Content Include="SteamVR\Textures\logo.png" />
