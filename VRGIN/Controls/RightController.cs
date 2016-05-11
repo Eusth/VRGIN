@@ -11,7 +11,6 @@ namespace VRGIN.Core.Controls
         public static RightController Create()
         {
             var rightHand = new GameObject("Right Controller").AddComponent<RightController>();
-            rightHand.SetUp();
 
             return rightHand;
         }

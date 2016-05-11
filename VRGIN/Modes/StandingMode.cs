@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using VRGIN.Core.Controls;
 
 namespace VRGIN.Core.Modes
 {
@@ -25,7 +26,7 @@ namespace VRGIN.Core.Modes
         {
 
         }
-
+        
         protected override void OnUpdate()
         {
             var origin = VRCamera.Instance.SteamCam.origin;
@@ -33,6 +34,14 @@ namespace VRGIN.Core.Modes
             Camera.main.transform.position = VR.Camera.transform.position;
             Camera.main.transform.rotation = VR.Camera.transform.rotation;
             
+        }
+
+        public override IEnumerable<Type> Tools
+        {
+            get
+            {
+                return base.Tools.Concat(new Type[] { typeof(MenuTool), typeof(WarpTool) });
+            }
         }
     }
 }

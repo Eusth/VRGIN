@@ -37,10 +37,15 @@ namespace VRGIN.Core
 
         public virtual void Save()
         {
-            if(Path != null)
+            Save(Path);
+        }
+
+        public virtual void Save(string path)
+        {
+            if(path != null)
             {
                 var serializer = new XmlSerializer(GetType());
-                using (var stream = File.OpenWrite(Path))
+                using (var stream = File.OpenWrite(path))
                 {
                     serializer.Serialize(stream, this);
                 }
@@ -51,12 +56,19 @@ namespace VRGIN.Core
 
         public static T Load<T>(string path) where T : VRSettings
         {
-            var serializer = new XmlSerializer(typeof(T));
-            using (var stream = new FileStream(path, FileMode.Open))
+            if(!File.Exists(path))
             {
-                var settings = serializer.Deserialize(stream) as T;
-                settings.Path = path;
+                var settings = Activator.CreateInstance<T>();
+                settings.Save(path);
                 return settings;
+            }  else { 
+             var serializer = new XmlSerializer(typeof(T));
+                using (var stream = new FileStream(path, FileMode.Open))
+                {
+                    var settings = serializer.Deserialize(stream) as T;
+                    settings.Path = path;
+                    return settings;
+                }
             }
         }
     }

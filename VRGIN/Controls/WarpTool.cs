@@ -93,6 +93,8 @@ namespace VRGIN.Core.Controls
 
         protected override void OnStart()
         {
+            base.OnStart();
+
             SteamCam = VRCamera.Instance.SteamCam;
             PlayAreaRotation.transform.SetParent(SteamCam.transform, false);
             //ArcRenderer.transform.SetParent(SteamCam.transform, false);
@@ -101,6 +103,7 @@ namespace VRGIN.Core.Controls
         protected override void OnEnable()
         {
             base.OnEnable();
+
             SetVisibility(false);
 
             PlayArea.BuildMesh();

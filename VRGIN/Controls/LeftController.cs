@@ -8,7 +8,6 @@ namespace VRGIN.Core.Controls
         public static LeftController Create()
         {
             var leftHand = new GameObject("Left Controller").AddComponent<LeftController>();
-            leftHand.SetUp();
             
             return leftHand;
         }

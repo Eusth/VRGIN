@@ -23,6 +23,8 @@ namespace VRGIN.Core
 
     public class VRManager : ProtectedBehaviour
     {
+        private VRGUI _Gui;
+
         private static VRManager _Instance;
         public static VRManager Instance
         {
@@ -74,8 +76,24 @@ namespace VRGIN.Core
         }
 
         private static Type ModeType;
-        
 
+
+        protected override void OnAwake()
+        {
+            Application.targetFrameRate = 90;
+            Time.fixedDeltaTime = 1 / 90f;
+            Application.runInBackground = true;
+
+            GameObject.DontDestroyOnLoad(SteamVR_Render.instance.gameObject);
+            GameObject.DontDestroyOnLoad(gameObject);
+
+            // Makes sure that the GUI is instanciated
+            _Gui = VRGUI.Instance;
+
+#if UNITY_4_5
+            SteamVR_Render.instance.helpSeconds = 0;
+#endif
+        }
         protected override void OnStart()
         {
             VRCamera.Instance.Copy(Camera.main);
@@ -97,8 +115,6 @@ namespace VRGIN.Core
         string GuiLayer { get; }
         int UILayerMask { get; }
         Color PrimaryColor { get; }
-        Type LeftControllerType { get; }
-        Type RightControllerType { get; }
         IMaterialPalette Materials { get; }
         VRSettings Settings { get; }
     }

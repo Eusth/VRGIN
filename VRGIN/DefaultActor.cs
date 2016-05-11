@@ -12,12 +12,16 @@ namespace VRGIN.Core
     /// <typeparam name="T">Type of the MonoBehaviour</typeparam>
     public abstract class DefaultActor<T> : IActor where T : MonoBehaviour
     {
+        public class Marker : MonoBehaviour
+        {
+        }
+
         public T Actor { get; protected set; }
-
-
+        
         public DefaultActor(T nativeActor)
         {
             Actor = nativeActor;
+            Actor.gameObject.AddComponent<Marker>();
         }
         
         public virtual bool IsValid

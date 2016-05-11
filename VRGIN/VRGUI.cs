@@ -7,6 +7,10 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
+#if UNITY_4_5
+using VRGIN.Core.Native;
+#endif
+
 namespace VRGIN.Core
 {
     /// <summary>
@@ -18,7 +22,27 @@ namespace VRGIN.Core
     /// </summary>
     public class VRGUI : ProtectedBehaviour
     {
-      
+
+#if UNITY_4_5
+        class CursorBlocker : ProtectedBehaviour
+        {
+    
+            private bool _focused = false;
+
+            protected override void OnAwake()
+            {
+                WindowManager.Activate();
+                WindowManager.ConfineCursor();
+            }
+
+            void OnApplicationFocus(bool hasFocus)
+            {
+                _focused = hasFocus;
+                WindowManager.ConfineCursor();
+            }
+        }    
+#endif
+
         private static VRGUI _Instance;
 
         /// <summary>
@@ -31,6 +55,12 @@ namespace VRGIN.Core
                 if (!_Instance)
                 {
                     _Instance = new GameObject("GUI").AddComponent<VRGUI>();
+
+#if UNITY_4_5
+                    _Instance.gameObject.AddComponent<CursorBlocker>();
+#else
+                    Cursor.lockState = CursorLockMode.Confined;
+#endif
                 }
                 return _Instance;
             }
@@ -94,7 +124,6 @@ namespace VRGIN.Core
 
             GameObject.DontDestroyOnLoad(_VRGUICamera);
             DontDestroyOnLoad(gameObject);
-
         }
 
         protected void CatchCanvas()

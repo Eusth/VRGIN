@@ -31,13 +31,12 @@ namespace VRGIN.Core.Controls
         private bool helpShown;
         private List<HelpText> helpTexts;
 
+        private Canvas _Canvas;
+
         protected void SetUp()
         {
             Tracking = gameObject.AddComponent<SteamVR_TrackedObject>();
-
-            Tools.Add(gameObject.AddComponent<MenuTool>());
-            Tools.Add(gameObject.AddComponent<WarpTool>());
-
+            
             Laser = new GameObject().AddComponent<LineRenderer>();
             Laser.transform.SetParent(transform, false);
             Laser.material = Resources.GetBuiltinResource<Material>("Sprites-Default.mat");
@@ -67,12 +66,19 @@ namespace VRGIN.Core.Controls
             gameObject.AddComponent<Rigidbody>().isKinematic = true;
         }
 
+        protected override void OnAwake()
+        {
+            base.OnAwake();
+            SetUp();
+        }
+
         public void AddTool(Type toolType)
         {
             if (toolType.IsSubclassOf(typeof(Tool)) && !Tools.Any(tool => toolType.IsAssignableFrom(tool.GetType())))
             {
                 var newTool = gameObject.AddComponent(toolType) as Tool;
                 Tools.Add(newTool);
+                CreateToolCanvas(newTool);
 
                 newTool.enabled = false;
             }
@@ -84,6 +90,7 @@ namespace VRGIN.Core.Controls
         {
             get
             {
+                if (ToolIndex >= Tools.Count) return null;
                 return Tools[ToolIndex];
             }
         }
@@ -104,6 +111,7 @@ namespace VRGIN.Core.Controls
                     Console.WriteLine("Kill tool #{0} ({1})", i - 1 , ToolIndex);
                 } else
                 {
+                    tool.enabled = true;
                     Console.WriteLine("Do nothing with Tool #{0}", i - 1);
                 }
             }
@@ -124,7 +132,7 @@ namespace VRGIN.Core.Controls
             //Console.WriteLine(transform.position);
             if (Other)
             {
-                if(Other.ActiveTool is MenuTool)
+                if(Other.ActiveTool != null && Other.ActiveTool is MenuTool)
                 {
 
                     var menuTool = Other.ActiveTool as MenuTool;
@@ -203,16 +211,18 @@ namespace VRGIN.Core.Controls
         {
             get
             {
-                return ActiveTool.enabled;
+                return ActiveTool != null && ActiveTool.enabled;
             }
             set
             {
-                ActiveTool.enabled = value;
-                if(!value)
+                if (ActiveTool != null)
                 {
-                    HideHelp();
+                    ActiveTool.enabled = value;
+                    if (!value)
+                    {
+                        HideHelp();
+                    }
                 }
-
             }
 
         }
@@ -253,16 +263,16 @@ namespace VRGIN.Core.Controls
                     }
                     else
                     {
-                        if (Tools[ToolIndex])
+                        if (ActiveTool)
                         {
-                            Tools[ToolIndex].enabled = false;
-                        }
+                            ActiveTool.enabled = false;
+                        } 
 
                         ToolIndex = (ToolIndex + 1) % Tools.Count;
 
-                        if (Tools[ToolIndex])
+                        if (ActiveTool)
                         {
-                            Tools[ToolIndex].enabled = true;
+                            ActiveTool.enabled = true;
                         }
                     }
                     appButtonPressTime = null;
@@ -282,14 +292,17 @@ namespace VRGIN.Core.Controls
 
         private void ShowHelp()
         {
-            helpTexts = ActiveTool.GetHelpTexts();
-            helpShown = true;
+            if (ActiveTool != null)
+            {
+                helpTexts = ActiveTool.GetHelpTexts();
+                helpShown = true;
+            }
         }
 
         private void BuildCanvas()
         {
            
-            var canvas = new GameObject().AddComponent<Canvas>();
+            var canvas = _Canvas = new GameObject().AddComponent<Canvas>();
             canvas.renderMode = RenderMode.WorldSpace;
             canvas.transform.SetParent(transform, false);
 
@@ -301,27 +314,6 @@ namespace VRGIN.Core.Controls
             canvas.transform.localRotation = Quaternion.Euler(30, 180, 180);
             canvas.transform.localScale = new Vector3(4.930151e-05f, 4.930148e-05f, 0);
             
-
-            foreach(var tool in Tools)
-            {
-                var img = new GameObject().AddComponent<Image>();
-                img.transform.SetParent(canvas.transform, false);
-
-                var texture = tool.Image;
-                img.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
-
-                // Maximize
-                img.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
-                img.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
-
-                img.color = Color.cyan;
-
-
-                tool.Icon = img.gameObject;
-                tool.Icon.SetActive(false);
-                tool.Icon.layer = 0;
-            }
-
             canvas.gameObject.layer = 0;
 
             // Hack for alpha order
@@ -332,6 +324,26 @@ namespace VRGIN.Core.Controls
             circle.transform.localRotation = Quaternion.Euler(60, 0, 0);
             circle.GetComponent<Collider>().enabled = false;
 
+        }
+
+        private void CreateToolCanvas(Tool tool)
+        {
+            var img = new GameObject().AddComponent<Image>();
+            img.transform.SetParent(_Canvas.transform, false);
+
+            var texture = tool.Image;
+            img.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+
+            // Maximize
+            img.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
+            img.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
+
+            img.color = Color.cyan;
+
+
+            tool.Icon = img.gameObject;
+            tool.Icon.SetActive(false);
+            tool.Icon.layer = 0;
         }
 
 

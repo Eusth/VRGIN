@@ -8,9 +8,12 @@ using UnityEngine;
 
 namespace VRGIN.Core
 {
+    /// <summary>
+    /// A collection of helper methods that can be used in the Unity context.
+    /// </summary>
     public static class UnityHelper
     {
-        public static Shader GetShader(string name)
+        internal static Shader GetShader(string name)
         {
 #if UNITY_4_5
             var assetBundle = AssetBundle.CreateFromMemoryImmediate(Resource.steamvr);
@@ -23,7 +26,7 @@ namespace VRGIN.Core
         }
 
         /// <summary>
-        /// Loads an image out 
+        /// Loads an image from the images folder.
         /// </summary>
         /// <param name="filePath"></param>
         /// <returns></returns>

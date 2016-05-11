@@ -28,7 +28,7 @@ namespace VRGIN.Core.Controls
 
         protected override void OnStart()
         {
-            base.OnAwake();
+            base.OnStart();
 
             Tracking = GetComponent<SteamVR_TrackedObject>();
         }
@@ -61,11 +61,14 @@ namespace VRGIN.Core.Controls
 
         protected virtual void OnEnable()
         {
+            Console.WriteLine("On Enable: {0}", GetType().Name);
+
             Icon.SetActive(true);
         }
 
         protected virtual void OnDisable()
         {
+            Console.WriteLine("On Disable: {0}", GetType().Name);
             Icon.SetActive(false);
         }
 

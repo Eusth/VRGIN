@@ -44,7 +44,7 @@ namespace VRGIN.Core
             }
         }
 
-        protected override void OnStart()
+        protected override void OnAwake()
         {
             gameObject.AddComponent<SteamVR_Camera>();
             SteamCam = GetComponent<SteamVR_Camera>();

@@ -46,6 +46,12 @@ namespace VRGIN.Core.Modes
                 ControllerManager.right = Right.gameObject;
             }
             steamCam.origin.gameObject.SetActive(true);
+
+            Console.WriteLine("---- Initialize left tools");
+            InitializeTools(Left, true);
+
+            Console.WriteLine("---- Initialize right tools");
+            InitializeTools(Right, false);
         }
 
         protected virtual void InitializeTools(Controller controller, bool isLeft)
@@ -57,6 +63,8 @@ namespace VRGIN.Core.Modes
             {
                 controller.AddTool(type);
             }
+
+            Console.WriteLine("{0} tools added" , toolTypes.Count());
         }
 
         protected virtual Controller CreateLeftController()
@@ -69,17 +77,17 @@ namespace VRGIN.Core.Modes
             return RightController.Create();
         }
 
-        public virtual IList<Type> Tools
+        public virtual IEnumerable<Type> Tools
         {
             get { return new List<Type>(); }
         }
 
-        public virtual IList<Type> LeftTools
+        public virtual IEnumerable<Type> LeftTools
         {
             get { return new List<Type>(); }
         }
 
-        public virtual IList<Type> RightTools
+        public virtual IEnumerable<Type> RightTools
         {
             get { return new List<Type>(); }
         }
