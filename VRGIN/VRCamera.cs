@@ -59,7 +59,7 @@ namespace VRGIN.Core
             {
                 targetCamera.nearClipPlane = Mathf.Clamp(0.01f, 0.001f, 0.01f);
                 targetCamera.farClipPlane = Mathf.Clamp(100f, 50f, 200f);
-                targetCamera.cullingMask = Blueprint.cullingMask & ~VRManager.Instance.Context.UILayerMask;
+                targetCamera.cullingMask = Blueprint.cullingMask & ~(VRManager.Instance.Context.UILayerMask | LayerMask.GetMask(VR.Context.HMDLayer));
                 targetCamera.clearFlags = Blueprint.clearFlags;
                 targetCamera.backgroundColor = Blueprint.backgroundColor;
                 //Console.WriteLine(ovrCamera.clearFlags);

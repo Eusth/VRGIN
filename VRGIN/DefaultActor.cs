@@ -6,22 +6,24 @@ using UnityEngine;
 
 namespace VRGIN.Core
 {
+    public class Marker : MonoBehaviour
+    {
+    }
     /// <summary>
     /// Default actor that is defined by a Unity behaviour.
     /// </summary>
     /// <typeparam name="T">Type of the MonoBehaviour</typeparam>
     public abstract class DefaultActor<T> : IActor where T : MonoBehaviour
     {
-        public class Marker : MonoBehaviour
-        {
-        }
+        
 
         public T Actor { get; protected set; }
         
         public DefaultActor(T nativeActor)
         {
             Actor = nativeActor;
-            Actor.gameObject.AddComponent<Marker>();
+
+            this.Initialize(nativeActor);
         }
         
         public virtual bool IsValid
@@ -42,6 +44,11 @@ namespace VRGIN.Core
         {
             get;
             set;
+        }
+
+        protected virtual void Initialize(T actor)
+        {
+            Actor.gameObject.AddComponent<Marker>();
         }
     }
 }

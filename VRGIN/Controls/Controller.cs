@@ -33,6 +33,11 @@ namespace VRGIN.Core.Controls
 
         private Canvas _Canvas;
 
+        protected virtual void OnDestroy()
+        {
+            GameObject.Destroy(gameObject);
+        }
+
         protected void SetUp()
         {
             Tracking = gameObject.AddComponent<SteamVR_TrackedObject>();

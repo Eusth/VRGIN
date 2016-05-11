@@ -42,7 +42,7 @@ public class SteamVR_PlayArea : MonoBehaviour
 				OpenVR.Init(ref error, EVRApplicationType.VRApplication_Other);
 			}
 
-			var chaperone = OpenVR.Chaperone;
+            var chaperone = OpenVR.Chaperone;
 			bool success = (chaperone != null) && chaperone.GetPlayAreaRect(ref pRect);
 			if (!success)
 				Debug.LogWarning("Failed to get Calibrated Play Area bounds!  Make sure you have tracking first, and that your space is calibrated.");

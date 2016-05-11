@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using Valve.VR;
 using VRGIN.Core.Controls;
 
 namespace VRGIN.Core.Modes
@@ -10,7 +11,9 @@ namespace VRGIN.Core.Modes
     public abstract class ControlMode : ProtectedBehaviour
     {
         public abstract void Impersonate(IActor actor);
-        public abstract void OnDestroy();
+
+        public abstract ETrackingUniverseOrigin TrackingOrigin { get; }
+
         public Controller Left { get; private set; }
         public Controller Right { get; private set; }
 
@@ -19,8 +22,9 @@ namespace VRGIN.Core.Modes
         protected override void OnStart()
         {
             CreateControllers();
+            SteamVR_Render.instance.trackingSpace = TrackingOrigin;
         }
-
+        
         /// <summary>
         /// Creates both controllers by using <see cref="CreateRightController"/> and <see cref="CreateLeftController"/>.
         /// Override those methods to change the controller implementation to be used.
@@ -52,6 +56,13 @@ namespace VRGIN.Core.Modes
 
             Console.WriteLine("---- Initialize right tools");
             InitializeTools(Right, false);
+        }
+
+        public virtual void OnDestroy()
+        {
+            Destroy(ControllerManager);
+            Destroy(Left);
+            Destroy(Right);
         }
 
         protected virtual void InitializeTools(Controller controller, bool isLeft)

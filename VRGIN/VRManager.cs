@@ -19,6 +19,7 @@ namespace VRGIN.Core
         public static IVRManagerContext Context { get { return VRManager.Instance.Context; } }
         public static ControlMode Mode { get { return VRManager.Instance.Mode; } }
         public static VRSettings Settings { get { return Context.Settings; } }
+        public static VRManager Manager { get { return VRManager.Instance; } }
     }
 
     public class VRManager : ProtectedBehaviour
@@ -117,5 +118,6 @@ namespace VRGIN.Core
         Color PrimaryColor { get; }
         IMaterialPalette Materials { get; }
         VRSettings Settings { get; }
+        string HMDLayer { get; }
     }
 }

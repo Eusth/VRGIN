@@ -34,7 +34,6 @@ namespace VRGIN.Core.Controls
         protected override void OnStart()
         {
             base.OnStart();
-            Console.WriteLine("INIT GUI");
 
             Gui = GUIQuad.Create();
             Gui.transform.parent = transform;
