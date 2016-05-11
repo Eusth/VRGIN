@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 using VRGIN.Core.Controls;
 
 namespace VRGIN.Core.Modes
@@ -81,6 +82,38 @@ namespace VRGIN.Core.Modes
         public virtual IList<Type> RightTools
         {
             get { return new List<Type>(); }
+        }
+
+        protected override void OnUpdate()
+        {
+            base.OnUpdate();
+
+            // Update head visibility
+
+            var steamCam = VRCamera.Instance.SteamCam;
+            foreach (var actor in VR.Interpreter.Actors)
+            {
+                if (actor.HasHead)
+                {
+                    var hisPos = actor.Eyes.position;
+                    var hisForward = actor.Eyes.forward;
+
+                    var myPos = steamCam.head.position;
+                    var myForward = steamCam.head.forward;
+
+                    if (Vector3.Distance(hisPos, myPos) < 0.15f && Vector3.Dot(hisForward, myForward) > 0.6f)
+                    {
+                        actor.HasHead = false;
+                    }
+                }
+                else
+                {
+                    if (Vector3.Distance(actor.Eyes.position, steamCam.head.position) > 0.3f)
+                    {
+                        actor.HasHead = true;
+                    }
+                }
+            }
         }
     }
 }

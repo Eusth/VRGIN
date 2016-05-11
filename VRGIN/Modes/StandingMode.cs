@@ -10,7 +10,15 @@ namespace VRGIN.Core.Modes
     {
         public override void Impersonate(IActor actor)
         {
+            var targetYaw = Quaternion.Euler(0, actor.Eyes.rotation.eulerAngles.y, 0);
+            var myYaw = Quaternion.Euler(0, VR.Camera.SteamCam.head.eulerAngles.y, 0);
+            VR.Camera.SteamCam.origin.rotation *= Quaternion.Inverse(myYaw) * targetYaw;
 
+
+            var targetPosition = actor.Eyes.position;
+            targetPosition = new Vector3(targetPosition.x, 0, targetPosition.z);
+            var myPosition = new Vector3(VR.Camera.SteamCam.head.position.x, 0, VR.Camera.SteamCam.head.position.z);
+            VR.Camera.SteamCam.origin.position += (targetPosition - myPosition);
         }
 
         public override void OnDestroy()
@@ -24,6 +32,7 @@ namespace VRGIN.Core.Modes
 
             Camera.main.transform.position = VR.Camera.transform.position;
             Camera.main.transform.rotation = VR.Camera.transform.rotation;
+            
         }
     }
 }
