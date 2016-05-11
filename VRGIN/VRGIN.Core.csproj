@@ -1,0 +1,158 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{22788A2C-7695-4A6A-A9F0-115AB9A05FD4}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>VRGIN.Core</RootNamespace>
+    <AssemblyName>VRGIN</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;UNITY_5_3</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libs\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libs\UnityEngine.UI.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Controls\Controller.cs" />
+    <Compile Include="Controls\HelpText.cs" />
+    <Compile Include="Controls\LeftController.cs" />
+    <Compile Include="Controls\MenuTool.cs" />
+    <Compile Include="Controls\RightController.cs" />
+    <Compile Include="Controls\Tool.cs" />
+    <Compile Include="Controls\WarpTool.cs" />
+    <Compile Include="DefaultActor.cs" />
+    <Compile Include="GameInterpreter.cs" />
+    <Compile Include="IActor.cs" />
+    <Compile Include="QuaternionExtensions.cs" />
+    <Compile Include="Visuals\ArcRenderer.cs" />
+    <Compile Include="Visuals\IMaterialPalette.cs" />
+    <Compile Include="Visuals\DefaultMaterialPalette.cs" />
+    <Compile Include="Visuals\ProceduralPlane.cs" />
+    <Compile Include="VRManager.cs" />
+    <Compile Include="Modes\ControlMode.cs" />
+    <Compile Include="Modes\SeatedMode.cs" />
+    <Compile Include="Modes\StandingMode.cs" />
+    <Compile Include="Native\MouseOperations.cs" />
+    <Compile Include="Native\WindowManager.cs" />
+    <Compile Include="Native\WindowsInterop.cs" />
+    <Compile Include="Visuals\GUIQuad.cs" />
+    <Compile Include="VRGUI.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ProtectedBehaviour.cs" />
+    <Compile Include="Resource.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resource.resx</DependentUpon>
+    </Compile>
+    <Compile Include="SteamVR\openvr_api.cs" />
+    <Compile Include="SteamVR\Scripts\SteamVR.cs" />
+    <Compile Include="SteamVR\Scripts\SteamVR_Camera.cs" />
+    <Compile Include="SteamVR\Scripts\SteamVR_CameraFlip.cs" />
+    <Compile Include="SteamVR\Scripts\SteamVR_CameraMask.cs" />
+    <Compile Include="SteamVR\Scripts\SteamVR_Controller.cs" />
+    <Compile Include="SteamVR\Scripts\SteamVR_ControllerManager.cs" />
+    <Compile Include="SteamVR\Scripts\SteamVR_Ears.cs" />
+    <Compile Include="SteamVR\Scripts\SteamVR_ExternalCamera.cs" />
+    <Compile Include="SteamVR\Scripts\SteamVR_Fade.cs" />
+    <Compile Include="SteamVR\Scripts\SteamVR_Frustum.cs" />
+    <Compile Include="SteamVR\Scripts\SteamVR_GameView.cs" />
+    <Compile Include="SteamVR\Scripts\SteamVR_IK.cs" />
+    <Compile Include="SteamVR\Scripts\SteamVR_LoadLevel.cs" />
+    <Compile Include="SteamVR\Scripts\SteamVR_Menu.cs" />
+    <Compile Include="SteamVR\Scripts\SteamVR_Overlay.cs" />
+    <Compile Include="SteamVR\Scripts\SteamVR_PlayArea.cs" />
+    <Compile Include="SteamVR\Scripts\SteamVR_Render.cs" />
+    <Compile Include="SteamVR\Scripts\SteamVR_RenderModel.cs" />
+    <Compile Include="SteamVR\Scripts\SteamVR_Skybox.cs" />
+    <Compile Include="SteamVR\Scripts\SteamVR_SphericalProjection.cs" />
+    <Compile Include="SteamVR\Scripts\SteamVR_Stats.cs" />
+    <Compile Include="SteamVR\Scripts\SteamVR_Status.cs" />
+    <Compile Include="SteamVR\Scripts\SteamVR_StatusText.cs" />
+    <Compile Include="SteamVR\Scripts\SteamVR_TestController.cs" />
+    <Compile Include="SteamVR\Scripts\SteamVR_TrackedObject.cs" />
+    <Compile Include="SteamVR\Scripts\SteamVR_UpdatePoses.cs" />
+    <Compile Include="SteamVR\Scripts\SteamVR_Utils.cs" />
+    <Compile Include="UnityHelper.cs" />
+    <Compile Include="VRCamera.cs" />
+    <Compile Include="VRSettings.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Libs\UnityEngine.dll" />
+    <Content Include="Libs\UnityEngine.UI.dll" />
+    <Content Include="Libs\x86\openvr_api.dll" />
+    <Content Include="Libs\x86_64\openvr_api.dll" />
+    <Content Include="SteamVR\Textures\arrow.png" />
+    <Content Include="SteamVR\Textures\background.png" />
+    <Content Include="SteamVR\Textures\logo.png" />
+    <Content Include="SteamVR\Textures\workshop.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="SteamVR\Prefabs\[CameraRig].prefab" />
+    <None Include="SteamVR\Prefabs\[Status].prefab" />
+    <None Include="SteamVR\Prefabs\[SteamVR].prefab" />
+    <None Include="SteamVR\Resources\SteamVR_AlphaOut.shader" />
+    <None Include="SteamVR\Resources\SteamVR_Blit.shader" />
+    <None Include="SteamVR\Resources\SteamVR_BlitFlip.shader" />
+    <None Include="SteamVR\Resources\SteamVR_ClearAll.shader" />
+    <None Include="SteamVR\Resources\SteamVR_ColorOut.shader" />
+    <None Include="SteamVR\Resources\SteamVR_ExternalCamera.prefab" />
+    <None Include="SteamVR\Resources\SteamVR_Fade.shader" />
+    <None Include="SteamVR\Resources\SteamVR_HiddenArea.shader" />
+    <None Include="SteamVR\Resources\SteamVR_Overlay.shader" />
+    <None Include="SteamVR\Resources\SteamVR_SphericalProjection.shader" />
+    <None Include="SteamVR\Textures\arrow.png.meta" />
+    <None Include="SteamVR\Textures\background.png.meta" />
+    <None Include="SteamVR\Textures\logo.png.meta" />
+    <None Include="SteamVR\Textures\overlay.renderTexture" />
+    <None Include="SteamVR\Textures\overlay.renderTexture.meta" />
+    <None Include="SteamVR\Textures\workshop.png.meta" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resource.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resource.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
