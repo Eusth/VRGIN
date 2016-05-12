@@ -54,6 +54,9 @@
     <Compile Include="..\VRGIN\Controls\HelpText.cs">
       <Link>Controls\HelpText.cs</Link>
     </Compile>
+    <Compile Include="..\VRGIN\Controls\IShortcut.cs">
+      <Link>Controls\IShortcut.cs</Link>
+    </Compile>
     <Compile Include="..\VRGIN\Controls\LeftController.cs">
       <Link>Controls\LeftController.cs</Link>
     </Compile>
@@ -62,6 +65,9 @@
     </Compile>
     <Compile Include="..\VRGIN\Controls\RightController.cs">
       <Link>Controls\RightController.cs</Link>
+    </Compile>
+    <Compile Include="..\VRGIN\Controls\Shortcut.cs">
+      <Link>Controls\Shortcut.cs</Link>
     </Compile>
     <Compile Include="..\VRGIN\Controls\Tool.cs">
       <Link>Controls\Tool.cs</Link>
@@ -74,6 +80,9 @@
     </Compile>
     <Compile Include="..\VRGIN\GameInterpreter.cs">
       <Link>GameInterpreter.cs</Link>
+    </Compile>
+    <Compile Include="..\VRGIN\Helpers\KeyStroke.cs">
+      <Link>Helpers\KeyStroke.cs</Link>
     </Compile>
     <Compile Include="..\VRGIN\IActor.cs">
       <Link>IActor.cs</Link>

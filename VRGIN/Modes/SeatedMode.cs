@@ -5,12 +5,15 @@ using System.Text;
 using UnityEngine;
 using Valve.VR;
 using VRGIN.Core.Controls;
+using VRGIN.Core.Helpers;
+using VRGIN.Core.Visuals;
 
 namespace VRGIN.Core.Modes
 {
     public class SeatedMode : ControlMode
     {
         private Transform _Master;
+        protected GUIQuad Monitor;
 
         protected override void OnStart()
         {
@@ -51,9 +54,26 @@ namespace VRGIN.Core.Modes
             }
         }
 
+        protected override IEnumerable<IShortcut> CreateShortcuts()
+        {
+            return new List<IShortcut>() {
+                new KeyboardShortcut(new KeyStroke("KeypadMinus"), MoveGUI(1)),
+                new KeyboardShortcut(new KeyStroke("KeypadPlus"), MoveGUI(-1))
+            }.Concat(base.CreateShortcuts());
+        }
+
         public void Recenter()
         {
             OpenVR.System.ResetSeatedZeroPose();
         }
+
+        protected Action MoveGUI(float speed)
+        {
+            return delegate
+            {
+                // Reposition monitor
+            };
+        }
+        
     }
 }

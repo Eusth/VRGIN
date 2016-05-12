@@ -5,6 +5,7 @@ using System.Text;
 using UnityEngine;
 using Valve.VR;
 using VRGIN.Core.Controls;
+using VRGIN.Core.Helpers;
 
 namespace VRGIN.Core.Modes
 {
@@ -17,11 +18,15 @@ namespace VRGIN.Core.Modes
         public Controller Left { get; private set; }
         public Controller Right { get; private set; }
 
+        protected IEnumerable<IShortcut> Shortcuts { get; private set; }
+
         protected SteamVR_ControllerManager ControllerManager;
 
         protected override void OnStart()
         {
             CreateControllers();
+
+            Shortcuts = CreateShortcuts();
             SteamVR_Render.instance.trackingSpace = TrackingOrigin;
         }
         
@@ -103,6 +108,15 @@ namespace VRGIN.Core.Modes
             get { return new List<Type>(); }
         }
 
+        protected virtual IEnumerable<IShortcut> CreateShortcuts()
+        {
+            return new List<IShortcut>()
+            {
+                new KeyboardShortcut(new KeyStroke("Alt + KeypadMinus"), delegate { VR.Settings.IPDScale += Time.deltaTime; } ),
+                new KeyboardShortcut(new KeyStroke("Alt + KeypadPlus"), delegate { VR.Settings.IPDScale -= Time.deltaTime; } )
+            };
+        }
+        
         protected override void OnUpdate()
         {
             base.OnUpdate();
@@ -141,6 +155,16 @@ namespace VRGIN.Core.Modes
                     }
                 }
                 i++;
+            }
+        }
+
+        protected override void OnFixedUpdate()
+        {
+            base.OnFixedUpdate();
+            
+            foreach(var shortcut in Shortcuts)
+            {
+                shortcut.Evaluate();
             }
         }
     }
