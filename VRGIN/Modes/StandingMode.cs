@@ -30,11 +30,12 @@ namespace VRGIN.Core.Modes
         
         protected override void OnUpdate()
         {
+            base.OnUpdate();
+
             var origin = VRCamera.Instance.SteamCam.origin;
 
             Camera.main.transform.position = VR.Camera.transform.position;
             Camera.main.transform.rotation = VR.Camera.transform.rotation;
-            
         }
 
         public override IEnumerable<Type> Tools

@@ -208,7 +208,6 @@ public class SteamVR_ControllerManager : MonoBehaviour
 
 	public void Refresh()
 	{
-        Console.WriteLine("Refresh");
 		int objectIndex = 0;
 
 		var system = OpenVR.System;

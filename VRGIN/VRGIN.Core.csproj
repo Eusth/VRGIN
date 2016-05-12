@@ -57,10 +57,12 @@
     <Compile Include="DefaultActor.cs" />
     <Compile Include="GameInterpreter.cs" />
     <Compile Include="IActor.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="QuaternionExtensions.cs" />
     <Compile Include="Visuals\ArcRenderer.cs" />
     <Compile Include="Visuals\IMaterialPalette.cs" />
     <Compile Include="Visuals\DefaultMaterialPalette.cs" />
+    <Compile Include="Visuals\PlayerCamera.cs" />
     <Compile Include="Visuals\ProceduralPlane.cs" />
     <Compile Include="VRManager.cs" />
     <Compile Include="Modes\ControlMode.cs" />

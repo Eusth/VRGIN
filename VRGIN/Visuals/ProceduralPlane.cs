@@ -75,7 +75,7 @@ namespace VRGIN.Core.Visuals
             int trisArrayLength = numTris * 3;          //3 places in the array for each tri
 
             // log the number of tris
-            //Console.WriteLine ("Plane has " + trisArrayLength/3 + " tris");
+            //Logger.Info ("Plane has " + trisArrayLength/3 + " tris");
 
             //initialize arrays
             Vector3[] Vertices = new Vector3[numVertices];
@@ -129,7 +129,7 @@ namespace VRGIN.Core.Visuals
                     float z = Mathf.Sin(Mathf.PI / 2 - p.x * m2rad * Mathf.Clamp01(curviness));
 
                     int index = j * numVertexColumns + i;
-                    //Console.WriteLine(90 - x * m2angle);
+                    //Logger.Info(90 - x * m2angle);
 
                     Vertices[index] = new Vector3(nx,
                                                  p.y,
@@ -139,7 +139,7 @@ namespace VRGIN.Core.Visuals
                     {
                         float roundness = curviness - 1;
                         Vertices[index] = Vector3.Lerp(Vertices[index], Vertices[index].normalized * distance, Mathf.Clamp01(roundness));
-                        //  Console.WriteLine(roundness);
+                        //  Logger.Info(roundness);
                     }
 
                     //calculate UVs

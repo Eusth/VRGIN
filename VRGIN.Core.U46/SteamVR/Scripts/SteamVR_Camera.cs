@@ -185,7 +185,7 @@ public class SteamVR_Camera : ProtectedBehaviour
             }
             catch (System.Exception e)
             {
-                System.Console.WriteLine("Ears not found");
+                Logger.Info("Ears not found");
             }
             System.Console.WriteLine("OK7");
 

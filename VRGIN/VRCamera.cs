@@ -53,6 +53,7 @@ namespace VRGIN.Core
 
         public void Copy(Camera blueprint)
         {
+            Logger.Info("Copying camera: {0}", blueprint);
             Blueprint = blueprint ?? GetComponent<Camera>();
             
             ApplyToCameras(targetCamera =>
@@ -62,7 +63,7 @@ namespace VRGIN.Core
                 targetCamera.cullingMask = Blueprint.cullingMask & ~(VRManager.Instance.Context.UILayerMask | LayerMask.GetMask(VR.Context.HMDLayer));
                 targetCamera.clearFlags = Blueprint.clearFlags;
                 targetCamera.backgroundColor = Blueprint.backgroundColor;
-                //Console.WriteLine(ovrCamera.clearFlags);
+                //Logger.Info(ovrCamera.clearFlags);
                 var skybox = Blueprint.GetComponent<Skybox>();
                 if (skybox != null)
                 {

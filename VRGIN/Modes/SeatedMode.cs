@@ -21,6 +21,8 @@ namespace VRGIN.Core.Modes
 
         protected override void OnUpdate()
         {
+            base.OnUpdate();
+
             VR.Camera.SteamCam.origin.transform.position = _Master.position;
             VR.Camera.SteamCam.origin.transform.rotation = _Master.rotation;
         }

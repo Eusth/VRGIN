@@ -61,7 +61,7 @@ namespace VRGIN.Core.Visuals
             for (int i = 0; i <= VertexCount; i++)
             {
                 float t = Mathf.Clamp(((i / (VertexCount - 1f)) * totT) + ((Time.time * UvSpeed) % 2) * timeStep - timeStep, 0, totT);
-                //Console.WriteLine(t);
+                //Logger.Info(t);
                 vertices.Add(transform.InverseTransformPoint(transform.position + ((direction * Velocity) * t + 0.5f * Physics.gravity * t * t) * scale));
             }
 

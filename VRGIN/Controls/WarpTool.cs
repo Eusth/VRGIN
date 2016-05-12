@@ -130,7 +130,7 @@ namespace VRGIN.Core.Controls
 
             _CanImpersonate = false;
 
-            if (!VRManager.Instance.Interpreter.IsEveryoneHeaded)
+            if (VRManager.Instance.Interpreter.IsEveryoneHeaded)
             {
                 var firstMember = VRManager.Instance.Interpreter.Actors.FirstOrDefault();
                 if (firstMember != null && firstMember.IsValid)
@@ -229,10 +229,10 @@ namespace VRGIN.Core.Controls
                 if (Mathf.Abs(rot) < 60)
                 {
                     _AdditionalRotation += rot;
-                    //Console.WriteLine("Detected circular movement. Total: {0}", _AdditionalRotation);
+                    //Logger.Info("Detected circular movement. Total: {0}", _AdditionalRotation);
                 } else
                 {
-                    Console.WriteLine("Discarding too large rotation: {0}", rot);
+                    Logger.Info("Discarding too large rotation: {0}", rot);
                 }
             }
             points.Clear();

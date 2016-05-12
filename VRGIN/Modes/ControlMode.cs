@@ -51,10 +51,10 @@ namespace VRGIN.Core.Modes
             }
             steamCam.origin.gameObject.SetActive(true);
 
-            Console.WriteLine("---- Initialize left tools");
+            Logger.Info("---- Initialize left tools");
             InitializeTools(Left, true);
 
-            Console.WriteLine("---- Initialize right tools");
+            Logger.Info("---- Initialize right tools");
             InitializeTools(Right, false);
         }
 
@@ -75,7 +75,7 @@ namespace VRGIN.Core.Modes
                 controller.AddTool(type);
             }
 
-            Console.WriteLine("{0} tools added" , toolTypes.Count());
+            Logger.Info("{0} tools added" , toolTypes.Count());
         }
 
         protected virtual Controller CreateLeftController()
@@ -110,19 +110,27 @@ namespace VRGIN.Core.Modes
             // Update head visibility
 
             var steamCam = VRCamera.Instance.SteamCam;
+            int i = 0;
+
+            bool allActorsHaveHeads = VR.Interpreter.IsEveryoneHeaded;
+
             foreach (var actor in VR.Interpreter.Actors)
             {
                 if (actor.HasHead)
                 {
-                    var hisPos = actor.Eyes.position;
-                    var hisForward = actor.Eyes.forward;
-
-                    var myPos = steamCam.head.position;
-                    var myForward = steamCam.head.forward;
-
-                    if (Vector3.Distance(hisPos, myPos) < 0.15f && Vector3.Dot(hisForward, myForward) > 0.6f)
+                    if (allActorsHaveHeads)
                     {
-                        actor.HasHead = false;
+                        var hisPos = actor.Eyes.position;
+                        var hisForward = actor.Eyes.forward;
+
+                        var myPos = steamCam.head.position;
+                        var myForward = steamCam.head.forward;
+
+                        Logger.Debug("Actor #{0} -- He: {1} -> {2} | Me: {3} -> {4}", i, hisPos, hisForward, myPos, myForward);
+                        if (Vector3.Distance(hisPos, myPos) < 0.15f && Vector3.Dot(hisForward, myForward) > 0.6f)
+                        {
+                            actor.HasHead = false;
+                        }
                     }
                 }
                 else
@@ -132,6 +140,7 @@ namespace VRGIN.Core.Modes
                         actor.HasHead = true;
                     }
                 }
+                i++;
             }
         }
     }

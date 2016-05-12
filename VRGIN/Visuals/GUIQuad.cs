@@ -63,7 +63,7 @@ namespace VRGIN.Core.Visuals
         }
         public void UpdateGUI(bool transparent, bool renderGUI)
         {
-            //Console.WriteLine();
+            //Logger.Info();
             //renderGUI = false;
             UpdateAspect();
             try
@@ -90,7 +90,7 @@ namespace VRGIN.Core.Visuals
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Logger.Info(e);
             }
         }
     }

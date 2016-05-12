@@ -138,7 +138,7 @@ namespace VRGIN.Core
             foreach (var canvas in canvasList.Where(c => c.renderMode == RenderMode.ScreenSpaceOverlay && c.worldCamera != _VRGUICamera))
             {
                 if (canvas.name.Contains("TexFade")) continue;
-                Console.WriteLine("Add {0} ({1}: {2})", canvas.name, canvas.sortingLayerName, LayerMask.LayerToName(canvas.gameObject.layer));
+                Logger.Info("Add {0} ({1}: {2})", canvas.name, canvas.sortingLayerName, LayerMask.LayerToName(canvas.gameObject.layer));
                 canvas.renderMode = RenderMode.ScreenSpaceCamera;
                 canvas.worldCamera = _VRGUICamera;
 
@@ -157,14 +157,14 @@ namespace VRGIN.Core
         {
             if (_Listeners > 0)
             {
-                //Console.WriteLine(Time.time);
+                //Logger.Info(Time.time);
                 //var watch = System.Diagnostics.Stopwatch.StartNew();
                 CatchCanvas();
-                //Console.WriteLine(watch.ElapsedTicks);
+                //Logger.Info(watch.ElapsedTicks);
             }
             if (_Listeners < 0)
             {
-                Console.WriteLine("NUMBER DONT ADD UP!");
+                Logger.Info("NUMBER DONT ADD UP!");
             }
         }
 

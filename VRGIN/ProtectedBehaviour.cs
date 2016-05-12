@@ -54,7 +54,7 @@ namespace VRGIN.Core
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                Logger.Error(ex);
             }
         }
     }

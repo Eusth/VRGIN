@@ -46,7 +46,7 @@ namespace VRGIN.Core
             }
             else
             {
-                Console.WriteLine("File " + filePath + " does not exist");
+                Logger.Warn("File " + filePath + " does not exist");
             }
             return tex;
         }

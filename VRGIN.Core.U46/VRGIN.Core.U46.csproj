@@ -78,6 +78,9 @@
     <Compile Include="..\VRGIN\IActor.cs">
       <Link>IActor.cs</Link>
     </Compile>
+    <Compile Include="..\VRGIN\Logger.cs">
+      <Link>Logger.cs</Link>
+    </Compile>
     <Compile Include="..\VRGIN\Modes\ControlMode.cs">
       <Link>Modes\ControlMode.cs</Link>
     </Compile>
@@ -116,6 +119,9 @@
     </Compile>
     <Compile Include="..\VRGIN\Visuals\IMaterialPalette.cs">
       <Link>Visuals\IMaterialPalette.cs</Link>
+    </Compile>
+    <Compile Include="..\VRGIN\Visuals\PlayerCamera.cs">
+      <Link>Visuals\PlayerCamera.cs</Link>
     </Compile>
     <Compile Include="..\VRGIN\Visuals\ProceduralPlane.cs">
       <Link>Visuals\ProceduralPlane.cs</Link>

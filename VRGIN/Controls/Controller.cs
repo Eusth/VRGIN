@@ -56,7 +56,7 @@ namespace VRGIN.Core.Controls
             // Add model
             Model = new GameObject("Model").AddComponent<SteamVR_RenderModel>();
             Model.shader = VRManager.Instance.Context.Materials.StandardShader;
-            Console.WriteLine(Model.shader == null ? "Shader not found" : "Shader found");
+            Logger.Info(Model.shader == null ? "Shader not found" : "Shader found");
             Model.transform.SetParent(transform, false);
             //Model.verbose = true;
 
@@ -113,11 +113,11 @@ namespace VRGIN.Core.Controls
                 if (i++ != ToolIndex && tool)
                 {
                     tool.enabled = false;
-                    Console.WriteLine("Kill tool #{0} ({1})", i - 1 , ToolIndex);
+                    Logger.Info("Kill tool #{0} ({1})", i - 1 , ToolIndex);
                 } else
                 {
                     tool.enabled = true;
-                    Console.WriteLine("Do nothing with Tool #{0}", i - 1);
+                    Logger.Info("Do nothing with Tool #{0}", i - 1);
                 }
             }
         }
@@ -134,7 +134,7 @@ namespace VRGIN.Core.Controls
                 Laser.SetPosition(0, Laser.transform.position);
                 Laser.SetPosition(1, Laser.transform.position + Laser.transform.forward);
             }
-            //Console.WriteLine(transform.position);
+            //Logger.Info(transform.position);
             if (Other)
             {
                 if(Other.ActiveTool != null && Other.ActiveTool is MenuTool)
