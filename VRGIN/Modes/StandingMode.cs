@@ -27,7 +27,16 @@ namespace VRGIN.Core.Modes
         {
 
         }
-        
+
+        protected override void OnStart()
+        {
+            base.OnStart();
+
+            VR.Camera.SteamCam.origin.position = Vector3.zero;
+            VR.Camera.SteamCam.origin.rotation = Quaternion.identity;
+
+        }
+
         protected override void OnUpdate()
         {
             base.OnUpdate();

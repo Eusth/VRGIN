@@ -123,6 +123,9 @@
     <Compile Include="..\VRGIN\Visuals\DefaultMaterialPalette.cs">
       <Link>Visuals\DefaultMaterialPalette.cs</Link>
     </Compile>
+    <Compile Include="..\VRGIN\Visuals\GUIMonitor.cs">
+      <Link>GUIMonitor.cs</Link>
+    </Compile>
     <Compile Include="..\VRGIN\Visuals\GUIQuad.cs">
       <Link>Visuals\GUIQuad.cs</Link>
     </Compile>

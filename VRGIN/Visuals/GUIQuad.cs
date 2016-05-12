@@ -29,9 +29,6 @@ namespace VRGIN.Core.Visuals
 #if !UNITY_4_5
             renderer = GetComponent<Renderer>();
 #endif
-            var plane = gameObject.AddComponent<ProceduralPlane>();
-            plane.distance = 1;
-            plane.xSegments = 100;
 
             transform.localPosition = Vector3.zero;// new Vector3(0, 0, distance);
             transform.localRotation = Quaternion.identity;
@@ -61,6 +58,7 @@ namespace VRGIN.Core.Visuals
 
             transform.localScale = new Vector3(width, height, 1);
         }
+
         public void UpdateGUI(bool transparent, bool renderGUI)
         {
             //Logger.Info();

@@ -63,6 +63,7 @@
     <Compile Include="Controls\Shortcut.cs" />
     <Compile Include="QuaternionExtensions.cs" />
     <Compile Include="Visuals\ArcRenderer.cs" />
+    <Compile Include="Visuals\GUIMonitor.cs" />
     <Compile Include="Visuals\IMaterialPalette.cs" />
     <Compile Include="Visuals\DefaultMaterialPalette.cs" />
     <Compile Include="Visuals\PlayerCamera.cs" />
