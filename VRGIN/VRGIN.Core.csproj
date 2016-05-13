@@ -61,7 +61,7 @@
     <Compile Include="IActor.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Controls\IShortcut.cs" />
-    <Compile Include="Controls\Shortcut.cs" />
+    <Compile Include="Controls\KeyboardShortcut.cs" />
     <Compile Include="Helpers\QuaternionExtensions.cs" />
     <Compile Include="Visuals\ArcRenderer.cs" />
     <Compile Include="Visuals\GUIMonitor.cs" />
