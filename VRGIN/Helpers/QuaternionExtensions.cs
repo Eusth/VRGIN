@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace VRGIN.Core
+namespace VRGIN.Core.Helpers
 {
     public static class QuaternionExtensions
     {

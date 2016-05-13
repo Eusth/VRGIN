@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using Valve.VR;
+using VRGIN.Core.Helpers;
 using VRGIN.Core.Visuals;
 
 namespace VRGIN.Core.Controls

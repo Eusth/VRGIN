@@ -81,8 +81,17 @@
     <Compile Include="..\VRGIN\GameInterpreter.cs">
       <Link>GameInterpreter.cs</Link>
     </Compile>
+    <Compile Include="..\VRGIN\Helpers\GameObjectExtensions.cs">
+      <Link>Helpers\GameObjectExtensions.cs</Link>
+    </Compile>
     <Compile Include="..\VRGIN\Helpers\KeyStroke.cs">
       <Link>Helpers\KeyStroke.cs</Link>
+    </Compile>
+    <Compile Include="..\VRGIN\Helpers\QuaternionExtensions.cs">
+      <Link>Helpers\QuaternionExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\VRGIN\Helpers\UnityHelper.cs">
+      <Link>Helpers\UnityHelper.cs</Link>
     </Compile>
     <Compile Include="..\VRGIN\IActor.cs">
       <Link>IActor.cs</Link>
@@ -110,12 +119,6 @@
     </Compile>
     <Compile Include="..\VRGIN\ProtectedBehaviour.cs">
       <Link>ProtectedBehaviour.cs</Link>
-    </Compile>
-    <Compile Include="..\VRGIN\QuaternionExtensions.cs">
-      <Link>QuaternionExtensions.cs</Link>
-    </Compile>
-    <Compile Include="..\VRGIN\UnityHelper.cs">
-      <Link>UnityHelper.cs</Link>
     </Compile>
     <Compile Include="..\VRGIN\Visuals\ArcRenderer.cs">
       <Link>Visuals\ArcRenderer.cs</Link>

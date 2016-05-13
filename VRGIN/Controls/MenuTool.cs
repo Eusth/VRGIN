@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using Valve.VR;
+using VRGIN.Core.Helpers;
 using VRGIN.Core.Native;
 using VRGIN.Core.Visuals;
 using static VRGIN.Core.Native.WindowsInterop;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using VRGIN.Core.Helpers;
 
 namespace VRGIN.Core
 {
@@ -56,6 +57,7 @@ namespace VRGIN.Core
             Logger.Info("Copying camera: {0}", blueprint);
             Blueprint = blueprint ?? GetComponent<Camera>();
             
+            // Apply to both the head camera and the VR camera
             ApplyToCameras(targetCamera =>
             {
                 targetCamera.nearClipPlane = Mathf.Clamp(0.01f, 0.001f, 0.01f);
@@ -77,14 +79,48 @@ namespace VRGIN.Core
                 InitializeCamera(this, new InitializeCameraEventArgs(targetCamera, Blueprint));
             });
 
+            CopyFX(Blueprint);
             SteamCam.origin.position = Vector3.zero;
             Blueprint.GetComponent<Camera>().cullingMask = 0;
+        }
+
+        /// <summary>
+        /// Doesn't really work yet.
+        /// </summary>
+        /// <param name="blueprint"></param>
+        public void CopyFX(Camera blueprint)
+        {
+            // Clean
+            foreach (var fx in gameObject.GetCameraEffects())
+            {
+                Logger.Info("DESTROY {0}", fx.GetType().Name);
+                DestroyImmediate(fx);
+            }
+
+            Logger.Info("Copying FX to {0}...", gameObject.name);
+            // Rebuild
+            foreach (var fx in blueprint.gameObject.GetCameraEffects())
+            {
+                Logger.Info("Copy FX: {0} (enabled={1})", fx.GetType().Name, fx.enabled);
+                var attachedFx = gameObject.CopyComponentFrom(fx);
+                attachedFx.enabled = fx.enabled;
+            }
+
+            Logger.Info("That's all.");
+
+            SteamCam.ForceLast();
+            SteamCam = GetComponent<SteamVR_Camera>();
         }
 
         private void ApplyToCameras(CameraOperation operation)
         {
             operation(SteamCam.GetComponent<Camera>());
             operation(SteamCam.head.GetComponent<Camera>());
+        }
+
+        public void Refresh()
+        {
+            CopyFX(Blueprint);
         }
     }
 }

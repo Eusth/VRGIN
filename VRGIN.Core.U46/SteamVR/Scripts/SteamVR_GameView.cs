@@ -7,6 +7,7 @@
 using System;
 using UnityEngine;
 using VRGIN.Core;
+using VRGIN.Core.Helpers;
 
 [RequireComponent(typeof(Camera))]
 public class SteamVR_GameView : MonoBehaviour

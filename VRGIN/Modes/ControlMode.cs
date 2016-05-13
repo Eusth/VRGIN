@@ -113,7 +113,9 @@ namespace VRGIN.Core.Modes
             return new List<IShortcut>()
             {
                 new KeyboardShortcut(new KeyStroke("Alt + KeypadMinus"), delegate { VR.Settings.IPDScale += Time.deltaTime; } ),
-                new KeyboardShortcut(new KeyStroke("Alt + KeypadPlus"), delegate { VR.Settings.IPDScale -= Time.deltaTime; } )
+                new KeyboardShortcut(new KeyStroke("Alt + KeypadPlus"), delegate { VR.Settings.IPDScale -= Time.deltaTime; } ),
+                //new KeyboardShortcut(new KeyStroke("Ctrl + F5"), delegate { VR.Camera.CopyFX(Camera.main); }, KeyMode.PressUp),
+
             };
         }
         

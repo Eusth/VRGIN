@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text;
 using UnityEngine;
 
-namespace VRGIN.Core
+namespace VRGIN.Core.Helpers
 {
     /// <summary>
     /// A collection of helper methods that can be used in the Unity context.
@@ -59,6 +59,19 @@ namespace VRGIN.Core
                 if ((mask & (1 << i)) != 0) masks.Add(LayerMask.LayerToName(i));
             }
             return masks.Select(m => m.Trim()).Where(m => m.Length > 0).ToArray();
+        }
+
+
+        public static T CopyComponent<T>(T original, GameObject destination) where T : Component
+        {
+            System.Type type = original.GetType();
+            Component copy = destination.AddComponent(type);
+            System.Reflection.FieldInfo[] fields = type.GetFields();
+            foreach (System.Reflection.FieldInfo field in fields)
+            {
+                field.SetValue(copy, field.GetValue(original));
+            }
+            return copy as T;
         }
     }
 }

@@ -10,7 +10,16 @@ namespace VRGIN.Core.Visuals
     { 
         public DefaultMaterialPalette()
         {
-            UnlitTransparentCombined = new Material(@"Shader ""Unlit/AlphaSelfIllum"" {
+            Unlit = CreateUnlit();
+            UnlitTransparent = CreateUnlitTransparent();
+            UnlitTransparentCombined = CreateUnlitTransparentCombined();
+            StandardShader = CreateStandardShader();
+            Sprite = CreateSprite();
+        }
+        
+        private Material CreateUnlitTransparentCombined()
+        {
+            return new Material(@"Shader ""Unlit/AlphaSelfIllum"" {
                                 Properties {
                                     _MainTex (""Base (RGB)"", 2D) = ""white"" {}
                                     _SubTex (""Base (RGB)"", 2D) = ""white"" {}
@@ -32,31 +41,37 @@ namespace VRGIN.Core.Visuals
                                     } 
                                 }
                             }");
+        }
 
-            UnlitTransparent = new Material(@"Shader ""Unlit/AlphaSelfIllum"" {
-                                Properties {
-                                    _MainTex (""Base (RGB)"", 2D) = ""white"" {}
-                                }
-                                Category {
-                                   Lighting Off
-                                   ZWrite Off
-                                   Cull Back
-                                   Blend SrcAlpha OneMinusSrcAlpha
-                                   
-                                   SubShader {
-                                        Tags {""Queue""=""Transparent+100""}
-                                        Pass {
-                                           SetTexture [_MainTex] {
-                                                  Combine Texture, Texture + Texture
-                                            }
-                                        }
-                                    } 
-                                }
-                            }");
+        public Material UnlitTransparentCombined
+        {
+            get; set;
+        }
 
-            Sprite = Resources.GetBuiltinResource<Material>("Sprites-Default.mat");
-            StandardShader = Shader.Find("Standard");
-            Unlit = new Material(@"Shader ""Unlit Single Color"" {
+
+        private Material CreateSprite()
+        {
+            return Resources.GetBuiltinResource<Material>("Sprites-Default.mat");
+        }
+        public Material Sprite
+        {
+            get; set;
+        }
+
+
+        private Shader CreateStandardShader()
+        {
+            return Shader.Find("Standard");
+        }
+        public Shader StandardShader
+        {
+            get; set;
+        }
+
+
+        private Material CreateUnlit()
+        {
+            return new Material(@"Shader ""Unlit Single Color"" {
                 Properties {
                     _Color (""Main Color"", Color) = (1,1,1,1)
                     _MainTex (""Base (RGB)"", 2D) = ""white"" {}
@@ -76,31 +91,38 @@ namespace VRGIN.Core.Visuals
                 }
             }");
         }
-
-
-        public Material UnlitTransparentCombined
-        {
-            get; private set;
-        }
-
-        public Material Sprite
-        {
-            get; private set;
-        }
-
-        public Shader StandardShader
-        {
-            get; private set;
-        }
-
         public Material Unlit
         {
-            get; private set;
+            get; set;
         }
 
+
+        private Material CreateUnlitTransparent()
+        {
+            return new Material(@"Shader ""Unlit/AlphaSelfIllum"" {
+                                Properties {
+                                    _MainTex (""Base (RGB)"", 2D) = ""white"" {}
+                                }
+                                Category {
+                                   Lighting Off
+                                   ZWrite Off
+                                   Cull Back
+                                   Blend SrcAlpha OneMinusSrcAlpha
+                                   
+                                   SubShader {
+                                        Tags {""Queue""=""Transparent+100""}
+                                        Pass {
+                                           SetTexture [_MainTex] {
+                                                  Combine Texture, Texture + Texture
+                                            }
+                                        }
+                                    } 
+                                }
+                            }");
+        }
         public Material UnlitTransparent
         {
-            get; private set;
+            get; set;
         }
     }
 }

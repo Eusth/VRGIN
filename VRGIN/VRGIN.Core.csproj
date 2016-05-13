@@ -56,12 +56,13 @@
     <Compile Include="Controls\WarpTool.cs" />
     <Compile Include="DefaultActor.cs" />
     <Compile Include="GameInterpreter.cs" />
+    <Compile Include="Helpers\GameObjectExtensions.cs" />
     <Compile Include="Helpers\KeyStroke.cs" />
     <Compile Include="IActor.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Controls\IShortcut.cs" />
     <Compile Include="Controls\Shortcut.cs" />
-    <Compile Include="QuaternionExtensions.cs" />
+    <Compile Include="Helpers\QuaternionExtensions.cs" />
     <Compile Include="Visuals\ArcRenderer.cs" />
     <Compile Include="Visuals\GUIMonitor.cs" />
     <Compile Include="Visuals\IMaterialPalette.cs" />
@@ -112,7 +113,7 @@
     <Compile Include="SteamVR\Scripts\SteamVR_TrackedObject.cs" />
     <Compile Include="SteamVR\Scripts\SteamVR_UpdatePoses.cs" />
     <Compile Include="SteamVR\Scripts\SteamVR_Utils.cs" />
-    <Compile Include="UnityHelper.cs" />
+    <Compile Include="Helpers\UnityHelper.cs" />
     <Compile Include="VRCamera.cs" />
     <Compile Include="VRSettings.cs" />
   </ItemGroup>
