@@ -31,6 +31,8 @@ namespace VRGIN.Core.Controls
 
     public class MultiKeyboardShortcut : IShortcut
     {
+        private const float WAIT_TIME = 0.5f;
+
         public KeyStroke[] KeyStrokes { get; private set; }
         public Action Action { get; private set; }
         public KeyMode CheckMode { get; private set; }
@@ -53,7 +55,7 @@ namespace VRGIN.Core.Controls
 
         public void Evaluate()
         {
-            if(Time.time - _Time > 1f)
+            if(Time.time - _Time > WAIT_TIME)
             {
                 _Index = 0;
             }

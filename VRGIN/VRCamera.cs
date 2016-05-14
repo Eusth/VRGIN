@@ -135,6 +135,16 @@ namespace VRGIN.Core
             operation(SteamCam.head.GetComponent<Camera>());
         }
 
+        protected override void OnUpdate()
+        {
+            base.OnUpdate();
+
+            if(SteamCam.origin)
+            {
+                SteamCam.origin.localScale = Vector3.one * VR.Settings.IPDScale;
+            }
+        }
+
         public void Refresh()
         {
             CopyFX(Blueprint);

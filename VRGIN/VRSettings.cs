@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Xml.Serialization;
 
@@ -35,6 +36,8 @@ namespace VRGIN.Core
         public VRSettings()
         {
             PropertyChanged += Distribute;
+
+            _OldSettings = this.MemberwiseClone() as VRSettings;
         }
 
         private void TriggerPropertyChanged(string name)
@@ -100,13 +103,45 @@ namespace VRGIN.Core
 
         private void Distribute(object sender, PropertyChangedEventArgs e)
         {
-            if (_Listeners.ContainsKey(e.PropertyName))
+            if (!_Listeners.ContainsKey(e.PropertyName))
             {
-                foreach(var listener in _Listeners[e.PropertyName])
-                {
-                    listener(sender, e);
-                }
+                _Listeners[e.PropertyName] = new List<EventHandler<PropertyChangedEventArgs>>();
+            }
+
+            foreach (var listener in _Listeners[e.PropertyName])
+            {
+                listener(sender, e);
             }
         }
+
+        public void Reset()
+        {
+            this.CopyFrom(new VRSettings());
+        }
+
+        public void Reload()
+        {
+            this.CopyFrom(_OldSettings);
+        }
+
+        public void CopyFrom(VRSettings settings)
+        {
+            foreach(var key in _Listeners.Keys)
+            {
+                var prop = settings.GetType().GetProperty(key, BindingFlags.Instance | BindingFlags.Public);
+                if(prop != null)
+                {
+                    try
+                    {
+                        prop.SetValue(this, prop.GetValue(settings, null), null);
+                    } catch(Exception e)
+                    {
+                        Logger.Warn(e);
+                    }
+                }
+            }
+        } 
+
+        
     }
 }

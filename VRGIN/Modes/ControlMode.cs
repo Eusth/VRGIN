@@ -6,6 +6,7 @@ using UnityEngine;
 using Valve.VR;
 using VRGIN.Core.Controls;
 using VRGIN.Core.Helpers;
+using VRGIN.Core.Visuals;
 
 namespace VRGIN.Core.Modes
 {
@@ -112,12 +113,32 @@ namespace VRGIN.Core.Modes
         {
             return new List<IShortcut>()
             {
-                new KeyboardShortcut(new KeyStroke("Alt + KeypadMinus"), delegate { VR.Settings.IPDScale += Time.deltaTime; } ),
-                new KeyboardShortcut(new KeyStroke("Alt + KeypadPlus"), delegate { VR.Settings.IPDScale -= Time.deltaTime; } ),
-                new MultiKeyboardShortcut(new KeyStroke("Ctrl + X"), new KeyStroke("Ctrl + D"), delegate { UnityHelper.DumpScene("dump.json"); } ),
+                new KeyboardShortcut(new KeyStroke("Alt + KeypadMinus"), delegate { VR.Settings.IPDScale += Time.deltaTime * 0.1f; }, KeyMode.Press ),
+                new KeyboardShortcut(new KeyStroke("Alt + KeypadPlus"), delegate { VR.Settings.IPDScale -= Time.deltaTime * 0.1f; }, KeyMode.Press ),
+                new MultiKeyboardShortcut(new KeyStroke("Ctrl + C"), new KeyStroke("Ctrl + D"), delegate { UnityHelper.DumpScene("dump.json"); } ),
+                new MultiKeyboardShortcut(new KeyStroke("Ctrl + C"), new KeyStroke("Ctrl + C"), ToggleUserCamera),
+                new KeyboardShortcut(new KeyStroke("Alt + S"), delegate { VR.Settings.Save(); }),
+                new KeyboardShortcut(new KeyStroke("Alt + L"), delegate { VR.Settings.Reload(); }),
+                new KeyboardShortcut(new KeyStroke("Ctrl + Alt + L"), delegate { VR.Settings.Reset(); }),
                 //new KeyboardShortcut(new KeyStroke("Ctrl + F5"), delegate { VR.Camera.CopyFX(Camera.main); }, KeyMode.PressUp),
 
             };
+        }
+
+        protected virtual void ToggleUserCamera()
+        {
+            if (!PlayerCamera.Created)
+            {
+                Logger.Info("Create user camera");
+
+                PlayerCamera.Create();
+            }
+            else
+            {
+                Logger.Info("Remove user camera");
+                
+                PlayerCamera.Remove();
+            }
         }
         
         protected override void OnUpdate()
