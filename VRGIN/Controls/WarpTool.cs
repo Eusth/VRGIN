@@ -46,25 +46,23 @@ namespace VRGIN.Core.Controls
             PlayArea.transform.SetParent(PlayAreaRotation, false);
 
 
-            DirectionIndicator = GameObject.CreatePrimitive(PrimitiveType.Cube).transform;
-            DirectionIndicator.SetParent(PlayAreaRotation, false);
-            DirectionIndicator.localScale = new Vector3(0.01f, 0.01f, .2f);
-            DirectionIndicator.localRotation = Quaternion.identity;
-            var renderer = DirectionIndicator.GetComponent<Renderer>();
-            renderer.material = Resources.GetBuiltinResource<Material>("Sprites-Default.mat");
-#if UNITY_4_5
-            renderer.castShadows = false;
-#else
-            renderer.reflectionProbeUsage = UnityEngine.Rendering.ReflectionProbeUsage.Off;
-            renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-#endif
-            renderer.receiveShadows = false;
-            renderer.useLightProbes = false;
-            renderer.material.color = Color.cyan;
-
+            DirectionIndicator = CreateClone();
+            DirectionIndicator.SetParent(PlayArea.transform);
             DontDestroyOnLoad(PlayAreaRotation.gameObject);
 
             //DontDestroyOnLoad(PlayAreaRotation.gameObject);
+        }
+
+        protected virtual Transform CreateClone()
+        {
+            var model = new GameObject("Model").AddComponent<SteamVR_RenderModel>();
+            model.transform.SetParent(VR.Camera.SteamCam.head, false);
+            model.shader = VR.Context.Materials.StandardShader;
+            model.SetDeviceIndex((int)OpenVR.k_unTrackedDeviceIndex_Hmd);
+            var obj = model.gameObject.AddComponent<SteamVR_TrackedObject>();
+            obj.SetDeviceIndex((int)OpenVR.k_unTrackedDeviceIndex_Hmd);
+            
+            return model.transform;
         }
 
         protected override void OnAwake()
@@ -93,7 +91,7 @@ namespace VRGIN.Core.Controls
 #endif
             renderer.receiveShadows = false;
             renderer.useLightProbes = false;
-            renderer.material.color = Color.cyan;
+            renderer.material.color = VR.Context.PrimaryColor;
 
          
         }
@@ -130,6 +128,11 @@ namespace VRGIN.Core.Controls
             Showing = visible;
             ArcRenderer.gameObject.SetActive(visible);
             PlayAreaRotation.gameObject.SetActive(visible);
+
+            if(visible)
+            {
+                DirectionIndicator.GetComponent<Renderer>().material.color = VR.Context.PrimaryColor;
+            }
         }
 
         protected override void OnDisable()
@@ -174,9 +177,9 @@ namespace VRGIN.Core.Controls
             PlayArea.transform.localPosition = -new Vector3(SteamCam.head.transform.localPosition.x, 0, SteamCam.head.transform.localPosition.z);
             PlayAreaRotation.rotation = Quaternion.Euler(0, -_AdditionalRotation + SteamCam.origin.rotation.eulerAngles.y, 0);
 
-            Indicator.localScale = Vector3.one * 0.1f + Vector3.one * Mathf.Sin(Time.time*5) * 0.05f;
-            DirectionIndicator.localRotation = Quaternion.Euler(0, SteamCam.head.localEulerAngles.y, 0);
-            DirectionIndicator.localPosition = (DirectionIndicator.localRotation) * new Vector3(0, 0.02f, 0.1f);
+            Indicator.localScale = Vector3.one * 0.1f + Vector3.one * Mathf.Sin(Time.time * 5) * 0.05f;
+            //DirectionIndicator.localRotation = Quaternion.Euler(0, SteamCam.head.localEulerAngles.y, 0);
+            //DirectionIndicator.localPosition = (DirectionIndicator.localRotation) * new Vector3(0, 0.02f, 0.1f);
 
         }
 
