@@ -88,7 +88,7 @@ namespace VRGIN.Core.Visuals
             float uvStepH = 1.0f / xSegments;   // place UVs evenly
             float uvStepV = 1.0f / ySegments;
             float xOffset = -width / 2f;        // this offset means we want the pivot at the center
-            float yOffset = -width / 2f;        // same as above
+            float yOffset = -height / 2f;        // same as above
             float radSpan = angleSpan * Mathf.PI / 180;
             float mSpan = 1;
             float aspect = (float)Screen.width / Screen.height;

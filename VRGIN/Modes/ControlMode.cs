@@ -123,6 +123,7 @@ namespace VRGIN.Core.Modes
         protected override void OnUpdate()
         {
             base.OnUpdate();
+            SteamVR_Render.instance.trackingSpace = TrackingOrigin;
 
             // Update head visibility
 

@@ -12,14 +12,23 @@ namespace VRGIN.Core.Modes
 {
     public class SeatedMode : ControlMode
     {
-        private Transform _Master;
-        protected GUIQuad Monitor;
+        private static bool _IsFirstStart = true;
+
+        protected GUIMonitor Monitor;
 
         protected override void OnStart()
         {
             base.OnStart();
-            
-            _Master = Camera.main ? Camera.main.transform : VR.Camera.Blueprint.transform;
+
+            if(_IsFirstStart)
+            {
+                VR.Camera.SteamCam.origin.transform.position = new Vector3(0, 0, 0);
+                Recenter();
+                _IsFirstStart = false;
+            }
+
+            Monitor = GUIMonitor.Create();
+            Monitor.transform.SetParent(VR.Camera.SteamCam.origin, false);
         }
 
         //protected virtual void OnLevel()
@@ -31,8 +40,12 @@ namespace VRGIN.Core.Modes
         {
             base.OnUpdate();
 
-            VR.Camera.SteamCam.origin.transform.position = _Master.position;
-            VR.Camera.SteamCam.origin.transform.rotation = _Master.rotation;
+            // Move origin
+            if (VR.Camera.Blueprint)
+            {
+                VR.Camera.SteamCam.origin.transform.position = VR.Camera.Blueprint.transform.position;
+                VR.Camera.SteamCam.origin.transform.rotation = VR.Camera.Blueprint.transform.rotation;
+            }
         }
 
         public override void Impersonate(IActor actor)
@@ -41,6 +54,9 @@ namespace VRGIN.Core.Modes
         
         public override void OnDestroy()
         {
+            base.OnDestroy();
+
+            Destroy(Monitor.gameObject);
         }
 
         public override IEnumerable<Type> Tools
@@ -62,13 +78,15 @@ namespace VRGIN.Core.Modes
         protected override IEnumerable<IShortcut> CreateShortcuts()
         {
             return new List<IShortcut>() {
-                new KeyboardShortcut(new KeyStroke("KeypadMinus"), MoveGUI(1)),
-                new KeyboardShortcut(new KeyStroke("KeypadPlus"), MoveGUI(-1))
+                new KeyboardShortcut(new KeyStroke("KeypadMinus"), MoveGUI(0.1f), KeyMode.Press),
+                new KeyboardShortcut(new KeyStroke("KeypadPlus"), MoveGUI(-.1f), KeyMode.Press),
+                new KeyboardShortcut(new KeyStroke("F12"), Recenter)
             }.Concat(base.CreateShortcuts());
         }
 
         public void Recenter()
         {
+            Logger.Info("Recenter");
             OpenVR.System.ResetSeatedZeroPose();
         }
 
@@ -76,7 +94,7 @@ namespace VRGIN.Core.Modes
         {
             return delegate
             {
-                // Reposition monitor
+                VR.Settings.OffsetY += speed * Time.deltaTime;
             };
         }
         

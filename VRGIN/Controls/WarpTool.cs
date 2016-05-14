@@ -16,6 +16,8 @@ namespace VRGIN.Core.Controls
         Transform PlayAreaRotation;
         Transform Indicator;
         Transform DirectionIndicator;
+        Transform HeightIndicator;
+
 
         SteamVR_Camera SteamCam;
 
@@ -26,6 +28,7 @@ namespace VRGIN.Core.Controls
         bool Showing = false;
 
         private List<Vector2> points = new List<Vector2>();
+        private bool _MaterialInitialized;
 
         public override Texture2D Image
         {
@@ -56,11 +59,10 @@ namespace VRGIN.Core.Controls
         protected virtual Transform CreateClone()
         {
             var model = new GameObject("Model").AddComponent<SteamVR_RenderModel>();
-            model.transform.SetParent(VR.Camera.SteamCam.head, false);
+            //model.transform.SetParent(VR.Camera.SteamCam.head, false);
             model.shader = VR.Context.Materials.StandardShader;
-            model.SetDeviceIndex((int)OpenVR.k_unTrackedDeviceIndex_Hmd);
             var obj = model.gameObject.AddComponent<SteamVR_TrackedObject>();
-            obj.SetDeviceIndex((int)OpenVR.k_unTrackedDeviceIndex_Hmd);
+            //obj.SetDeviceIndex((int)OpenVR.k_unTrackedDeviceIndex_Hmd);
             
             return model.transform;
         }
@@ -79,21 +81,28 @@ namespace VRGIN.Core.Controls
             Indicator = GameObject.CreatePrimitive(PrimitiveType.Sphere).transform;
             Indicator.SetParent(PlayAreaRotation, false);
 
-            var renderer = Indicator.GetComponent<Renderer>();
-            renderer.material = Resources.GetBuiltinResource<Material>("Sprites-Default.mat");
-            //renderer.reflectionProbeUsage = UnityEngine.Rendering.ReflectionProbeUsage.Off;
-            //renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            HeightIndicator = GameObject.CreatePrimitive(PrimitiveType.Cylinder).transform;
+            HeightIndicator.SetParent(PlayAreaRotation, false);
+
+
+            foreach(var indicator in new Transform[] {Indicator, HeightIndicator })
+            {
+                var renderer = indicator.GetComponent<Renderer>();
+                renderer.material = Resources.GetBuiltinResource<Material>("Sprites-Default.mat");
+                //renderer.reflectionProbeUsage = UnityEngine.Rendering.ReflectionProbeUsage.Off;
+                //renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
 #if UNITY_4_5
             renderer.castShadows = false;
 #else
-            renderer.reflectionProbeUsage = UnityEngine.Rendering.ReflectionProbeUsage.Off;
-            renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                renderer.reflectionProbeUsage = UnityEngine.Rendering.ReflectionProbeUsage.Off;
+                renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
 #endif
-            renderer.receiveShadows = false;
-            renderer.useLightProbes = false;
-            renderer.material.color = VR.Context.PrimaryColor;
+                renderer.receiveShadows = false;
+                renderer.useLightProbes = false;
+                renderer.material.color = VR.Context.PrimaryColor;
+            }
 
-         
+            SetVisibility(false);
         }
 
         protected override void OnDestroy()
@@ -110,8 +119,6 @@ namespace VRGIN.Core.Controls
             base.OnStart();
 
             SteamCam = VRCamera.Instance.SteamCam;
-            PlayAreaRotation.transform.SetParent(SteamCam.transform, false);
-            //ArcRenderer.transform.SetParent(SteamCam.transform, false);
         }
 
         protected override void OnEnable()
@@ -127,12 +134,7 @@ namespace VRGIN.Core.Controls
         {
             Showing = visible;
             ArcRenderer.gameObject.SetActive(visible);
-            PlayAreaRotation.gameObject.SetActive(visible);
-
-            if(visible)
-            {
-                DirectionIndicator.GetComponent<Renderer>().material.color = VR.Context.PrimaryColor;
-            }
+            PlayAreaRotation.gameObject.SetActive(visible);           
         }
 
         protected override void OnDisable()
@@ -141,10 +143,11 @@ namespace VRGIN.Core.Controls
 
             SetVisibility(false);
         }
-
+        
         protected override void OnUpdate()
         {
             base.OnUpdate();
+
             if (!IsTracking) return;
 
             _CanImpersonate = false;
@@ -168,16 +171,37 @@ namespace VRGIN.Core.Controls
                     }
                 }
             }
+
+            if(Showing)
+            {
+                if (!_MaterialInitialized)
+                {
+                    if (DirectionIndicator.GetComponent<Renderer>())
+                    {
+                        Logger.Info("Initialize headset material");
+                        DirectionIndicator.GetComponent<Renderer>().material.color = VR.Context.PrimaryColor;
+                        _MaterialInitialized = true;
+                    } else
+                    {
+                        DirectionIndicator.GetComponent<SteamVR_RenderModel>().SetDeviceIndex((int)OpenVR.k_unTrackedDeviceIndex_Hmd);
+                    }
+                }
+            }
         }
 
         protected override void OnLateUpdate()
         {
+            float cylinderHeight = 2;
+            float playerHeight = SteamCam.head.localPosition.y;
+            float pivot = 1f;
 
             PlayAreaRotation.position = ArcRenderer.target;
             PlayArea.transform.localPosition = -new Vector3(SteamCam.head.transform.localPosition.x, 0, SteamCam.head.transform.localPosition.z);
             PlayAreaRotation.rotation = Quaternion.Euler(0, -_AdditionalRotation + SteamCam.origin.rotation.eulerAngles.y, 0);
 
             Indicator.localScale = Vector3.one * 0.1f + Vector3.one * Mathf.Sin(Time.time * 5) * 0.05f;
+            HeightIndicator.localScale = new Vector3(0.01f, playerHeight / cylinderHeight, 0.01f);
+            HeightIndicator.localPosition = new Vector3(0, playerHeight - pivot * (playerHeight / cylinderHeight), 0);
             //DirectionIndicator.localRotation = Quaternion.Euler(0, SteamCam.head.localEulerAngles.y, 0);
             //DirectionIndicator.localPosition = (DirectionIndicator.localRotation) * new Vector3(0, 0.02f, 0.1f);
 

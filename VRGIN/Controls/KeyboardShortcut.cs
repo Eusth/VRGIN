@@ -13,7 +13,7 @@ namespace VRGIN.Core.Controls
         public Action Action { get; private set; }
         public KeyMode CheckMode { get; private set; }
         
-        public KeyboardShortcut(KeyStroke keyStroke, Action action, KeyMode checkMode = KeyMode.Press)
+        public KeyboardShortcut(KeyStroke keyStroke, Action action, KeyMode checkMode = KeyMode.PressUp)
         {
             KeyStroke = keyStroke;
             Action = action;

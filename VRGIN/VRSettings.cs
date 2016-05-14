@@ -12,6 +12,7 @@ namespace VRGIN.Core
     public class VRSettings
     {
         private VRSettings _OldSettings;
+        private IDictionary<string, IList<EventHandler<PropertyChangedEventArgs>>> _Listeners = new Dictionary<string, IList<EventHandler<PropertyChangedEventArgs>>>();
 
         [XmlIgnore]
         public string Path { get; set; }
@@ -27,9 +28,15 @@ namespace VRGIN.Core
 
         private float _OffsetY = 0f;
         public float OffsetY { get { return _OffsetY; } set { _OffsetY = value; TriggerPropertyChanged("OffsetY"); } }
-        
+
 
         public event EventHandler<PropertyChangedEventArgs> PropertyChanged = delegate { };
+
+        public VRSettings()
+        {
+            PropertyChanged += Distribute;
+        }
+
         private void TriggerPropertyChanged(string name)
         {
             PropertyChanged(this, new PropertyChangedEventArgs(name));
@@ -68,6 +75,36 @@ namespace VRGIN.Core
                     var settings = serializer.Deserialize(stream) as T;
                     settings.Path = path;
                     return settings;
+                }
+            }
+        }
+
+        public void AddListener(string property, EventHandler<PropertyChangedEventArgs> handler)
+        {
+            if(!_Listeners.ContainsKey(property))
+            {
+                _Listeners[property] = new List<EventHandler<PropertyChangedEventArgs>>();
+            }
+
+            _Listeners[property].Add(handler);
+        }
+
+
+        public void RemoveListener(string property, EventHandler<PropertyChangedEventArgs> handler)
+        {
+            if (_Listeners.ContainsKey(property))
+            {
+                _Listeners[property].Remove(handler);
+            }
+        }
+
+        private void Distribute(object sender, PropertyChangedEventArgs e)
+        {
+            if (_Listeners.ContainsKey(e.PropertyName))
+            {
+                foreach(var listener in _Listeners[e.PropertyName])
+                {
+                    listener(sender, e);
                 }
             }
         }

@@ -39,7 +39,7 @@ namespace VRGIN.Core
             {
                 if(_Instance == null)
                 {
-                    _Instance = new GameObject("VR Camera").AddComponent<VRCamera>();
+                    _Instance = new GameObject("VR Camera").AddComponent<AudioListener>().gameObject.AddComponent<VRCamera>();
                 }
                 return _Instance;
             }
@@ -91,6 +91,13 @@ namespace VRGIN.Core
             if (Blueprint != GetComponent<Camera>())
             {
                 Blueprint.GetComponent<Camera>().cullingMask = 0;
+
+                // Highlander principle
+                var listener = Blueprint.GetComponent<AudioListener>();
+                if(listener)
+                {
+                    Destroy(listener);
+                }
             }
         }
 

@@ -42,21 +42,21 @@ namespace VRGIN.Core.Visuals
             UpdateAspect();
         }
 
-        private void OnEnable()
+        protected virtual void OnEnable()
         {
             Logger.Info("Listen!");
 
             VRGUI.Instance.Listen();
         }
 
-        private void OnDisable()
+        protected virtual void OnDisable()
         {
             Logger.Info("Unlisten!");
 
             VRGUI.Instance.Unlisten();
         }
         
-        public void UpdateAspect()
+        public virtual void UpdateAspect()
         {
             var height = transform.localScale.y;
             var width = height / Screen.height * Screen.width;
@@ -64,11 +64,12 @@ namespace VRGIN.Core.Visuals
             transform.localScale = new Vector3(width, height, 1);
         }
 
-        public void UpdateGUI(bool transparent, bool renderGUI)
+        public virtual void UpdateGUI(bool transparent, bool renderGUI)
         {
             //Logger.Info();
             //renderGUI = false;
             UpdateAspect();
+            if (!renderer) Logger.Warn("No renderer!");
             try
             {
                 if (transparent)

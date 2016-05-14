@@ -42,8 +42,7 @@ namespace VRGIN.Core.Modes
             base.OnUpdate();
 
             var origin = VRCamera.Instance.SteamCam.origin;
-
-
+            
             VRCamera.Instance.Blueprint.transform.position = VR.Camera.transform.position;
             VRCamera.Instance.Blueprint.transform.rotation = VR.Camera.transform.rotation;
         }
