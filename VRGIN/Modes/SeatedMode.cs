@@ -7,14 +7,23 @@ using Valve.VR;
 using VRGIN.Core.Controls;
 using VRGIN.Core.Helpers;
 using VRGIN.Core.Visuals;
+using static VRGIN.Core.Visuals.GUIMonitor;
 
 namespace VRGIN.Core.Modes
 {
+    public enum LockMode
+    {
+        None,
+        XZPlane
+    }
+
     public class SeatedMode : ControlMode
     {
+      
         private static bool _IsFirstStart = true;
 
         protected GUIMonitor Monitor;
+        protected LockMode LockMode = LockMode.XZPlane;
 
         protected override void OnStart()
         {
@@ -46,6 +55,7 @@ namespace VRGIN.Core.Modes
                 VR.Camera.SteamCam.origin.transform.position = VR.Camera.Blueprint.transform.position;
                 VR.Camera.SteamCam.origin.transform.rotation = VR.Camera.Blueprint.transform.rotation;
             }
+            
         }
 
         public override void Impersonate(IActor actor)
@@ -80,8 +90,21 @@ namespace VRGIN.Core.Modes
             return new List<IShortcut>() {
                 new KeyboardShortcut(new KeyStroke("KeypadMinus"), MoveGUI(0.1f), KeyMode.Press),
                 new KeyboardShortcut(new KeyStroke("KeypadPlus"), MoveGUI(-.1f), KeyMode.Press),
+                new KeyboardShortcut(new KeyStroke("F4"), ChangeProjection),
+                new KeyboardShortcut(new KeyStroke("F5"), ToggleLockMode),
+                new KeyboardShortcut(new KeyStroke("Ctrl + X"), delegate { Impersonate(VR.Interpreter.Actors.FirstOrDefault()); }),
                 new KeyboardShortcut(new KeyStroke("F12"), Recenter)
             }.Concat(base.CreateShortcuts());
+        }
+
+        private void ToggleLockMode()
+        {
+            LockMode = LockMode == LockMode.None ? LockMode.XZPlane : LockMode.None;
+        }
+
+        private void ChangeProjection()
+        {
+            Monitor.TargetCurviness = (CurvinessState)(((int)Monitor.TargetCurviness + 1) % Enum.GetValues(typeof(CurvinessState)).Length);
         }
 
         public void Recenter()

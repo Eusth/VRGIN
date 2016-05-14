@@ -10,8 +10,18 @@ namespace VRGIN.Core.Visuals
 {
     public class GUIMonitor : GUIQuad
     {
+
+        public enum CurvinessState
+        {
+            Flat = 0,
+            Curved = 1,
+            Spherical = 2
+        }
+
+        public CurvinessState TargetCurviness = CurvinessState.Curved;
+        private float _Curviness = 1;
+
         public float Angle = 0;
-        public float Curviness = 1;
         public float Distance = 0;
 
         private ProceduralPlane _Plane;
@@ -76,6 +86,11 @@ namespace VRGIN.Core.Visuals
         {
             base.OnUpdate();
 
+            if(Mathf.Abs(_Curviness - (int)TargetCurviness) > float.Epsilon)
+            {
+                _Curviness = Mathf.MoveTowards(_Curviness, (float)TargetCurviness, Time.deltaTime * 5);
+                Rebuild();
+            }
             //var mode = VR.Mode;
             //GetComponent<Renderer>().enabled = !(  mode.Left.ActiveTool is MenuTool
             //                                    || mode.Right.ActiveTool is MenuTool );
@@ -89,7 +104,7 @@ namespace VRGIN.Core.Visuals
                 transform.localPosition = new Vector3(transform.localPosition.x, VR.Settings.OffsetY, transform.localPosition.z);
                 transform.localScale = Vector3.one * VR.Settings.Distance;
                 _Plane.angleSpan = VR.Settings.Angle;
-                _Plane.curviness = Curviness;
+                _Plane.curviness = _Curviness;
                 _Plane.height= (VR.Settings.Angle / 100);
                 _Plane.distance = 1;
                 _Plane.Rebuild();
