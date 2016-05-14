@@ -9,6 +9,9 @@ using System.Xml.Serialization;
 
 namespace VRGIN.Core
 {
+    /// <summary>
+    /// Class that holds settings for VR. Saved as an XML file.
+    /// </summary>
     [XmlRoot("Settings")]
     public class VRSettings
     {

@@ -153,5 +153,6 @@ namespace VRGIN.Core
         IMaterialPalette Materials { get; }
         VRSettings Settings { get; }
         string HMDLayer { get; }
+        string[] IgnoredCanvas { get; }
     }
 }

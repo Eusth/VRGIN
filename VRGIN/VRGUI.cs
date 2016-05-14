@@ -106,7 +106,6 @@ namespace VRGIN.Core
             transform.localPosition = Vector3.zero;// new Vector3(0, 0, distance);
             transform.localRotation = Quaternion.identity;
 
-
             gameObject.AddComponent<FastGUI>();
             gameObject.AddComponent<SlowGUI>();
 
@@ -137,11 +136,9 @@ namespace VRGIN.Core
 #endif
             foreach (var canvas in canvasList.Where(c => c.renderMode == RenderMode.ScreenSpaceOverlay && c.worldCamera != _VRGUICamera))
             {
+                if(VR.Context.IgnoredCanvas.Contains(canvas.name)) continue;
                 //if (canvas.name.Contains("TexFade")) continue;
                 Logger.Info("Add {0} ({1}: {2})", canvas.name, canvas.sortingLayerName, LayerMask.LayerToName(canvas.gameObject.layer));
-                Logger.Info("Active? {0}", canvas.gameObject.activeInHierarchy);
-                Logger.Info("Enabled? {0}", canvas.enabled);
-                Logger.Info("Camera: {0}", canvas.worldCamera ? canvas.worldCamera.name : "None");
 
                 canvas.renderMode = RenderMode.ScreenSpaceCamera;
                 canvas.worldCamera = _VRGUICamera;

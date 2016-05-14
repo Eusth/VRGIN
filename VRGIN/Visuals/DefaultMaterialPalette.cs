@@ -31,7 +31,7 @@ namespace VRGIN.Core.Visuals
                                    Blend SrcAlpha OneMinusSrcAlpha
                                    
                                    SubShader {
-                                        Tags {""Queue""=""Transparent+100""}
+                                        Tags {""Queue""=""Transparent+1000""}
                                         Pass {
                                            SetTexture [_MainTex] {
                                                   Combine Texture, Texture + Texture
@@ -110,7 +110,7 @@ namespace VRGIN.Core.Visuals
                                    Blend SrcAlpha OneMinusSrcAlpha
                                    
                                    SubShader {
-                                        Tags {""Queue""=""Transparent+100""}
+                                        Tags {""Queue""=""Transparent+1000""}
                                         Pass {
                                            SetTexture [_MainTex] {
                                                   Combine Texture, Texture + Texture

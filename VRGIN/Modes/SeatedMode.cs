@@ -23,7 +23,9 @@ namespace VRGIN.Core.Modes
         private static bool _IsFirstStart = true;
 
         protected GUIMonitor Monitor;
-        protected LockMode LockMode = LockMode.XZPlane;
+        protected IActor LockTarget;
+        public bool RotationLock = true;
+
 
         protected override void OnStart()
         {
@@ -52,14 +54,40 @@ namespace VRGIN.Core.Modes
             // Move origin
             if (VR.Camera.Blueprint)
             {
+                if(LockTarget != null && LockTarget.IsValid)
+                {
+                    VR.Camera.Blueprint.transform.position = LockTarget.Eyes.position;
+                    VR.Camera.Blueprint.transform.rotation = LockTarget.Eyes.rotation;
+                }
+
                 VR.Camera.SteamCam.origin.transform.position = VR.Camera.Blueprint.transform.position;
-                VR.Camera.SteamCam.origin.transform.rotation = VR.Camera.Blueprint.transform.rotation;
+
+                if(RotationLock && LockTarget == null)
+                {
+                    VR.Camera.SteamCam.origin.transform.eulerAngles = new Vector3(0, VR.Camera.Blueprint.transform.eulerAngles.y, 0);
+
+                    CorrectRotationLock();
+                } else
+                {
+                    VR.Camera.SteamCam.origin.transform.rotation = VR.Camera.Blueprint.transform.rotation;
+                }
             }
-            
+        }
+
+        protected virtual void SyncCameras()
+        {
+        }
+
+        protected virtual void CorrectRotationLock()
+        {
+
         }
 
         public override void Impersonate(IActor actor)
         {
+            SyncCameras();
+
+            LockTarget = actor;
         }
         
         public override void OnDestroy()
@@ -85,21 +113,24 @@ namespace VRGIN.Core.Modes
             }
         }
 
+
         protected override IEnumerable<IShortcut> CreateShortcuts()
         {
             return new List<IShortcut>() {
                 new KeyboardShortcut(new KeyStroke("KeypadMinus"), MoveGUI(0.1f), KeyMode.Press),
                 new KeyboardShortcut(new KeyStroke("KeypadPlus"), MoveGUI(-.1f), KeyMode.Press),
                 new KeyboardShortcut(new KeyStroke("F4"), ChangeProjection),
-                new KeyboardShortcut(new KeyStroke("F5"), ToggleLockMode),
-                new KeyboardShortcut(new KeyStroke("Ctrl + X"), delegate { Impersonate(VR.Interpreter.Actors.FirstOrDefault()); }),
+                new KeyboardShortcut(new KeyStroke("F5"), ToggleRotationLock),
+                new KeyboardShortcut(new KeyStroke("Ctrl + X"), delegate { if(LockTarget == null || !LockTarget.IsValid) { Impersonate(VR.Interpreter.Actors.FirstOrDefault()); } else { Impersonate(null); } }),
                 new KeyboardShortcut(new KeyStroke("F12"), Recenter)
             }.Concat(base.CreateShortcuts());
         }
 
-        private void ToggleLockMode()
+        private void ToggleRotationLock()
         {
-            LockMode = LockMode == LockMode.None ? LockMode.XZPlane : LockMode.None;
+            SyncCameras();
+
+            RotationLock = !RotationLock;
         }
 
         private void ChangeProjection()
