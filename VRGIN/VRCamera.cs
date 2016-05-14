@@ -50,10 +50,8 @@ namespace VRGIN.Core
             gameObject.AddComponent<SteamVR_Camera>();
             SteamCam = GetComponent<SteamVR_Camera>();
             SteamCam.Expand(); // Expand immediately!
-
-            //DontDestroyOnLoad(SteamCam.gameObject);
-            //DontDestroyOnLoad(SteamCam.head.gameObject);
-            //DontDestroyOnLoad(SteamCam.origin.gameObject);
+            
+            DontDestroyOnLoad(SteamCam.origin.gameObject);
         }
 
         public void Copy(Camera blueprint)

@@ -62,9 +62,11 @@ namespace VRGIN.Core.Controls
             renderer.useLightProbes = false;
             renderer.material.color = Color.cyan;
 
+            DontDestroyOnLoad(PlayAreaRotation.gameObject);
+
             //DontDestroyOnLoad(PlayAreaRotation.gameObject);
         }
-        
+
         protected override void OnAwake()
         {
             Logger.Info("Awake!");
@@ -92,6 +94,7 @@ namespace VRGIN.Core.Controls
             renderer.receiveShadows = false;
             renderer.useLightProbes = false;
             renderer.material.color = Color.cyan;
+
          
         }
 

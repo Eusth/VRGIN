@@ -45,7 +45,7 @@ namespace VRGIN.Core.Controls
 
         protected override void OnDestroy()
         {
-
+            DestroyImmediate(Gui.gameObject);
         }
 
         protected override void OnDisable()
