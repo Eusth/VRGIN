@@ -33,11 +33,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="UnityEngine">
       <HintPath>..\Libs\Unity 4.6\UnityEngine.dll</HintPath>
       <Private>False</Private>
@@ -89,6 +87,9 @@
     </Compile>
     <Compile Include="..\VRGIN\Helpers\QuaternionExtensions.cs">
       <Link>Helpers\QuaternionExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\VRGIN\Helpers\SimpleJSON.cs">
+      <Link>Helpers\SimpleJSON.cs</Link>
     </Compile>
     <Compile Include="..\VRGIN\Helpers\UnityHelper.cs">
       <Link>Helpers\UnityHelper.cs</Link>

@@ -7,6 +7,7 @@
 using UnityEngine;
 using System.Runtime.InteropServices;
 using Valve.VR;
+using System;
 
 public class SteamVR : System.IDisposable
 {
@@ -288,7 +289,7 @@ public class SteamVR : System.IDisposable
 		tanHalfFov = new Vector2(
 			Mathf.Max(-l_left, l_right, -r_left, r_right),
 			Mathf.Max(-l_top, l_bottom, -r_top, r_bottom));
-
+        
 		textureBounds = new VRTextureBounds_t[2];
 
 		textureBounds[0].uMin = 0.5f + 0.5f * l_left / tanHalfFov.x;

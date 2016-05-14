@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SimpleJSON;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace VRGIN.Core.Helpers
         internal static Shader GetShader(string name)
         {
 #if UNITY_4_5
-            var assetBundle = AssetBundle.CreateFromMemoryImmediate(Resource.steamvr);
+            var assetBundle = AssetBundle.CreateFromMemoryImmediate(U46.Resource.steamvr);
             var shader = Shader.Instantiate(assetBundle.Load(name)) as Shader;
             assetBundle.Unload(false);
             return shader;
@@ -72,6 +73,144 @@ namespace VRGIN.Core.Helpers
                 field.SetValue(copy, field.GetValue(original));
             }
             return copy as T;
+        }
+
+        public static void DumpScene(string path)
+        {
+            Logger.Info("Dumping scene...");
+            
+            var rootArray = new JSONArray();
+            foreach (var gameObject in UnityEngine.Object.FindObjectsOfType<GameObject>().Where(go => go.transform.parent == null))
+            {
+                rootArray.Add(AnalyzeNode(gameObject));
+            }
+
+            File.WriteAllText(path, rootArray.ToJSON(0));
+            Logger.Info("Done!");
+
+        }
+
+        private static JSONClass AnalyzeNode(GameObject go)
+        {
+
+            var obj = new JSONClass();
+            obj["name"] = (go.name);
+            obj["active"] = go.activeSelf.ToString();
+            obj["tag"] = (go.tag);
+            obj["layer"] = (LayerMask.LayerToName(go.gameObject.layer));
+
+            var components = new JSONClass();
+            foreach(var c in go.GetComponents<Component>())
+            {
+                var comp = new JSONClass();
+
+                foreach(var field in c.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public))
+                {
+                    try {
+                        var val = FieldToString(field.Name, field.GetValue(c));
+                        if (val != null)
+                        {
+                            comp[field.Name] = val;
+                        }
+                    } catch (Exception e)
+                    {
+                        Logger.Warn("Failed to get field {0}", field.Name);
+                    }
+                }
+
+                foreach (var prop in c.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public))
+                {
+                    try
+                    {
+                        var val = FieldToString(prop.Name, prop.GetValue(c, null));
+                        if (val != null)
+                        {
+                            comp[prop.Name] = val;
+                        }
+                    } catch(Exception e)
+                    {
+                        Logger.Warn("Failed to get prop {0}", prop.Name);
+                    }
+                }
+                
+                components[c.GetType().Name] = comp;
+            }
+
+
+            var children = new JSONArray();
+            foreach (var child in go.Children())
+            {
+                children.Add(AnalyzeNode(child));
+            }
+
+            obj["Components"] = components;
+            obj["Children"] = children;
+
+            return obj;
+        }
+
+        private static string FieldToString(string memberName, object value)
+        {
+            if (value == null) return null;
+
+            switch(memberName)
+            {
+                case "cullingMask":
+                    return string.Join(", ", GetLayerNames((int)value));
+                case "renderer":
+                    return ((Renderer)value).material.shader.name;
+                default:
+                    if(value is Vector3)
+                    {
+                        var v = (Vector3)value;
+                        return String.Format("({0:0.000}, {1:0.000}, {2:0.000})", v.x, v.y, v.z);
+                    }
+                    if (value is Vector2)
+                    {
+                        var v = (Vector2)value;
+                        return String.Format("({0:0.000}, {1:0.000})", v.x, v.y);
+                    }
+                    return value.ToString();
+
+            }
+        }
+     
+        // -- COMPATIBILITY --
+        public static void SetPropertyOrField<T>(T obj, string name, object value)
+        {
+            var prop = typeof(T).GetProperty(name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+            var field = typeof(T).GetField(name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+            
+            if(prop != null)
+            {
+                prop.SetValue(obj, value, null);
+            } else if(field != null)
+            {
+                field.SetValue(obj, value);
+            } else
+            {
+                Logger.Warn("Prop/Field not found!");
+            }
+        }
+
+        public static object GetPropertyOrField<T>(T obj, string name)
+        {
+            var prop = typeof(T).GetProperty(name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+            var field = typeof(T).GetField(name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+
+            if (prop != null)
+            {
+                return prop.GetValue(obj, null);
+            }
+            else if (field != null)
+            {
+                return field.GetValue(obj);
+            }
+            else
+            {
+                Logger.Warn("Prop/Field not found!");
+                return null;
+            }
         }
     }
 }

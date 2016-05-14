@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace VRGIN.Core {
+namespace VRGIN.Core.U46 {
     using System;
     
     

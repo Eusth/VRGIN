@@ -19,8 +19,13 @@ namespace VRGIN.Core.Modes
         {
             base.OnStart();
             
-            _Master = Camera.main.transform;
+            _Master = Camera.main ? Camera.main.transform : VR.Camera.Blueprint.transform;
         }
+
+        //protected virtual void OnLevel()
+        //{
+        //    _Master = Camera.main.transform;
+        //}
 
         protected override void OnUpdate()
         {

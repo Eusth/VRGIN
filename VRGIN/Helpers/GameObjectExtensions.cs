@@ -38,5 +38,48 @@ namespace VRGIN.Core.Helpers
             return copy;
         }
 
+        public static IEnumerable<GameObject> Children(this GameObject gameObject)
+        {
+            for (int i = 0; i < gameObject.transform.childCount; i++)
+            {
+                yield return gameObject.transform.GetChild(i).gameObject;
+            }
+        }
+
+        public static IEnumerable<GameObject> Descendants(this GameObject gameObject)
+        {
+            Queue<GameObject> queue = new Queue<GameObject>();
+            queue.Enqueue(gameObject);
+
+            while (queue.Count > 0)
+            {
+                var obj = queue.Dequeue();
+
+                yield return obj;
+
+                // Enqueue children
+                foreach(var child in obj.Children())
+                {
+                    queue.Enqueue(child);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Makes a breadth-first search for a gameObject with a tag.
+        /// </summary>
+        /// <param name="gameObject"></param>
+        /// <param name="tag"></param>
+        /// <returns></returns>
+        public static IEnumerable<GameObject> FindGameObjectsByTag(this GameObject gameObject, string tag)
+        {
+            return gameObject.Children().Where(child => child.CompareTag(tag));
+        }
+
+        public static GameObject FIndGameObjectByTag(this GameObject gameObject, string tag)
+        {
+            return gameObject.FindGameObjectsByTag(tag).FirstOrDefault();
+        }
+
     }
 }

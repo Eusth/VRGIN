@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,6 +26,7 @@ namespace VRGIN.Core
     public class VRManager : ProtectedBehaviour
     {
         private VRGUI _Gui;
+        private bool _CameraLoaded = false;
 
         private static VRManager _Instance;
         public static VRManager Instance
@@ -58,15 +60,19 @@ namespace VRGIN.Core
             
             if(Mode == null || !(Mode is T))
             {
+                ModeType = typeof(T);
+
                 // Change!
-                if(Mode != null)
+                if (Mode != null)
                 {
                     // Get on clean grounds
                     GameObject.DestroyImmediate(Mode);
                 }
 
-                Mode = VRCamera.Instance.gameObject.AddComponent<T>();
-                ModeType = typeof(T);
+                if (_CameraLoaded)
+                {
+                    Mode = VRCamera.Instance.gameObject.AddComponent<T>();
+                }
             }
         }
 
@@ -97,17 +103,45 @@ namespace VRGIN.Core
         }
         protected override void OnStart()
         {
-            VRCamera.Instance.Copy(Camera.main);
+            _CameraLoaded = false;
+            Copy(Interpreter.FindCamera());
+
         }
 
         protected override void OnLevel(int level)
         {
-            VRCamera.Instance.Copy(Camera.main);
+            _CameraLoaded = false;
+            Copy(Interpreter.FindCamera());
+            //StartCoroutine(Load());
+        }
 
-            if(ModeType != null && ModeType.IsSubclassOf(typeof(ControlMode)))
+        private IEnumerator Load()
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                var camera = Interpreter.FindCamera();
+                if (camera)
+                {
+                    Copy(camera);
+                    yield break;
+                }
+                yield return null;
+            }
+
+            Copy(null);
+        }
+
+        private void Copy(Camera camera)
+        {
+            if (_CameraLoaded) return;
+            VRCamera.Instance.Copy(camera);
+
+            if (!Mode && ModeType != null && ModeType.IsSubclassOf(typeof(ControlMode)))
             {
                 Mode = VRCamera.Instance.gameObject.AddComponent(ModeType) as ControlMode;
             }
+
+            _CameraLoaded = true;
         }
     }
 

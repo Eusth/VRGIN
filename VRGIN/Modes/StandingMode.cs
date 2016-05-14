@@ -43,8 +43,9 @@ namespace VRGIN.Core.Modes
 
             var origin = VRCamera.Instance.SteamCam.origin;
 
-            Camera.main.transform.position = VR.Camera.transform.position;
-            Camera.main.transform.rotation = VR.Camera.transform.rotation;
+
+            VRCamera.Instance.Blueprint.transform.position = VR.Camera.transform.position;
+            VRCamera.Instance.Blueprint.transform.rotation = VR.Camera.transform.rotation;
         }
 
         public override IEnumerable<Type> Tools

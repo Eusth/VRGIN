@@ -12,7 +12,9 @@ namespace VRGIN.Core.Controls
 {
    
     public abstract class Controller : ProtectedBehaviour
-    { 
+    {
+        private bool _Started = false;
+
         public SteamVR_TrackedObject Tracking;
         protected SteamVR_RenderModel Model;
         protected BoxCollider Collider;
@@ -56,7 +58,10 @@ namespace VRGIN.Core.Controls
             // Add model
             Model = new GameObject("Model").AddComponent<SteamVR_RenderModel>();
             Model.shader = VRManager.Instance.Context.Materials.StandardShader;
-            Logger.Info(Model.shader == null ? "Shader not found" : "Shader found");
+            if(!Model.shader)
+            {
+                Logger.Warn("Shader not found");
+            }
             Model.transform.SetParent(transform, false);
             //Model.verbose = true;
 
@@ -67,6 +72,7 @@ namespace VRGIN.Core.Controls
             Collider.transform.SetParent(transform, false);
             Collider.center = new Vector3(0, -0.02f, -0.06f);
             Collider.size = new Vector3(-0.05f, 0.05f, 0.2f);
+            Collider.isTrigger = true;
             
             gameObject.AddComponent<Rigidbody>().isKinematic = true;
         }
@@ -85,11 +91,14 @@ namespace VRGIN.Core.Controls
                 Tools.Add(newTool);
                 CreateToolCanvas(newTool);
 
-                newTool.enabled = false;
+                if (_Started)
+                {
+                    newTool.enabled = false;
+                }
             }
         }
 
-        abstract protected int ToolIndex { get; set; }
+        public virtual int ToolIndex { get; set; }
 
         public Tool ActiveTool
         {
@@ -120,6 +129,8 @@ namespace VRGIN.Core.Controls
                     Logger.Info("Do nothing with Tool #{0}", i - 1);
                 }
             }
+
+            _Started = true;
         }
 
         protected override void OnUpdate()

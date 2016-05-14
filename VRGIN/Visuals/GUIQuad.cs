@@ -15,6 +15,7 @@ namespace VRGIN.Core.Visuals
 
         public static GUIQuad Create()
         {
+            Logger.Info("Create GUI");
             var gui = GameObject.CreatePrimitive(PrimitiveType.Quad).AddComponent<GUIQuad>();
             gui.name = "GUIQuad";
 
@@ -43,11 +44,15 @@ namespace VRGIN.Core.Visuals
 
         private void OnEnable()
         {
+            Logger.Info("Listen!");
+
             VRGUI.Instance.Listen();
         }
 
         private void OnDisable()
         {
+            Logger.Info("Unlisten!");
+
             VRGUI.Instance.Unlisten();
         }
         

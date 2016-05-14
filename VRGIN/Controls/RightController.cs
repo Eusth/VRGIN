@@ -16,7 +16,7 @@ namespace VRGIN.Core.Controls
         }
         private static int S_ToolIndex = 1; // Start with warp tool
 
-        protected override int ToolIndex
+        public override int ToolIndex
         {
             get
             {

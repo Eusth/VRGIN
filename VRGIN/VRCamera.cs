@@ -50,19 +50,29 @@ namespace VRGIN.Core
             gameObject.AddComponent<SteamVR_Camera>();
             SteamCam = GetComponent<SteamVR_Camera>();
             SteamCam.Expand(); // Expand immediately!
+
+            //DontDestroyOnLoad(SteamCam.gameObject);
+            //DontDestroyOnLoad(SteamCam.head.gameObject);
+            //DontDestroyOnLoad(SteamCam.origin.gameObject);
         }
 
         public void Copy(Camera blueprint)
         {
-            Logger.Info("Copying camera: {0}", blueprint);
+            Logger.Info("Copying camera: {0}", blueprint ? blueprint.name : "NULL" );
             Blueprint = blueprint ?? GetComponent<Camera>();
-            
+
+            int cullingMask = Blueprint.cullingMask;
+            if(cullingMask == 0)
+            {
+                cullingMask = int.MaxValue;
+            }
+
             // Apply to both the head camera and the VR camera
             ApplyToCameras(targetCamera =>
             {
                 targetCamera.nearClipPlane = Mathf.Clamp(0.01f, 0.001f, 0.01f);
                 targetCamera.farClipPlane = Mathf.Clamp(100f, 50f, 200f);
-                targetCamera.cullingMask = Blueprint.cullingMask & ~(VRManager.Instance.Context.UILayerMask | LayerMask.GetMask(VR.Context.HMDLayer));
+                targetCamera.cullingMask = cullingMask & ~(VRManager.Instance.Context.UILayerMask | LayerMask.GetMask(VR.Context.HMDLayer));
                 targetCamera.clearFlags = Blueprint.clearFlags;
                 targetCamera.backgroundColor = Blueprint.backgroundColor;
                 //Logger.Info(ovrCamera.clearFlags);
@@ -79,9 +89,11 @@ namespace VRGIN.Core
                 InitializeCamera(this, new InitializeCameraEventArgs(targetCamera, Blueprint));
             });
 
-            CopyFX(Blueprint);
-            SteamCam.origin.position = Vector3.zero;
-            Blueprint.GetComponent<Camera>().cullingMask = 0;
+            //CopyFX(Blueprint);
+            if (Blueprint != GetComponent<Camera>())
+            {
+                Blueprint.GetComponent<Camera>().cullingMask = 0;
+            }
         }
 
         /// <summary>

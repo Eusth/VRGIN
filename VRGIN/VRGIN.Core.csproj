@@ -32,18 +32,16 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="UnityEngine">
       <HintPath>..\Libs\Unity 5.3.4\UnityEngine.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="UnityEngine.UI">
       <HintPath>..\Libs\Unity 5.3.4\UnityEngine.UI.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -58,6 +56,7 @@
     <Compile Include="GameInterpreter.cs" />
     <Compile Include="Helpers\GameObjectExtensions.cs" />
     <Compile Include="Helpers\KeyStroke.cs" />
+    <Compile Include="Helpers\SimpleJSON.cs" />
     <Compile Include="IActor.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Controls\IShortcut.cs" />

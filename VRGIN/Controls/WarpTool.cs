@@ -34,13 +34,9 @@ namespace VRGIN.Core.Controls
                 return UnityHelper.LoadImage("icon_warp.png");
             }
         }
-        
-        protected override void OnAwake()
-        {
-            ArcRenderer = new GameObject("Arc Renderer").AddComponent<ArcRenderer>();
-            ArcRenderer.transform.SetParent(transform, false);
-            ArcRenderer.gameObject.SetActive(false);
 
+        protected virtual void CreateArea()
+        {
             PlayAreaRotation = new GameObject("PlayArea Y").transform;
 
             PlayArea = new GameObject("PlayArea").AddComponent<SteamVR_PlayArea>();
@@ -49,6 +45,35 @@ namespace VRGIN.Core.Controls
 
             PlayArea.transform.SetParent(PlayAreaRotation, false);
 
+
+            DirectionIndicator = GameObject.CreatePrimitive(PrimitiveType.Cube).transform;
+            DirectionIndicator.SetParent(PlayAreaRotation, false);
+            DirectionIndicator.localScale = new Vector3(0.01f, 0.01f, .2f);
+            DirectionIndicator.localRotation = Quaternion.identity;
+            var renderer = DirectionIndicator.GetComponent<Renderer>();
+            renderer.material = Resources.GetBuiltinResource<Material>("Sprites-Default.mat");
+#if UNITY_4_5
+            renderer.castShadows = false;
+#else
+            renderer.reflectionProbeUsage = UnityEngine.Rendering.ReflectionProbeUsage.Off;
+            renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+#endif
+            renderer.receiveShadows = false;
+            renderer.useLightProbes = false;
+            renderer.material.color = Color.cyan;
+
+            //DontDestroyOnLoad(PlayAreaRotation.gameObject);
+        }
+        
+        protected override void OnAwake()
+        {
+            Logger.Info("Awake!");
+            ArcRenderer = new GameObject("Arc Renderer").AddComponent<ArcRenderer>();
+            ArcRenderer.transform.SetParent(transform, false);
+            ArcRenderer.gameObject.SetActive(false);
+
+            CreateArea();
+            
             // -- Create indicator
 
             Indicator = GameObject.CreatePrimitive(PrimitiveType.Sphere).transform;
@@ -67,33 +92,20 @@ namespace VRGIN.Core.Controls
             renderer.receiveShadows = false;
             renderer.useLightProbes = false;
             renderer.material.color = Color.cyan;
-
-
-
-            DirectionIndicator = GameObject.CreatePrimitive(PrimitiveType.Cube).transform;
-            DirectionIndicator.SetParent(PlayAreaRotation, false);
-            DirectionIndicator.localScale = new Vector3(0.01f, 0.01f, .2f);
-            DirectionIndicator.localRotation = Quaternion.identity;
-            renderer = DirectionIndicator.GetComponent<Renderer>();
-            renderer.material = Resources.GetBuiltinResource<Material>("Sprites-Default.mat");
-#if UNITY_4_5
-            renderer.castShadows = false;
-#else
-            renderer.reflectionProbeUsage = UnityEngine.Rendering.ReflectionProbeUsage.Off;
-            renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-#endif
-            renderer.receiveShadows = false;
-            renderer.useLightProbes = false;
-            renderer.material.color = Color.cyan;
+         
         }
 
         protected override void OnDestroy()
         {
-            GameObject.Destroy(PlayAreaRotation.gameObject);
+            Logger.Info("Destroy!");
+
+            GameObject.DestroyImmediate(PlayAreaRotation.gameObject);
         }
 
         protected override void OnStart()
         {
+            Logger.Info("Start!");
+
             base.OnStart();
 
             SteamCam = VRCamera.Instance.SteamCam;
@@ -120,8 +132,8 @@ namespace VRGIN.Core.Controls
         protected override void OnDisable()
         {
             base.OnDisable();
-            SetVisibility(false);
 
+            SetVisibility(false);
         }
 
         protected override void OnUpdate()

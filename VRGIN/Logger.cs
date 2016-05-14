@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -11,6 +12,18 @@ namespace VRGIN.Core
     /// </summary>
     public static class Logger
     {
+        private static string LOG_PATH = "vr.log";
+        static Logger()
+        {
+            if (File.Exists(LOG_PATH))
+            {
+                using (var file = File.OpenWrite(LOG_PATH))
+                {
+                    file.SetLength(0);
+                }
+            }
+        }
+
         public static LogMode Level = LogMode.Info;
         public enum LogMode
         {
@@ -89,7 +102,9 @@ namespace VRGIN.Core
                 Console.ForegroundColor = foregroundColor;
                 Console.BackgroundColor = backgroundColor;
 #endif
-                Console.WriteLine(Format(text, severity), args);
+                string formatted = String.Format(Format(text, severity), args);
+                Console.WriteLine(formatted);
+                File.AppendAllText(LOG_PATH, formatted + "\n");
 
 #if COLOR_SUPPORT
                 Console.ForegroundColor = oldForegroundColor;
@@ -105,7 +120,7 @@ namespace VRGIN.Core
         {
             var trace = new StackTrace(3);
             var caller = trace.GetFrame(0);
-            return String.Format("[{0}][{1}] {2} ({3}#{4} @ {5})", DateTime.Now.ToString("HH':'mm':'ss"), mode.ToString().ToUpper(), text, caller.GetMethod().DeclaringType.Name, caller.GetMethod().Name, caller.GetFileLineNumber());
+            return String.Format("[{0}][{1}][{3}#{4}] {2}", DateTime.Now.ToString("HH':'mm':'ss"), mode.ToString().ToUpper(), text, caller.GetMethod().DeclaringType.Name, caller.GetMethod().Name, caller.GetFileLineNumber());
         }
     }
 }

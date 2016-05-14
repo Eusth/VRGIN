@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
+using VRGIN.Core.Helpers;
 
 #if UNITY_4_5
 using VRGIN.Core.Native;
@@ -134,11 +135,14 @@ namespace VRGIN.Core
 #else
             var canvasList = GameObject.FindObjectsOfType<Canvas>();
 #endif
-
             foreach (var canvas in canvasList.Where(c => c.renderMode == RenderMode.ScreenSpaceOverlay && c.worldCamera != _VRGUICamera))
             {
-                if (canvas.name.Contains("TexFade")) continue;
+                //if (canvas.name.Contains("TexFade")) continue;
                 Logger.Info("Add {0} ({1}: {2})", canvas.name, canvas.sortingLayerName, LayerMask.LayerToName(canvas.gameObject.layer));
+                Logger.Info("Active? {0}", canvas.gameObject.activeInHierarchy);
+                Logger.Info("Enabled? {0}", canvas.enabled);
+                Logger.Info("Camera: {0}", canvas.worldCamera ? canvas.worldCamera.name : "None");
+
                 canvas.renderMode = RenderMode.ScreenSpaceCamera;
                 canvas.worldCamera = _VRGUICamera;
 
@@ -147,16 +151,21 @@ namespace VRGIN.Core
                 {
                     GameObject.DestroyImmediate(raycaster);
                     var newRaycaster = canvas.gameObject.AddComponent<SortingAwareGraphicRaycaster>();
-                    newRaycaster.ignoreReversedGraphics = raycaster.ignoreReversedGraphics;
-                    newRaycaster.blockingObjects = raycaster.blockingObjects;
+
+                    // These fields turned into properties in Unity 4.7+
+                    UnityHelper.SetPropertyOrField(newRaycaster, "ignoreReversedGraphics", UnityHelper.GetPropertyOrField(raycaster, "ignoreReversedGraphics"));
+                    UnityHelper.SetPropertyOrField(newRaycaster, "blockingObjects", UnityHelper.GetPropertyOrField(raycaster, "blockingObjects"));
+                    UnityHelper.SetPropertyOrField(newRaycaster, "m_BlockingMask", UnityHelper.GetPropertyOrField(raycaster, "m_BlockingMask"));
                 }
             }
         }
 
         protected override void OnUpdate()
         {
+            Logger.Debug("Updating GUI...");
             if (_Listeners > 0)
             {
+                Logger.Debug("Oh, we have listeners");
                 //Logger.Info(Time.time);
                 //var watch = System.Diagnostics.Stopwatch.StartNew();
                 CatchCanvas();
@@ -164,7 +173,7 @@ namespace VRGIN.Core
             }
             if (_Listeners < 0)
             {
-                Logger.Info("NUMBER DONT ADD UP!");
+                Logger.Warn("NUMBER DONT ADD UP!");
             }
         }
 
@@ -172,13 +181,16 @@ namespace VRGIN.Core
         internal void OnAfterGUI()
         {
             if (Event.current.type == EventType.Repaint)
+            {
                 RenderTexture.active = _PrevRT;
+            }
         }
 
         internal void OnBeforeGUI()
         {
             if (Event.current.type == EventType.Repaint)
             {
+
                 _PrevRT = RenderTexture.active;
                 RenderTexture.active = nGuiTexture;
 
@@ -192,7 +204,7 @@ namespace VRGIN.Core
         private class FastGUI : MonoBehaviour {
             private void OnGUI()
             {
-                GUI.depth = 1000;
+                GUI.depth = int.MaxValue;
 
                 if (Event.current.type == EventType.Repaint)
                 {
@@ -208,7 +220,7 @@ namespace VRGIN.Core
         {
             private void OnGUI()
             {
-                GUI.depth = -1000;
+                GUI.depth = int.MinValue;
 
                 if (Event.current.type == EventType.Repaint)
                 {
@@ -239,15 +251,30 @@ namespace VRGIN.Core
             {
                 get
                 {
-                    return -Canvas.sortingOrder;
+                    return GetOrder();
                 }
             }
             public override int sortOrderPriority
             {
                 get
                 {
-                    return -Canvas.sortingOrder;
+                    //Logger.Info("Sort Order: {0} ({1})", -Canvas.renderOrder, _Canvas.name);
+                    return GetOrder();
                 }
+            }
+
+            public override int renderOrderPriority
+            {
+                get
+                {
+                    return GetOrder();
+                }
+            }
+
+            private int GetOrder()
+            {
+                if (Canvas.gameObject.layer != LayerMask.NameToLayer("UI")) return int.MinValue;
+                return -Canvas.sortingOrder;
             }
         }
     }
