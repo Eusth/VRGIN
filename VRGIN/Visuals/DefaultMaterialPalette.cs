@@ -31,10 +31,10 @@ namespace VRGIN.Core.Visuals
                                    Blend SrcAlpha OneMinusSrcAlpha
                                    
                                    SubShader {
-                                        Tags {""Queue""=""Transparent+1000""}
+                                        Tags {""Queue""=""Transparent+1000""  ""IgnoreProjector""=""True""}
                                         Pass {
                                            SetTexture [_MainTex] {
-                                                  Combine Texture, Texture + Texture
+                                                  Combine Texture, Texture
                                             }
                                             SetTexture [_SubTex] { combine Texture lerp(Texture) Previous }
                                         }
