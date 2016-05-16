@@ -72,6 +72,14 @@ namespace VRGIN.Core.Visuals
             if (!renderer) Logger.Warn("No renderer!");
             try
             {
+                renderer.receiveShadows = false;
+#if UNITY_4_5
+                renderer.castShadows = false;
+#else
+                renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+#endif
+
+                renderer.castShadows = false;
                 if (transparent)
                 {
                     if (renderGUI)

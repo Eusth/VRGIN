@@ -11,6 +11,47 @@ namespace VRGIN.Core.Controls
 {
     public class WarpTool : Tool
     {
+
+        private class HMDLoader : ProtectedBehaviour
+        {
+            public Transform NewParent;
+            private SteamVR_RenderModel _Model;
+
+            protected override void OnStart()
+            {
+                transform.localScale = Vector3.zero;
+
+                _Model = gameObject.AddComponent<SteamVR_RenderModel>();
+                //model.transform.SetParent(VR.Camera.SteamCam.head, false);
+                _Model.shader = VR.Context.Materials.StandardShader;
+                gameObject.AddComponent<SteamVR_TrackedObject>();
+
+                _Model.SetDeviceIndex((int)OpenVR.k_unTrackedDeviceIndex_Hmd);
+            }
+
+            protected override void OnUpdate()
+            {
+                base.OnUpdate();
+
+                if(GetComponent<Renderer>())
+                {
+                    if (NewParent)
+                    {
+                        // Done loading!
+                        transform.SetParent(NewParent, false);
+                        transform.localScale = Vector3.one;
+                        GetComponent<Renderer>().material.color = VR.Context.PrimaryColor;
+                    } else
+                    {
+                        // Seems like we're too late...
+                        Logger.Info("We're too late!");
+                        Destroy(gameObject);
+                    }
+
+                }
+            }
+        }
+
         ArcRenderer ArcRenderer;
         SteamVR_PlayArea PlayArea;
         Transform PlayAreaRotation;
@@ -28,7 +69,6 @@ namespace VRGIN.Core.Controls
         bool Showing = false;
 
         private List<Vector2> points = new List<Vector2>();
-        private bool _MaterialInitialized;
 
         public override Texture2D Image
         {
@@ -50,7 +90,6 @@ namespace VRGIN.Core.Controls
 
 
             DirectionIndicator = CreateClone();
-            DirectionIndicator.SetParent(PlayArea.transform);
             DontDestroyOnLoad(PlayAreaRotation.gameObject);
 
             //DontDestroyOnLoad(PlayAreaRotation.gameObject);
@@ -58,12 +97,8 @@ namespace VRGIN.Core.Controls
 
         protected virtual Transform CreateClone()
         {
-            var model = new GameObject("Model").AddComponent<SteamVR_RenderModel>();
-            //model.transform.SetParent(VR.Camera.SteamCam.head, false);
-            model.shader = VR.Context.Materials.StandardShader;
-            var obj = model.gameObject.AddComponent<SteamVR_TrackedObject>();
-            //obj.SetDeviceIndex((int)OpenVR.k_unTrackedDeviceIndex_Hmd);
-            
+            var model = new GameObject("Model").AddComponent<HMDLoader>();
+            model.NewParent = PlayArea.transform;
             return model.transform;
         }
 
@@ -168,22 +203,6 @@ namespace VRGIN.Core.Controls
                     {
                         Controller.TriggerHapticPulse();
                         _CanImpersonate = true;
-                    }
-                }
-            }
-
-            if(Showing)
-            {
-                if (!_MaterialInitialized)
-                {
-                    if (DirectionIndicator.GetComponent<Renderer>())
-                    {
-                        Logger.Info("Initialize headset material");
-                        DirectionIndicator.GetComponent<Renderer>().material.color = VR.Context.PrimaryColor;
-                        _MaterialInitialized = true;
-                    } else
-                    {
-                        DirectionIndicator.GetComponent<SteamVR_RenderModel>().SetDeviceIndex((int)OpenVR.k_unTrackedDeviceIndex_Hmd);
                     }
                 }
             }
