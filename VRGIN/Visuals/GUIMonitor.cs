@@ -76,6 +76,7 @@ namespace VRGIN.Core.Visuals
                     case "Angle":
                     case "OffsetY":
                     case "Distance":
+                    case "Rotation":
                          Rebuild();
                         break;
                 }
@@ -103,6 +104,7 @@ namespace VRGIN.Core.Visuals
             {
                 transform.localPosition = new Vector3(transform.localPosition.x, VR.Settings.OffsetY, transform.localPosition.z);
                 transform.localScale = Vector3.one * VR.Settings.Distance;
+                transform.localRotation = Quaternion.Euler(0f, VR.Settings.Rotation, 0f);
                 _Plane.angleSpan = VR.Settings.Angle;
                 _Plane.curviness = _Curviness;
                 _Plane.height= (VR.Settings.Angle / 100);

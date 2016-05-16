@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Xml.Serialization;
+using UnityEngine;
 
 namespace VRGIN.Core
 {
@@ -22,17 +23,19 @@ namespace VRGIN.Core
         public string Path { get; set; }
 
         private float _Distance = 0.3f;
-        public float Distance { get { return _Distance; } set { _Distance = value; TriggerPropertyChanged("Distance"); } }
+        public float Distance { get { return _Distance; } set { _Distance = Mathf.Clamp(value, 0.1f, 10f); TriggerPropertyChanged("Distance"); } }
 
         private float _Angle = 170f;
-        public float Angle { get { return _Angle; } set { _Angle = value; TriggerPropertyChanged("Angle"); } }
+        public float Angle { get { return _Angle; } set { _Angle = Mathf.Clamp(value, 50f, 360f); TriggerPropertyChanged("Angle"); } }
 
         private float _IPDScale = 1f;
-        public float IPDScale { get { return _IPDScale; } set { _IPDScale = value; TriggerPropertyChanged("IPDScale"); } }
+        public float IPDScale { get { return _IPDScale; } set { _IPDScale = Mathf.Clamp(value, 0.01f, 10f); TriggerPropertyChanged("IPDScale"); } }
 
         private float _OffsetY = 0f;
         public float OffsetY { get { return _OffsetY; } set { _OffsetY = value; TriggerPropertyChanged("OffsetY"); } }
 
+        private float _Rotation = 0f;
+        public float Rotation { get { return _Rotation; } set { _Rotation = value; TriggerPropertyChanged("Rotation"); } }
 
         public event EventHandler<PropertyChangedEventArgs> PropertyChanged = delegate { };
 

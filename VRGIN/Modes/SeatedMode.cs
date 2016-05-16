@@ -119,6 +119,12 @@ namespace VRGIN.Core.Modes
             return new List<IShortcut>() {
                 new KeyboardShortcut(new KeyStroke("KeypadMinus"), MoveGUI(0.1f), KeyMode.Press),
                 new KeyboardShortcut(new KeyStroke("KeypadPlus"), MoveGUI(-.1f), KeyMode.Press),
+                new KeyboardShortcut(new KeyStroke("Ctrl + KeypadMinus"), delegate { VR.Settings.Angle += Time.deltaTime * 50f; }, KeyMode.Press),
+                new KeyboardShortcut(new KeyStroke("Ctrl + KeypadPlus"), delegate { VR.Settings.Angle -= Time.deltaTime * 50f; }, KeyMode.Press),
+                new KeyboardShortcut(new KeyStroke("Shift + KeypadMinus"), delegate { VR.Settings.Distance += Time.deltaTime * 0.1f; }, KeyMode.Press),
+                new KeyboardShortcut(new KeyStroke("Shift + KeypadPlus"), delegate { VR.Settings.Distance -= Time.deltaTime * 0.1f; }, KeyMode.Press),
+                new KeyboardShortcut(new KeyStroke("Ctrl + Shift + KeypadMinus"), delegate { VR.Settings.Rotation += Time.deltaTime * 50f; }, KeyMode.Press),
+                new KeyboardShortcut(new KeyStroke("Ctrl + Shift + KeypadPlus"), delegate { VR.Settings.Rotation -= Time.deltaTime * 50f; }, KeyMode.Press),
                 new KeyboardShortcut(new KeyStroke("F4"), ChangeProjection),
                 new KeyboardShortcut(new KeyStroke("F5"), ToggleRotationLock),
                 new KeyboardShortcut(new KeyStroke("Ctrl + X"), delegate { if(LockTarget == null || !LockTarget.IsValid) { Impersonate(VR.Interpreter.Actors.FirstOrDefault()); } else { Impersonate(null); } }),
