@@ -88,6 +88,9 @@
     <Compile Include="..\VRGIN\Helpers\QuaternionExtensions.cs">
       <Link>Helpers\QuaternionExtensions.cs</Link>
     </Compile>
+    <Compile Include="..\VRGIN\Helpers\RumbleSession.cs">
+      <Link>Helpers\RumbleSession.cs</Link>
+    </Compile>
     <Compile Include="..\VRGIN\Helpers\SimpleJSON.cs">
       <Link>Helpers\SimpleJSON.cs</Link>
     </Compile>

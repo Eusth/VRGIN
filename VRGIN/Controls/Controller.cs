@@ -5,6 +5,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using Valve.VR;
+using VRGIN.Core.Helpers;
 using VRGIN.Core.Native;
 using static VRGIN.Core.Native.WindowsInterop;
 
@@ -13,6 +14,9 @@ namespace VRGIN.Core.Controls
    
     public abstract class Controller : ProtectedBehaviour
     {
+        const float MILLI_TO_SECONDS = 1f / 1000f;
+        public const float MIN_INTERVAL = 5 * MILLI_TO_SECONDS;
+
         private bool _Started = false;
 
         public SteamVR_TrackedObject Tracking;
@@ -21,8 +25,9 @@ namespace VRGIN.Core.Controls
 
         private Vector2? mouseDownPosition;
         private float? appButtonPressTime;
-
-
+        private List<IRumbleSession> _RumbleSessions = new List<IRumbleSession>();
+        private float _LastImpulse;
+        
         private LineRenderer Laser;
 
         public List<Tool> Tools = new List<Tool>();
@@ -32,6 +37,7 @@ namespace VRGIN.Core.Controls
         private const float APP_BUTTON_TIME_THRESHOLD = 0.5f; // seconds
         private bool helpShown;
         private List<HelpText> helpTexts;
+        private Dictionary<Collider, RumbleSession> _TouchRumbles = new Dictionary<Collider, RumbleSession>();
 
         private Canvas _Canvas;
 
@@ -75,6 +81,29 @@ namespace VRGIN.Core.Controls
             Collider.isTrigger = true;
             
             gameObject.AddComponent<Rigidbody>().isKinematic = true;
+        }
+
+        protected void OnTriggerEnter(Collider collider)
+        {
+            if (collider.gameObject.layer == LayerMask.NameToLayer("ToLiquidCollision"))
+            {
+                if (_TouchRumbles.Values.Count == 0)
+                {
+                    StartRumble(new RumbleImpulse(1000));
+                }
+
+                var session = _TouchRumbles[collider] = new RumbleSession(100, 10);
+                StartRumble(session);
+            }
+        }
+
+        protected void OnTriggerExit(Collider collider)
+        {
+            if (collider.gameObject.layer == LayerMask.NameToLayer("ToLiquidCollision"))
+            {
+                _TouchRumbles[collider].Close();
+                _TouchRumbles.Remove(collider);
+            }
         }
 
         protected override void OnAwake()
@@ -204,6 +233,11 @@ namespace VRGIN.Core.Controls
             }
         }
 
+        protected virtual void OnDisable()
+        {
+            _RumbleSessions.Clear();
+        }
+
         public bool LaserVisible
         {
             get
@@ -295,8 +329,38 @@ namespace VRGIN.Core.Controls
 
                 }
             }
+
+
+            UpdateRumble();
         }
 
+
+        private void UpdateRumble()
+        {
+            if (_RumbleSessions.Count > 0)
+            {
+                var session = _RumbleSessions.Max();
+                float timeSinceLastImpulse = Time.time - _LastImpulse;
+                
+                if (Tracking.isValid && timeSinceLastImpulse >= session.MilliInterval * MILLI_TO_SECONDS && timeSinceLastImpulse > MIN_INTERVAL)
+                {
+                    SteamVR_Controller.Input((int)Tracking.index).TriggerHapticPulse(session.MicroDuration);
+                    _LastImpulse = Time.time;
+
+                    session.Consume();
+                    if(session.IsOver)
+                    {
+                        _RumbleSessions.Remove(session);
+                    }
+                }
+            }
+        }
+
+        public void StartRumble(IRumbleSession session)
+        {
+            _RumbleSessions.Add(session);
+        }
+        
         private void HideHelp()
         {
             if (helpShown)

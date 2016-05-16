@@ -56,6 +56,7 @@
     <Compile Include="GameInterpreter.cs" />
     <Compile Include="Helpers\GameObjectExtensions.cs" />
     <Compile Include="Helpers\KeyStroke.cs" />
+    <Compile Include="Helpers\RumbleSession.cs" />
     <Compile Include="Helpers\SimpleJSON.cs" />
     <Compile Include="IActor.cs" />
     <Compile Include="Logger.cs" />
