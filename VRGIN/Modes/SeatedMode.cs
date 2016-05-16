@@ -33,13 +33,13 @@ namespace VRGIN.Core.Modes
 
             if(_IsFirstStart)
             {
-                VR.Camera.Origin.transform.position = new Vector3(0, 0, 0);
+                VR.Camera.SteamCam.origin.transform.position = new Vector3(0, 0, 0);
                 Recenter();
                 _IsFirstStart = false;
             }
 
             Monitor = GUIMonitor.Create();
-            Monitor.transform.SetParent(VR.Camera.Origin, false);
+            Monitor.transform.SetParent(VR.Camera.SteamCam.origin, false);
         }
 
         //protected virtual void OnLevel()
@@ -60,16 +60,16 @@ namespace VRGIN.Core.Modes
                     VR.Camera.Blueprint.transform.rotation = LockTarget.Eyes.rotation;
                 }
 
-                VR.Camera.Origin.transform.position = VR.Camera.Blueprint.transform.position;
+                VR.Camera.SteamCam.origin.transform.position = VR.Camera.Blueprint.transform.position;
 
                 if(RotationLock && LockTarget == null)
                 {
-                    VR.Camera.Origin.transform.eulerAngles = new Vector3(0, VR.Camera.Blueprint.transform.eulerAngles.y, 0);
+                    VR.Camera.SteamCam.origin.transform.eulerAngles = new Vector3(0, VR.Camera.Blueprint.transform.eulerAngles.y, 0);
 
                     CorrectRotationLock();
                 } else
                 {
-                    VR.Camera.Origin.transform.rotation = VR.Camera.Blueprint.transform.rotation;
+                    VR.Camera.SteamCam.origin.transform.rotation = VR.Camera.Blueprint.transform.rotation;
                 }
             }
         }
@@ -142,8 +142,6 @@ namespace VRGIN.Core.Modes
         {
             Logger.Info("Recenter");
             OpenVR.System.ResetSeatedZeroPose();
-            VR.Camera.SteamCam.origin.transform.localRotation *= Quaternion.Inverse(VR.Camera.SteamCam.head.rotation);
-            VR.Camera.SteamCam.origin.transform.localPosition += (VR.Camera.Origin.position - VR.Camera.SteamCam.head.position);
         }
 
         protected Action MoveGUI(float speed)

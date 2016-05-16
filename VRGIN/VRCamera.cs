@@ -29,8 +29,6 @@ namespace VRGIN.Core
         private static VRCamera _Instance;
         public SteamVR_Camera SteamCam { get; private set; }
         public Camera Blueprint { get; private set; }
-        public Transform Origin;
-       
         public event EventHandler<InitializeCameraEventArgs> InitializeCamera = delegate { };
 
         public static VRCamera Instance
@@ -53,9 +51,6 @@ namespace VRGIN.Core
 
             var legacyAnchor = new GameObject("CenterEyeAnchor");
             legacyAnchor.transform.SetParent(SteamCam.head);
-
-            Origin = new GameObject("VR Origin").transform;
-            SteamCam.origin.SetParent(Origin, false);
 
             DontDestroyOnLoad(SteamCam.origin.gameObject);
         }
