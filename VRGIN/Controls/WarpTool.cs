@@ -59,6 +59,8 @@ namespace VRGIN.Core.Controls
         Transform DirectionIndicator;
         Transform HeightIndicator;
 
+        private RumbleSession _RumbleSession;
+
 
         SteamVR_Camera SteamCam;
 
@@ -183,6 +185,8 @@ namespace VRGIN.Core.Controls
         {
             base.OnUpdate();
 
+            bool triggerHapticImpulse = false;
+
             if (!IsTracking) return;
 
             _CanImpersonate = false;
@@ -201,10 +205,21 @@ namespace VRGIN.Core.Controls
 
                     if (Quaternion.Dot(hisRot, myRot) > 0.96f && Mathf.Abs(myHeight - hisHeight) < 0.05f)
                     {
-                        Controller.TriggerHapticPulse();
+                        triggerHapticImpulse = true;
                         _CanImpersonate = true;
                     }
                 }
+            }
+
+            if(triggerHapticImpulse && _RumbleSession == null)
+            {
+                _RumbleSession = new RumbleSession(100, 10);
+                Owner.StartRumble(_RumbleSession);
+                
+            } else if(!triggerHapticImpulse && _RumbleSession != null)
+            {
+                _RumbleSession.Close();
+                _RumbleSession = null;
             }
         }
 

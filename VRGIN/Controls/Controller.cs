@@ -89,10 +89,10 @@ namespace VRGIN.Core.Controls
             {
                 if (_TouchRumbles.Values.Count == 0)
                 {
-                    StartRumble(new RumbleImpulse(1000));
+                    StartRumble(new RumbleImpulse(200));
                 }
 
-                var session = _TouchRumbles[collider] = new RumbleSession(100, 10);
+                var session = _TouchRumbles[collider] = new RumbleSession(50, 10);
                 StartRumble(session);
             }
         }
@@ -344,7 +344,10 @@ namespace VRGIN.Core.Controls
                 
                 if (Tracking.isValid && timeSinceLastImpulse >= session.MilliInterval * MILLI_TO_SECONDS && timeSinceLastImpulse > MIN_INTERVAL)
                 {
-                    SteamVR_Controller.Input((int)Tracking.index).TriggerHapticPulse(session.MicroDuration);
+                    if (VR.Settings.Rumble)
+                    {
+                        SteamVR_Controller.Input((int)Tracking.index).TriggerHapticPulse(session.MicroDuration);
+                    }
                     _LastImpulse = Time.time;
 
                     session.Consume();

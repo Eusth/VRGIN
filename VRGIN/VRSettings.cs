@@ -37,6 +37,8 @@ namespace VRGIN.Core
         private float _Rotation = 0f;
         public float Rotation { get { return _Rotation; } set { _Rotation = value; TriggerPropertyChanged("Rotation"); } }
 
+        private bool _Rumble = true;
+        public bool Rumble { get { return _Rumble; } set { _Rumble = value; TriggerPropertyChanged("Rumble"); } }
         public event EventHandler<PropertyChangedEventArgs> PropertyChanged = delegate { };
 
         public VRSettings()

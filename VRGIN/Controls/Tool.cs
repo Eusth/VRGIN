@@ -15,6 +15,7 @@ namespace VRGIN.Core.Controls
     {
 
         protected SteamVR_TrackedObject Tracking;
+        protected Controller Owner;
 
         public abstract Texture2D Image
         {
@@ -31,6 +32,7 @@ namespace VRGIN.Core.Controls
             base.OnStart();
 
             Tracking = GetComponent<SteamVR_TrackedObject>();
+            Owner = GetComponent<Controller>();
         }
 
         protected abstract void OnDestroy();
