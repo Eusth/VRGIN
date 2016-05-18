@@ -60,8 +60,6 @@ namespace VRGIN.Core
 
 #if UNITY_4_5
                     _Instance.gameObject.AddComponent<CursorBlocker>();
-#else
-                    Cursor.lockState = CursorLockMode.Confined;
 #endif
                 }
                 return _Instance;
@@ -135,7 +133,7 @@ namespace VRGIN.Core
 #else
             var canvasList = GameObject.FindObjectsOfType<Canvas>();
 #endif
-            foreach (var canvas in canvasList.Where(c => c.renderMode == RenderMode.ScreenSpaceOverlay && c.worldCamera != _VRGUICamera))
+            foreach (var canvas in canvasList.Where(c => (c.renderMode == RenderMode.ScreenSpaceOverlay || c.renderMode == RenderMode.ScreenSpaceCamera) && c.worldCamera != _VRGUICamera))
             {
                 if(VR.Context.IgnoredCanvas.Contains(canvas.name)) continue;
                 //if (canvas.name.Contains("TexFade")) continue;
@@ -160,6 +158,9 @@ namespace VRGIN.Core
 
         protected override void OnUpdate()
         {
+#if !UNITY_4_5
+            Cursor.lockState = CursorLockMode.Confined;
+#endif
             Logger.Debug("Updating GUI...");
             if (_Listeners > 0)
             {

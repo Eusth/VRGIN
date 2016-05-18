@@ -139,6 +139,7 @@
     <Content Include="SteamVR\Textures\workshop.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\steamvr" />
     <None Include="SteamVR\Prefabs\[CameraRig].prefab" />
     <None Include="SteamVR\Prefabs\[Status].prefab" />
     <None Include="SteamVR\Prefabs\[SteamVR].prefab" />
@@ -158,6 +159,7 @@
     <None Include="SteamVR\Textures\overlay.renderTexture" />
     <None Include="SteamVR\Textures\overlay.renderTexture.meta" />
     <None Include="SteamVR\Textures\workshop.png.meta" />
+    <None Include="SteamVR\upgrading.md" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resource.resx">

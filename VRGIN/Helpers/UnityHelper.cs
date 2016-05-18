@@ -14,6 +14,10 @@ namespace VRGIN.Core.Helpers
     /// </summary>
     public static class UnityHelper
     {
+#if !UNITY_4_5
+        private static AssetBundle _SteamVR;
+#endif
+
         internal static Shader GetShader(string name)
         {
 #if UNITY_4_5
@@ -22,7 +26,20 @@ namespace VRGIN.Core.Helpers
             assetBundle.Unload(false);
             return shader;
 #else
-            throw new NotImplementedException();
+            if(!_SteamVR)
+            {
+                _SteamVR = AssetBundle.LoadFromMemory(Resource.steamvr);
+            } 
+
+            try
+            {
+                name = name.Replace("Custom/", "");
+                return _SteamVR.LoadAsset<Shader>(name);
+            } catch(Exception e)
+            {
+                Logger.Error(e);
+                return null;
+            }
 #endif
         }
 

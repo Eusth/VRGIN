@@ -59,5 +59,15 @@ namespace VRGIN.Core {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] steamvr {
+            get {
+                object obj = ResourceManager.GetObject("steamvr", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }

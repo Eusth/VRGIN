@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using VRGIN.Core.Helpers;
 
 namespace VRGIN.Core.Visuals
 {
@@ -15,11 +16,19 @@ namespace VRGIN.Core.Visuals
             UnlitTransparentCombined = CreateUnlitTransparentCombined();
             StandardShader = CreateStandardShader();
             Sprite = CreateSprite();
+
+            if (!Sprite.shader) Logger.Error("Could not load Sprite material!");
+            if (!Unlit.shader) Logger.Error("Could not load Unlit material!");
+            if (!UnlitTransparent.shader) Logger.Error("Could not load UnlitTransparent material!");
+            if (!UnlitTransparentCombined.shader) Logger.Error("Could not load UnlitTransparentCombined material!");
+            if (!StandardShader) Logger.Error("Could not load StandardShader material!");
         }
         
         private Material CreateUnlitTransparentCombined()
         {
-            return new Material(@"Shader ""Unlit/AlphaSelfIllum"" {
+#if UNITY_4_5
+
+            return new Material(@"Shader ""UnlitTransparentCombined"" {
                                 Properties {
                                     _MainTex (""Base (RGB)"", 2D) = ""white"" {}
                                     _SubTex (""Base (RGB)"", 2D) = ""white"" {}
@@ -41,6 +50,9 @@ namespace VRGIN.Core.Visuals
                                     } 
                                 }
                             }");
+#else
+            return new Material(UnityHelper.GetShader("UnlitTransparentCombined"));
+#endif
         }
 
         public Material UnlitTransparentCombined
@@ -71,7 +83,8 @@ namespace VRGIN.Core.Visuals
 
         private Material CreateUnlit()
         {
-            return new Material(@"Shader ""Unlit Single Color"" {
+#if UNITY_4_5
+            return new Material(@"Shader ""Unlit"" {
                 Properties {
                     _Color (""Main Color"", Color) = (1,1,1,1)
                     _MainTex (""Base (RGB)"", 2D) = ""white"" {}
@@ -90,6 +103,9 @@ namespace VRGIN.Core.Visuals
                     }
                 }
             }");
+#else
+            return new Material(UnityHelper.GetShader("Unlit"));
+#endif
         }
         public Material Unlit
         {
@@ -99,7 +115,8 @@ namespace VRGIN.Core.Visuals
 
         private Material CreateUnlitTransparent()
         {
-            return new Material(@"Shader ""Unlit/AlphaSelfIllum"" {
+#if UNITY_4_5
+            return new Material(@"Shader ""UnlitTransparent"" {
                                 Properties {
                                     _MainTex (""Base (RGB)"", 2D) = ""white"" {}
                                 }
@@ -119,6 +136,9 @@ namespace VRGIN.Core.Visuals
                                     } 
                                 }
                             }");
+#else
+            return new Material(UnityHelper.GetShader("UnlitTransparent"));
+#endif
         }
         public Material UnlitTransparent
         {

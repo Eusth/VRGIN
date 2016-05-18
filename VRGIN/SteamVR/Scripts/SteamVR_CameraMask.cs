@@ -21,7 +21,7 @@ public class SteamVR_CameraMask : MonoBehaviour
 		meshFilter = GetComponent<MeshFilter>();
 
 		if (material == null)
-			material = new Material(Shader.Find("Custom/SteamVR_HiddenArea"));
+			material = new Material(VRGIN.Core.Helpers.UnityHelper.GetShader("Custom/SteamVR_HiddenArea"));
 
 		var mr = GetComponent<MeshRenderer>();
 		mr.material = material;

@@ -422,7 +422,7 @@ public class SteamVR_RenderModel : MonoBehaviour
 					}
 				}
 
-				material = new Material(shader != null ? shader : Shader.Find("Standard"));
+				material = new Material(shader != null ? shader : VRGIN.Core.Helpers.UnityHelper.GetShader("Standard"));
 				material.mainTexture = texture;
 				//material.hideFlags = HideFlags.DontUnloadUnusedAsset;
 
