@@ -13,14 +13,14 @@ namespace VRGIN.Core
     public static class Logger
     {
         private static string LOG_PATH = "vr.log";
+        private static StreamWriter LogFile;
+
         static Logger()
         {
             if (File.Exists(LOG_PATH))
             {
-                using (var file = File.OpenWrite(LOG_PATH))
-                {
-                    file.SetLength(0);
-                }
+                LogFile = new StreamWriter(File.OpenWrite(LOG_PATH));
+                LogFile.BaseStream.SetLength(0);
             }
         }
 
@@ -104,7 +104,8 @@ namespace VRGIN.Core
 #endif
                 string formatted = String.Format(Format(text, severity), args);
                 Console.WriteLine(formatted);
-                File.AppendAllText(LOG_PATH, formatted + "\n");
+
+                LogFile.WriteLine(formatted);
 
 #if COLOR_SUPPORT
                 Console.ForegroundColor = oldForegroundColor;
