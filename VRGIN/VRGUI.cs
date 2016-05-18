@@ -142,6 +142,7 @@ namespace VRGIN.Core
                 canvas.renderMode = RenderMode.ScreenSpaceCamera;
                 canvas.worldCamera = _VRGUICamera;
 
+#if UNITY_4_5
                 var raycaster = canvas.GetComponent<GraphicRaycaster>();
                 if (raycaster)
                 {
@@ -153,6 +154,7 @@ namespace VRGIN.Core
                     UnityHelper.SetPropertyOrField(newRaycaster, "blockingObjects", UnityHelper.GetPropertyOrField(raycaster, "blockingObjects"));
                     UnityHelper.SetPropertyOrField(newRaycaster, "m_BlockingMask", UnityHelper.GetPropertyOrField(raycaster, "m_BlockingMask"));
                 }
+#endif
             }
         }
 
@@ -257,7 +259,6 @@ namespace VRGIN.Core
             {
                 get
                 {
-                    //Logger.Info("Sort Order: {0} ({1})", -Canvas.renderOrder, _Canvas.name);
                     return GetOrder();
                 }
             }
