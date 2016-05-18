@@ -27,7 +27,7 @@ namespace VRGIN.Core.Helpers
         public static T CopyComponentFrom<T>(this GameObject destination, T original) where T : Component
         {
             Type type = original.GetType();
-            T copy = destination.AddComponent<T>();
+            T copy = destination.AddComponent(type) as T;
             // Copied fields can be restricted with BindingFlags
             FieldInfo[] fields = type.GetFields( BindingFlags.Instance | BindingFlags.Public);
             foreach (FieldInfo field in fields)

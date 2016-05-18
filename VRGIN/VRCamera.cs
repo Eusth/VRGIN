@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -88,9 +89,11 @@ namespace VRGIN.Core
                 InitializeCamera(this, new InitializeCameraEventArgs(targetCamera, Blueprint));
             });
 
-            //CopyFX(Blueprint);
             if (Blueprint != GetComponent<Camera>())
             {
+                //StartCoroutine(ExecuteDelayed(delegate { CopyFX(Blueprint); }));
+                //CopyFX(Blueprint);
+
                 Blueprint.GetComponent<Camera>().cullingMask = 0;
 
                 // Highlander principle
@@ -102,25 +105,44 @@ namespace VRGIN.Core
             }
         }
 
+        private IEnumerator ExecuteDelayed(Action action)
+        {
+            yield return null;
+            try
+            {
+                action();
+            } catch(Exception e)
+            {
+                Logger.Error(e);
+            }
+        }
+
         /// <summary>
         /// Doesn't really work yet.
         /// </summary>
         /// <param name="blueprint"></param>
         public void CopyFX(Camera blueprint)
         {
+
             // Clean
             foreach (var fx in gameObject.GetCameraEffects())
             {
                 Logger.Info("DESTROY {0}", fx.GetType().Name);
                 DestroyImmediate(fx);
             }
+            int comps = gameObject.GetComponents<Component>().Length;
 
             Logger.Info("Copying FX to {0}...", gameObject.name);
             // Rebuild
             foreach (var fx in blueprint.gameObject.GetCameraEffects())
             {
+                //if (fx.GetType().Name.Contains("ColorCurves")) continue;
                 Logger.Info("Copy FX: {0} (enabled={1})", fx.GetType().Name, fx.enabled);
                 var attachedFx = gameObject.CopyComponentFrom(fx);
+                if(attachedFx)
+                {
+                    Logger.Info("Attacheded!");
+                }
                 attachedFx.enabled = fx.enabled;
             }
 
@@ -128,6 +150,7 @@ namespace VRGIN.Core
 
             SteamCam.ForceLast();
             SteamCam = GetComponent<SteamVR_Camera>();
+            Logger.Info("{0} components before the additions, {1} after", comps, gameObject.GetComponents<Component>().Length);
         }
 
         private void ApplyToCameras(CameraOperation operation)

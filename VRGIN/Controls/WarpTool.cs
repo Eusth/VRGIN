@@ -61,9 +61,6 @@ namespace VRGIN.Core.Controls
 
         private RumbleSession _RumbleSession;
 
-
-        SteamVR_Camera SteamCam;
-
         private float _AdditionalRotation;
         bool _CanImpersonate = false;
 
@@ -154,8 +151,6 @@ namespace VRGIN.Core.Controls
             Logger.Info("Start!");
 
             base.OnStart();
-
-            SteamCam = VRCamera.Instance.SteamCam;
         }
 
         protected override void OnEnable()
@@ -225,14 +220,15 @@ namespace VRGIN.Core.Controls
 
         protected override void OnLateUpdate()
         {
+            var steamCam = VRCamera.Instance.SteamCam;
             float cylinderHeight = 2;
-            float playerHeight = SteamCam.head.localPosition.y;
+            float playerHeight = steamCam.head.localPosition.y;
             float pivot = 1f;
 
             PlayAreaRotation.position = ArcRenderer.target;
             PlayAreaRotation.localScale = Vector3.one * VR.Settings.IPDScale;
-            PlayArea.transform.localPosition = -new Vector3(SteamCam.head.transform.localPosition.x, 0, SteamCam.head.transform.localPosition.z);
-            PlayAreaRotation.rotation = Quaternion.Euler(0, -_AdditionalRotation + SteamCam.origin.rotation.eulerAngles.y, 0);
+            PlayArea.transform.localPosition = -new Vector3(steamCam.head.transform.localPosition.x, 0, steamCam.head.transform.localPosition.z);
+            PlayAreaRotation.rotation = Quaternion.Euler(0, -_AdditionalRotation + steamCam.origin.rotation.eulerAngles.y, 0);
 
             Indicator.localScale = Vector3.one * 0.1f + Vector3.one * Mathf.Sin(Time.time * 5) * 0.05f;
             HeightIndicator.localScale = new Vector3(0.01f, playerHeight / cylinderHeight, 0.01f);
@@ -257,10 +253,12 @@ namespace VRGIN.Core.Controls
 
             if (Controller.GetPressDown(EVRButtonId.k_EButton_Axis0))
             {
+                var steamCam = VRCamera.Instance.SteamCam;
+
                 // Warp!
-                var rotOffset = Quaternion.Euler(0, -_AdditionalRotation + SteamCam.origin.rotation.eulerAngles.y, 0);
-                SteamCam.origin.position = ArcRenderer.target - rotOffset * new Vector3(SteamCam.head.transform.localPosition.x, 0, SteamCam.head.transform.localPosition.z) * VR.Settings.IPDScale;
-                SteamCam.origin.rotation = rotOffset;
+                var rotOffset = Quaternion.Euler(0, -_AdditionalRotation + steamCam.origin.rotation.eulerAngles.y, 0);
+                steamCam.origin.position = ArcRenderer.target - rotOffset * new Vector3(steamCam.head.transform.localPosition.x, 0, steamCam.head.transform.localPosition.z) * VR.Settings.IPDScale;
+                steamCam.origin.rotation = rotOffset;
                 Reset();
             }
 

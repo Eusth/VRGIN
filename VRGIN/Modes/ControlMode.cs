@@ -123,7 +123,7 @@ namespace VRGIN.Core.Modes
                 //new MultiKeyboardShortcut(new KeyStroke("Ctrl + C"), new KeyStroke("Ctrl+B"), delegate {
                 //    ProtectedBehaviour.DumpTable();
                 //})
-                //new KeyboardShortcut(new KeyStroke("Ctrl + F5"), delegate { VR.Camera.CopyFX(Camera.main); }, KeyMode.PressUp),
+                new KeyboardShortcut(new KeyStroke("Ctrl + F5"), delegate { VR.Camera.CopyFX(VR.Camera.Blueprint); }, KeyMode.PressUp),
 
             };
         }
