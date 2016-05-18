@@ -118,20 +118,20 @@ namespace VRGIN.Core.Helpers
                     }
                 }
 
-                foreach (var prop in c.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public))
-                {
-                    try
-                    {
-                        var val = FieldToString(prop.Name, prop.GetValue(c, null));
-                        if (val != null)
-                        {
-                            comp[prop.Name] = val;
-                        }
-                    } catch(Exception e)
-                    {
-                        Logger.Warn("Failed to get prop {0}", prop.Name);
-                    }
-                }
+                //foreach (var prop in c.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public))
+                //{
+                //    try
+                //    {
+                //        var val = FieldToString(prop.Name, prop.GetValue(c, null));
+                //        if (val != null)
+                //        {
+                //            comp[prop.Name] = val;
+                //        }
+                //    } catch(Exception e)
+                //    {
+                //        Logger.Warn("Failed to get prop {0}", prop.Name);
+                //    }
+                //}
                 
                 components[c.GetType().Name] = comp;
             }
