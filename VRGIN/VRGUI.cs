@@ -45,6 +45,7 @@ namespace VRGIN.Core
 #endif
 
         private static VRGUI _Instance;
+        private IDictionary _Registry;
 
         /// <summary>
         /// Gets an instance of VRGUI.
@@ -121,6 +122,7 @@ namespace VRGIN.Core
             _VRGUICamera.farClipPlane = 10000;
             _VRGUICamera.targetTexture = uGuiTexture;
             _Graphics = typeof(GraphicRegistry).GetField("m_Graphics", BindingFlags.NonPublic | BindingFlags.Instance);
+            _Registry = _Graphics.GetValue(GraphicRegistry.instance) as IDictionary;
 
             GameObject.DontDestroyOnLoad(_VRGUICamera);
             DontDestroyOnLoad(gameObject);
@@ -129,8 +131,7 @@ namespace VRGIN.Core
         protected void CatchCanvas()
         {
 #if UNITY_4_5
-            var canvasList = ((_Graphics.GetValue(GraphicRegistry.instance) as IDictionary).Keys as ICollection<Canvas>)
-                            .Where(c => c != null).SelectMany(canvas => canvas.gameObject.GetComponentsInChildren<Canvas>());
+            var canvasList = (_Registry.Keys as ICollection<Canvas>).Where(c => c).SelectMany(canvas => canvas.gameObject.GetComponentsInChildren<Canvas>());
 #else
             var canvasList = GameObject.FindObjectsOfType<Canvas>();
 #endif
