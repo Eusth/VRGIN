@@ -120,6 +120,9 @@ namespace VRGIN.Core.Modes
                 new KeyboardShortcut(new KeyStroke("Alt + S"), delegate { VR.Settings.Save(); }),
                 new KeyboardShortcut(new KeyStroke("Alt + L"), delegate { VR.Settings.Reload(); }),
                 new KeyboardShortcut(new KeyStroke("Ctrl + Alt + L"), delegate { VR.Settings.Reset(); }),
+                //new MultiKeyboardShortcut(new KeyStroke("Ctrl + C"), new KeyStroke("Ctrl+B"), delegate {
+                //    ProtectedBehaviour.DumpTable();
+                //})
                 //new KeyboardShortcut(new KeyStroke("Ctrl + F5"), delegate { VR.Camera.CopyFX(Camera.main); }, KeyMode.PressUp),
 
             };
