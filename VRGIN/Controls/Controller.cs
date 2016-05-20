@@ -14,6 +14,32 @@ namespace VRGIN.Core.Controls
    
     public abstract class Controller : ProtectedBehaviour
     {
+        public class Lock
+        {
+            public bool IsValid { get; private set; }
+            private Controller _Controller;
+            internal Lock(Controller controller)
+            {
+                IsValid = true;
+                _Controller = controller;
+                _Controller._Lock = this;
+                _Controller.OnLock();
+            }
+
+            public void Release()
+            {
+                if(IsValid)
+                {
+                    _Controller._Lock = null;
+                    _Controller.OnUnlock();
+                    IsValid = false;
+                } else
+                {
+                    Logger.Warn("Tried to release an invalid lock!");
+                }
+            }
+        }
+
         const float MILLI_TO_SECONDS = 1f / 1000f;
         public const float MIN_INTERVAL = 5 * MILLI_TO_SECONDS;
 
@@ -40,6 +66,32 @@ namespace VRGIN.Core.Controls
         private Dictionary<Collider, RumbleSession> _TouchRumbles = new Dictionary<Collider, RumbleSession>();
 
         private Canvas _Canvas;
+        private Lock _Lock;
+        private Lock _LaserLock;
+
+        public bool AcquireFocus(out Lock lockObj)
+        {
+            lockObj = null;
+
+            if(_Lock == null)
+            {
+                lockObj = new Lock(this);
+                return true;
+            } else
+            {
+                return false;
+            }
+        }
+
+        protected virtual void OnLock()
+        {
+            ToolEnabled = false;
+        }
+
+        protected virtual void OnUnlock()
+        {
+            ToolEnabled = true;
+        }
 
         protected virtual void OnDestroy()
         {
@@ -226,6 +278,7 @@ namespace VRGIN.Core.Controls
                                 laserVisible = false;
                             }
                         }
+                        
                         LaserVisible = laserVisible;
                     } else
                     {
@@ -254,6 +307,19 @@ namespace VRGIN.Core.Controls
             }
             set
             {
+                if(value && _LaserLock == null)
+                {
+                    if(!AcquireFocus(out _LaserLock))
+                    {
+                        // Could not get focus, do nothing.
+                        return;
+                    }
+                } else if(!value && _LaserLock != null)
+                {
+                    _LaserLock.Release();
+                    _LaserLock = null;
+                }
+
                 Laser.gameObject.SetActive(value);
                 ToolEnabled = !value;
 
