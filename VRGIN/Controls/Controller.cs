@@ -92,8 +92,16 @@ namespace VRGIN.Core.Controls
                     StartRumble(new RumbleImpulse(200));
                 }
 
-                var session = _TouchRumbles[collider] = new RumbleSession(50, 10);
+                var session = _TouchRumbles[collider] = new RumbleSession(50, 10, 1f);
                 StartRumble(session);
+            }
+        }
+
+        protected void OnTriggerStay(Collider collider)
+        {
+            if (collider.gameObject.layer == LayerMask.NameToLayer("ToLiquidCollision"))
+            {
+                _TouchRumbles[collider].Restart();
             }
         }
 

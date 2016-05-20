@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
 namespace VRGIN.Core.Helpers
 {
@@ -28,10 +29,26 @@ namespace VRGIN.Core.Helpers
         {
             get; set;
         }
+
+        public float Lifetime
+        {
+            get; set;
+        }
+
+        private float _Time = 0;
         
         public RumbleSession(ushort microDuration, float milliInterval) {
             MicroDuration = microDuration;
             MilliInterval = milliInterval;
+            _Time = Time.time;
+        }
+
+        public RumbleSession(ushort microDuration, float milliInterval, float lifetime)
+        {
+            MicroDuration = microDuration;
+            MilliInterval = milliInterval;
+            Lifetime = lifetime;
+            _Time = Time.time;
         }
 
         public void Close()
@@ -44,7 +61,17 @@ namespace VRGIN.Core.Helpers
             return MicroDuration.CompareTo(other.MicroDuration);
         }
 
-        public void Consume() { }
+        public void Restart()
+        {
+            _Time = Time.time;
+        }
+
+        public void Consume() {
+            if(Lifetime > 0 && (Time.time - _Time > Lifetime))
+            {
+                IsOver = true;
+            }
+        }
 
 
     }
