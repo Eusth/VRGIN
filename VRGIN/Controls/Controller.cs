@@ -321,8 +321,6 @@ namespace VRGIN.Core.Controls
                 }
 
                 Laser.gameObject.SetActive(value);
-                ToolEnabled = !value;
-
                 
                 if(value)
                 {
