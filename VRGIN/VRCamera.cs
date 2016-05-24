@@ -50,6 +50,9 @@ namespace VRGIN.Core
             SteamCam = GetComponent<SteamVR_Camera>();
             SteamCam.Expand(); // Expand immediately!
 
+            // Set render scale to the value defined by the user
+            SteamVR_Camera.sceneResolutionScale = VR.Settings.RenderScale;
+
             var legacyAnchor = new GameObject("CenterEyeAnchor");
             legacyAnchor.transform.SetParent(SteamCam.head);
 

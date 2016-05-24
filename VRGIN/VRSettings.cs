@@ -12,6 +12,9 @@ namespace VRGIN.Core
 {
     /// <summary>
     /// Class that holds settings for VR. Saved as an XML file.
+    /// 
+    /// In order to create your own settings file, extend this class and add your own properties. Make sure to call <see cref="TriggerPropertyChanged(string)"/> if you want to use
+    /// the events.
     /// </summary>
     [XmlRoot("Settings")]
     public class VRSettings
@@ -23,22 +26,47 @@ namespace VRGIN.Core
         public string Path { get; set; }
 
         private float _Distance = 0.3f;
+        /// <summary>
+        /// Gets or sets the distance between the camera and the GUI at [0,0,0] [seated]
+        /// </summary>
         public float Distance { get { return _Distance; } set { _Distance = Mathf.Clamp(value, 0.1f, 10f); TriggerPropertyChanged("Distance"); } }
 
         private float _Angle = 170f;
+        /// <summary>
+        /// Gets or sets the width of the arc the GUI takes up. [seated]
+        /// </summary>
         public float Angle { get { return _Angle; } set { _Angle = Mathf.Clamp(value, 50f, 360f); TriggerPropertyChanged("Angle"); } }
 
         private float _IPDScale = 1f;
+        /// <summary>
+        /// Gets or sets the scale of the camera. The higher, the more gigantic the player is.
+        /// </summary>
         public float IPDScale { get { return _IPDScale; } set { _IPDScale = Mathf.Clamp(value, 0.01f, 10f); TriggerPropertyChanged("IPDScale"); } }
 
         private float _OffsetY = 0f;
+        /// <summary>
+        /// Gets or sets the vertical offset of the GUI in meters. [seated]
+        /// </summary>
         public float OffsetY { get { return _OffsetY; } set { _OffsetY = value; TriggerPropertyChanged("OffsetY"); } }
 
         private float _Rotation = 0f;
+        /// <summary>
+        /// Gets or sets by how many degrees the GUI is rotated (around the y axis) [seated]
+        /// </summary>
         public float Rotation { get { return _Rotation; } set { _Rotation = value; TriggerPropertyChanged("Rotation"); } }
 
         private bool _Rumble = true;
+        /// <summary>
+        /// Gets or sets whether or not rumble is activated.
+        /// </summary>
         public bool Rumble { get { return _Rumble; } set { _Rumble = value; TriggerPropertyChanged("Rumble"); } }
+
+        private float _RenderScale = 1f;
+        /// <summary>
+        /// Gets or sets the render scale of the renderer. Increase for better quality but less performance, decrease for more performance but poor quality.
+        /// </summary>
+        public float RenderScale { get { return _RenderScale; } set { _RenderScale = Mathf.Clamp(value, 0.1f, 4f); TriggerPropertyChanged("RenderScale"); } }
+
         public event EventHandler<PropertyChangedEventArgs> PropertyChanged = delegate { };
 
         public VRSettings()
@@ -47,17 +75,28 @@ namespace VRGIN.Core
 
             _OldSettings = this.MemberwiseClone() as VRSettings;
         }
-
-        private void TriggerPropertyChanged(string name)
+        
+        /// <summary>
+        /// Triggers a PropertyChanged event and notifies the listeners.
+        /// </summary>
+        /// <param name="name"></param>
+        protected void TriggerPropertyChanged(string name)
         {
             PropertyChanged(this, new PropertyChangedEventArgs(name));
         }
 
+        /// <summary>
+        /// Saves the settings to the path that was initially set.
+        /// </summary>
         public virtual void Save()
         {
             Save(Path);
         }
 
+        /// <summary>
+        /// Saves the settings to a given path.
+        /// </summary>
+        /// <param name="path"></param>
         public virtual void Save(string path)
         {
             if(path != null)
@@ -72,6 +111,12 @@ namespace VRGIN.Core
             _OldSettings = this.MemberwiseClone() as VRSettings;
         }
 
+        /// <summary>
+        /// Loads the settings from a file. Generic to enable handling of sub classes.
+        /// </summary>
+        /// <typeparam name="T">Type of the settings</typeparam>
+        /// <param name="path"></param>
+        /// <returns></returns>
         public static T Load<T>(string path) where T : VRSettings
         {
             if(!File.Exists(path))
@@ -90,6 +135,11 @@ namespace VRGIN.Core
             }
         }
 
+        /// <summary>
+        /// Adds a listener for a certain property.
+        /// </summary>
+        /// <param name="property"></param>
+        /// <param name="handler"></param>
         public void AddListener(string property, EventHandler<PropertyChangedEventArgs> handler)
         {
             if(!_Listeners.ContainsKey(property))
@@ -101,6 +151,11 @@ namespace VRGIN.Core
         }
 
 
+        /// <summary>
+        /// Removes a listener for a certain property.
+        /// </summary>
+        /// <param name="property"></param>
+        /// <param name="handler"></param>
         public void RemoveListener(string property, EventHandler<PropertyChangedEventArgs> handler)
         {
             if (_Listeners.ContainsKey(property))
@@ -122,27 +177,39 @@ namespace VRGIN.Core
             }
         }
 
+        /// <summary>
+        /// Resets all values.
+        /// </summary>
         public void Reset()
         {
-            this.CopyFrom(new VRSettings());
+            var blueprint = Activator.CreateInstance(this.GetType()) as VRSettings;
+            this.CopyFrom(blueprint);
         }
 
+        /// <summary>
+        /// Restores the last saved state.
+        /// </summary>
         public void Reload()
         {
             this.CopyFrom(_OldSettings);
         }
 
+        /// <summary>
+        /// Clone settings from another instance.
+        /// </summary>
+        /// <param name="settings"></param>
         public void CopyFrom(VRSettings settings)
         {
-            foreach(var key in _Listeners.Keys)
+            foreach (var key in _Listeners.Keys)
             {
                 var prop = settings.GetType().GetProperty(key, BindingFlags.Instance | BindingFlags.Public);
-                if(prop != null)
+                if (prop != null)
                 {
                     try
                     {
                         prop.SetValue(this, prop.GetValue(settings, null), null);
-                    } catch(Exception e)
+                    }
+                    catch (Exception e)
                     {
                         Logger.Warn(e);
                     }
