@@ -366,7 +366,7 @@ namespace VRGIN.Core.Controls
                     mouseDownPosition = null;
                 }
             }
-            else
+            else if(_Lock == null)
             {
                 if(device.GetPressDown(EVRButtonId.k_EButton_ApplicationMenu))
                 {

@@ -38,7 +38,7 @@ namespace VRGIN.Core
             {
                 if(_Instance == null)
                 {
-                    _Instance = new GameObject("VR Camera").AddComponent<AudioListener>().gameObject.AddComponent<VRCamera>();
+                    _Instance = new GameObject("VRGIN_Camera").AddComponent<AudioListener>().gameObject.AddComponent<VRCamera>();
                 }
                 return _Instance;
             }
@@ -65,17 +65,30 @@ namespace VRGIN.Core
             Blueprint = blueprint ?? GetComponent<Camera>();
 
             int cullingMask = Blueprint.cullingMask;
-            if(cullingMask == 0)
+            if (cullingMask == 0)
             {
                 cullingMask = int.MaxValue;
             }
+            else
+            {
+                // Apply additional culling masks
+                foreach (var subCamera in VR.Interpreter.FindSubCameras())
+                {
+                    if (!subCamera.name.Contains(SteamCam.baseName))
+                    {
+                        cullingMask |= subCamera.cullingMask;
+                    }
+                }
+            }
+
+            cullingMask &= ~(VRManager.Instance.Context.UILayerMask | LayerMask.GetMask(VR.Context.HMDLayer));
 
             // Apply to both the head camera and the VR camera
             ApplyToCameras(targetCamera =>
             {
                 targetCamera.nearClipPlane = Mathf.Clamp(0.01f, 0.001f, 0.01f);
                 targetCamera.farClipPlane = Mathf.Clamp(100f, 50f, 200f);
-                targetCamera.cullingMask = cullingMask & ~(VRManager.Instance.Context.UILayerMask | LayerMask.GetMask(VR.Context.HMDLayer));
+                targetCamera.cullingMask = cullingMask;
                 targetCamera.clearFlags = Blueprint.clearFlags;
                 targetCamera.backgroundColor = Blueprint.backgroundColor;
                 //Logger.Info(ovrCamera.clearFlags);
@@ -130,7 +143,6 @@ namespace VRGIN.Core
             // Clean
             foreach (var fx in gameObject.GetCameraEffects())
             {
-                Logger.Info("DESTROY {0}", fx.GetType().Name);
                 DestroyImmediate(fx);
             }
             int comps = gameObject.GetComponents<Component>().Length;

@@ -11,22 +11,5 @@ namespace VRGIN.Core.Controls
             
             return leftHand;
         }
-        
-        private static int S_ToolIndex = 0;
-
-        public override int ToolIndex
-        {
-            get
-            {
-                return S_ToolIndex;
-            }
-
-            set
-            {
-                S_ToolIndex = value;
-
-            }
-        }
-       
     }
 }

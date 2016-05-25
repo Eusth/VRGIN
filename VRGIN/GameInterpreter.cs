@@ -22,12 +22,22 @@ namespace VRGIN.Core
         }
 
         /// <summary>
-        /// Finds the camera object.
+        /// Finds the main camera object.
         /// </summary>
         /// <returns></returns>
         public virtual Camera FindCamera()
         {
             return Camera.main;
+        }
+
+
+        /// <summary>
+        /// Finds additional cameras that should be considered (i.e. added to the culling mask).
+        /// </summary>
+        /// <returns></returns>
+        public virtual IEnumerable<Camera> FindSubCameras()
+        {
+            yield break;
         }
     }
 }
