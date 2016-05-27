@@ -145,6 +145,9 @@
     <Compile Include="..\VRGIN\Visuals\ProceduralPlane.cs">
       <Link>Visuals\ProceduralPlane.cs</Link>
     </Compile>
+    <Compile Include="..\VRGIN\Visuals\SimulatedCursor.cs">
+      <Link>Visuals\SimulatedCursor.cs</Link>
+    </Compile>
     <Compile Include="..\VRGIN\VRCamera.cs">
       <Link>VRCamera.cs</Link>
     </Compile>

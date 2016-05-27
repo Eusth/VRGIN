@@ -69,6 +69,7 @@
     <Compile Include="Visuals\DefaultMaterialPalette.cs" />
     <Compile Include="Visuals\PlayerCamera.cs" />
     <Compile Include="Visuals\ProceduralPlane.cs" />
+    <Compile Include="Visuals\SimulatedCursor.cs" />
     <Compile Include="VRManager.cs" />
     <Compile Include="Modes\ControlMode.cs" />
     <Compile Include="Modes\SeatedMode.cs" />

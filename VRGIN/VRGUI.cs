@@ -7,6 +7,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using VRGIN.Core.Helpers;
+using VRGIN.Core.Visuals;
 
 #if UNITY_4_5
 using VRGIN.Core.Native;
@@ -61,6 +62,13 @@ namespace VRGIN.Core
 #if UNITY_4_5
                     _Instance.gameObject.AddComponent<CursorBlocker>();
 #endif
+                    if (VR.Context.SimulateCursor)
+                    {
+                        var cursor = SimulatedCursor.Create();
+                        cursor.transform.SetParent(_Instance.transform, false);
+
+                        Logger.Info("Cursor is simulated");
+                    }
                 }
                 return _Instance;
             }
@@ -109,14 +117,14 @@ namespace VRGIN.Core
             gameObject.AddComponent<SlowGUI>();
 
             // Add GUI camera
-            _VRGUICamera = new GameObject("_GUICamera").AddComponent<Camera>();
+            _VRGUICamera = new GameObject("VRGIN_GUICamera").AddComponent<Camera>();
             _VRGUICamera.transform.position = Vector3.zero;
             _VRGUICamera.transform.rotation = Quaternion.identity;
 
 
-            _VRGUICamera.cullingMask = LayerMask.GetMask("UI");
+            _VRGUICamera.cullingMask = VR.Context.UILayerMask;
             _VRGUICamera.depth = 1;
-            _VRGUICamera.nearClipPlane = 99f;
+            _VRGUICamera.nearClipPlane = 0.1f;
             _VRGUICamera.farClipPlane = 10000;
             _VRGUICamera.targetTexture = uGuiTexture;
             _Graphics = typeof(GraphicRegistry).GetField("m_Graphics", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -128,11 +136,7 @@ namespace VRGIN.Core
 
         protected void CatchCanvas()
         {
-#if UNITY_4_5
             var canvasList = (_Registry.Keys as ICollection<Canvas>).Where(c => c).SelectMany(canvas => canvas.gameObject.GetComponentsInChildren<Canvas>());
-#else
-            var canvasList = GameObject.FindObjectsOfType<Canvas>();
-#endif
             foreach (var canvas in canvasList.Where(c => (c.renderMode == RenderMode.ScreenSpaceOverlay || c.renderMode == RenderMode.ScreenSpaceCamera) && c.worldCamera != _VRGUICamera))
             {
                 if(VR.Context.IgnoredCanvas.Contains(canvas.name)) continue;
@@ -163,10 +167,8 @@ namespace VRGIN.Core
 #if !UNITY_4_5
             Cursor.lockState = CursorLockMode.Confined;
 #endif
-            Logger.Debug("Updating GUI...");
             if (_Listeners > 0)
             {
-                Logger.Debug("Oh, we have listeners");
                 //Logger.Info(Time.time);
                 //var watch = System.Diagnostics.Stopwatch.StartNew();
                 CatchCanvas();
@@ -174,7 +176,7 @@ namespace VRGIN.Core
             }
             if (_Listeners < 0)
             {
-                Logger.Warn("NUMBER DONT ADD UP!");
+                Logger.Warn("Numbers don't add up!");
             }
         }
 
@@ -273,7 +275,7 @@ namespace VRGIN.Core
 
             private int GetOrder()
             {
-                if (Canvas.gameObject.layer != LayerMask.NameToLayer("UI")) return int.MinValue;
+                if (Canvas.gameObject.layer != LayerMask.NameToLayer(VR.Context.UILayer)) return int.MinValue;
                 return -Canvas.sortingOrder;
             }
         }

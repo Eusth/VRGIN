@@ -171,7 +171,7 @@ namespace VRGIN.Core
         private void ApplyToCameras(CameraOperation operation)
         {
             operation(SteamCam.GetComponent<Camera>());
-            operation(SteamCam.head.GetComponent<Camera>());
+            //operation(SteamCam.head.GetComponent<Camera>());
         }
 
         protected override void OnUpdate()

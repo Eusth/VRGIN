@@ -51,6 +51,9 @@ namespace VRGIN.Core
                 _Instance = new GameObject("VR Manager").AddComponent<VRManager>();
                 _Instance.Context = context;
                 _Instance.Interpreter = _Instance.gameObject.AddComponent<T>();
+                _Instance._Gui = VRGUI.Instance;
+
+                // Makes sure that the GUI is instanciated
             }
             return _Instance;
         }
@@ -93,10 +96,6 @@ namespace VRGIN.Core
 
             GameObject.DontDestroyOnLoad(SteamVR_Render.instance.gameObject);
             GameObject.DontDestroyOnLoad(gameObject);
-
-            // Makes sure that the GUI is instanciated
-            _Gui = VRGUI.Instance;
-
 #if UNITY_4_5
             SteamVR_Render.instance.helpSeconds = 0;
 #endif
@@ -147,12 +146,50 @@ namespace VRGIN.Core
 
     public interface IVRManagerContext
     {
+        /// <summary>
+        /// Gets the layer where the VR GUI should be placed. This is mainly used for raycasting and should ideally not be used by anything else.
+        /// </summary>
         string GuiLayer { get; }
+
+        /// <summary>
+        /// Gets the layer the game uses for its UI.
+        /// </summary>
+        string UILayer { get; }
+
+        /// <summary>
+        /// Gets the mask that can be used for the camera to *not* display the game's GUI. The VR cameras will ignore this, the GUI camera will look for this.
+        /// This is almost the same as <see cref="UILayer"/> but more flexible.
+        /// </summary>
         int UILayerMask { get; }
+
+        /// <summary>
+        /// Gets the color used for the tools and effects. (e.g. teleport)
+        /// </summary>
         Color PrimaryColor { get; }
+
+        /// <summary>
+        /// Gets the palette that contains all materials used by the library.
+        /// </summary>
         IMaterialPalette Materials { get; }
+
+        /// <summary>
+        /// Gets the settings object.
+        /// </summary>
         VRSettings Settings { get; }
+
+        /// <summary>
+        /// Gets the layer that can be used to add objects that will be ignored by the in-game player but that will appear on screen.
+        /// </summary>
         string HMDLayer { get; }
+
+        /// <summary>
+        /// Gets a list of canvas names that should be ignored entirely.
+        /// </summary>
         string[] IgnoredCanvas { get; }
+
+        /// <summary>
+        /// Gets whether the library should make a cursor of its own. Needed when the game uses a hardware cursor.
+        /// </summary>
+        bool SimulateCursor { get; }
     }
 }
