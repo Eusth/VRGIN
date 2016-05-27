@@ -124,7 +124,7 @@ namespace VRGIN.Core
 
             _VRGUICamera.cullingMask = VR.Context.UILayerMask;
             _VRGUICamera.depth = 1;
-            _VRGUICamera.nearClipPlane = 0.1f;
+            _VRGUICamera.nearClipPlane = 99f;
             _VRGUICamera.farClipPlane = 10000;
             _VRGUICamera.targetTexture = uGuiTexture;
             _Graphics = typeof(GraphicRegistry).GetField("m_Graphics", BindingFlags.NonPublic | BindingFlags.Instance);
