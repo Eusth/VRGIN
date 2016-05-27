@@ -124,6 +124,9 @@
     <Compile Include="..\VRGIN\ProtectedBehaviour.cs">
       <Link>ProtectedBehaviour.cs</Link>
     </Compile>
+    <Compile Include="..\VRGIN\Throttler.cs">
+      <Link>Throttler.cs</Link>
+    </Compile>
     <Compile Include="..\VRGIN\Visuals\ArcRenderer.cs">
       <Link>Visuals\ArcRenderer.cs</Link>
     </Compile>

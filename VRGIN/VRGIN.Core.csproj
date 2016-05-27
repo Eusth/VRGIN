@@ -63,6 +63,7 @@
     <Compile Include="Controls\IShortcut.cs" />
     <Compile Include="Controls\KeyboardShortcut.cs" />
     <Compile Include="Helpers\QuaternionExtensions.cs" />
+    <Compile Include="Throttler.cs" />
     <Compile Include="Visuals\ArcRenderer.cs" />
     <Compile Include="Visuals\GUIMonitor.cs" />
     <Compile Include="Visuals\IMaterialPalette.cs" />
