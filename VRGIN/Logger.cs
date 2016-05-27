@@ -13,14 +13,14 @@ namespace VRGIN.Core
     public static class Logger
     {
         private static string LOG_PATH = "vr.log";
-        private static StreamWriter LogFile;
-
         static Logger()
         {
             if (File.Exists(LOG_PATH))
             {
-                LogFile = new StreamWriter(File.OpenWrite(LOG_PATH));
-                LogFile.BaseStream.SetLength(0);
+                using (var file = File.OpenWrite(LOG_PATH))
+                {
+                    file.SetLength(0);
+                }
             }
         }
 
@@ -38,7 +38,8 @@ namespace VRGIN.Core
             Log(text, args, LogMode.Debug);
         }
 
-        public static void Info(string text, params object[] args) {
+        public static void Info(string text, params object[] args)
+        {
             Log(text, args, LogMode.Info);
         }
 
@@ -54,7 +55,7 @@ namespace VRGIN.Core
 
         public static void Debug(object obj)
         {
-            Log("{0}", new object[]{ obj }, LogMode.Debug);
+            Log("{0}", new object[] { obj }, LogMode.Debug);
         }
 
         public static void Info(object obj)
@@ -104,14 +105,14 @@ namespace VRGIN.Core
 #endif
                 string formatted = String.Format(Format(text, severity), args);
                 Console.WriteLine(formatted);
-
-                LogFile.WriteLine(formatted);
+                File.AppendAllText(LOG_PATH, formatted + "\n");
 
 #if COLOR_SUPPORT
                 Console.ForegroundColor = oldForegroundColor;
                 Console.BackgroundColor = oldBackgroundColor;
 #endif
-            } catch(Exception e)
+            }
+            catch (Exception e)
             {
                 Console.WriteLine(e);
             }
