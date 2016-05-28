@@ -112,8 +112,8 @@ namespace VRGIN.Core
                 //StartCoroutine(ExecuteDelayed(delegate { CopyFX(Blueprint); }));
                 //CopyFX(Blueprint);
 
-                //Blueprint.GetComponent<Camera>().cullingMask = 0;
-                Blueprint.gameObject.AddComponent<BlacklistThrottler>();
+                Blueprint.GetComponent<Camera>().cullingMask = 0;
+                //Blueprint.gameObject.AddComponent<BlacklistThrottler>();
 
                 // Highlander principle
                 var listener = Blueprint.GetComponent<AudioListener>();

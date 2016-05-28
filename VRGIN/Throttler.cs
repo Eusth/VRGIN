@@ -19,12 +19,13 @@ namespace VRGIN.Core
         protected override void OnStart()
         {
             Exceptions.Add(typeof(Transform));
+            Exceptions.Add(typeof(ProtectedBehaviour));
             base.OnStart();
         }
 
         protected override void OnUpdate()
         {
-            foreach(var behaviour in GetComponents<Behaviour>().Where(c => !Exceptions.Contains(c.GetType())))
+            foreach (var behaviour in GetComponents<Behaviour>().Where(c => !Exceptions.Contains(c.GetType())))
             {
                 behaviour.enabled = false;
             }
