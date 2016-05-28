@@ -49,7 +49,7 @@ namespace VRGIN.Core.Visuals
             rectTransform.anchorMin = Vector2.zero;
             rectTransform.anchorMax = Vector2.zero;
             rectTransform.pivot = new Vector2(0, 1);
-            rectTransform.sizeDelta = new Vector2(50, 50);
+            rectTransform.sizeDelta = new Vector2(texture.width / 2, texture.height / 2);
 
             gameObject.layer = LayerMask.NameToLayer(VR.Context.UILayer);
         }
