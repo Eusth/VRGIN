@@ -114,21 +114,6 @@ namespace VRGIN.Core
             //StartCoroutine(Load());
         }
 
-        private IEnumerator Load()
-        {
-            for (int i = 0; i < 3; i++)
-            {
-                var camera = Interpreter.FindCamera();
-                if (camera)
-                {
-                    Copy(camera);
-                    yield break;
-                }
-                yield return null;
-            }
-
-            Copy(null);
-        }
 
         private void Copy(Camera camera)
         {
@@ -191,5 +176,10 @@ namespace VRGIN.Core
         /// Gets whether the library should make a cursor of its own. Needed when the game uses a hardware cursor.
         /// </summary>
         bool SimulateCursor { get; }
+
+        /// <summary>
+        /// Gets whether or not the GUI should run in an alternative mode with custom sorting.
+        /// </summary>
+        bool GUIAlternativeSortingMode { get; }
     }
 }

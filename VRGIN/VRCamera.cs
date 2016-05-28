@@ -83,11 +83,13 @@ namespace VRGIN.Core
 
             cullingMask &= ~(VRManager.Instance.Context.UILayerMask | LayerMask.GetMask(VR.Context.HMDLayer));
 
+            Logger.Info("The camera sees {0}", string.Join(", ", UnityHelper.GetLayerNames(cullingMask)));
+
             // Apply to both the head camera and the VR camera
             ApplyToCameras(targetCamera =>
             {
-                targetCamera.nearClipPlane = Mathf.Clamp(0.01f, 0.001f, 0.01f);
-                targetCamera.farClipPlane = Mathf.Clamp(100f, 50f, 200f);
+                targetCamera.nearClipPlane = 0.01f;
+                targetCamera.farClipPlane = Blueprint.farClipPlane;
                 targetCamera.cullingMask = cullingMask;
                 targetCamera.clearFlags = Blueprint.clearFlags;
                 targetCamera.backgroundColor = Blueprint.backgroundColor;
@@ -157,7 +159,7 @@ namespace VRGIN.Core
                 var attachedFx = gameObject.CopyComponentFrom(fx);
                 if(attachedFx)
                 {
-                    Logger.Info("Attacheded!");
+                    Logger.Info("Attached!");
                 }
                 attachedFx.enabled = fx.enabled;
             }

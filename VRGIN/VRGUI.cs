@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -127,6 +128,9 @@ namespace VRGIN.Core
             _VRGUICamera.nearClipPlane = 99f;
             _VRGUICamera.farClipPlane = 10000;
             _VRGUICamera.targetTexture = uGuiTexture;
+            _VRGUICamera.backgroundColor = Color.clear;
+            _VRGUICamera.clearFlags = CameraClearFlags.SolidColor;
+
             _Graphics = typeof(GraphicRegistry).GetField("m_Graphics", BindingFlags.NonPublic | BindingFlags.Instance);
             _Registry = _Graphics.GetValue(GraphicRegistry.instance) as IDictionary;
 
@@ -136,7 +140,8 @@ namespace VRGIN.Core
 
         protected void CatchCanvas()
         {
-            var canvasList = (_Registry.Keys as ICollection<Canvas>).Where(c => c).SelectMany(canvas => canvas.gameObject.GetComponentsInChildren<Canvas>());
+            var canvasList = (_Registry.Keys as ICollection<Canvas>).Where(c => c).SelectMany(canvas => canvas.gameObject.GetComponentsInChildren<Canvas>()).ToList();
+
             foreach (var canvas in canvasList.Where(c => (c.renderMode == RenderMode.ScreenSpaceOverlay || c.renderMode == RenderMode.ScreenSpaceCamera) && c.worldCamera != _VRGUICamera))
             {
                 if(VR.Context.IgnoredCanvas.Contains(canvas.name)) continue;
@@ -145,20 +150,25 @@ namespace VRGIN.Core
 
                 canvas.renderMode = RenderMode.ScreenSpaceCamera;
                 canvas.worldCamera = _VRGUICamera;
+                //canvas.gameObject.layer = LayerMask.NameToLayer(VR.Context.UILayer);
+                //foreach(var child in canvas.gameObject.GetComponentsInChildren<Transform>())
+                //{
+                //    child.gameObject.layer = LayerMask.NameToLayer(VR.Context.UILayer);
+                //}
 
-#if UNITY_4_5
-                var raycaster = canvas.GetComponent<GraphicRaycaster>();
-                if (raycaster)
-                {
-                    GameObject.DestroyImmediate(raycaster);
-                    var newRaycaster = canvas.gameObject.AddComponent<SortingAwareGraphicRaycaster>();
+                if (VR.Context.GUIAlternativeSortingMode) {
+                    var raycaster = canvas.GetComponent<GraphicRaycaster>();
+                    if (raycaster)
+                    {
+                        GameObject.DestroyImmediate(raycaster);
+                        var newRaycaster = canvas.gameObject.AddComponent<SortingAwareGraphicRaycaster>();
 
-                    // These fields turned into properties in Unity 4.7+
-                    UnityHelper.SetPropertyOrField(newRaycaster, "ignoreReversedGraphics", UnityHelper.GetPropertyOrField(raycaster, "ignoreReversedGraphics"));
-                    UnityHelper.SetPropertyOrField(newRaycaster, "blockingObjects", UnityHelper.GetPropertyOrField(raycaster, "blockingObjects"));
-                    UnityHelper.SetPropertyOrField(newRaycaster, "m_BlockingMask", UnityHelper.GetPropertyOrField(raycaster, "m_BlockingMask"));
+                        // These fields turned into properties in Unity 4.7+
+                        UnityHelper.SetPropertyOrField(newRaycaster, "ignoreReversedGraphics", UnityHelper.GetPropertyOrField(raycaster, "ignoreReversedGraphics"));
+                        UnityHelper.SetPropertyOrField(newRaycaster, "blockingObjects", UnityHelper.GetPropertyOrField(raycaster, "blockingObjects"));
+                        UnityHelper.SetPropertyOrField(newRaycaster, "m_BlockingMask", UnityHelper.GetPropertyOrField(raycaster, "m_BlockingMask"));
+                    }
                 }
-#endif
             }
         }
 
@@ -275,7 +285,6 @@ namespace VRGIN.Core
 
             private int GetOrder()
             {
-                if (Canvas.gameObject.layer != LayerMask.NameToLayer(VR.Context.UILayer)) return int.MinValue;
                 return -Canvas.sortingOrder;
             }
         }
