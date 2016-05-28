@@ -225,6 +225,10 @@
     <None Include="SteamVR\Textures\overlay.renderTexture" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="..\VRGIN\Images\cursor.png">
+      <Link>Images\cursor.png</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="..\VRGIN\Images\icon_play.png">
       <Link>Images\icon_play.png</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
