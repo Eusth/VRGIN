@@ -58,7 +58,7 @@ namespace VRGIN.Core
             {
                 if (!_Instance)
                 {
-                    _Instance = new GameObject("GUI").AddComponent<VRGUI>();
+                    _Instance = new GameObject("VRGIN_GUI").AddComponent<VRGUI>();
 
 #if UNITY_4_5
                     _Instance.gameObject.AddComponent<CursorBlocker>();
@@ -74,7 +74,7 @@ namespace VRGIN.Core
                 return _Instance;
             }
         }
-        
+
         /// <summary>
         /// Gets the texture used for uGUI rendering. (Canvas)
         /// </summary>
@@ -90,7 +90,6 @@ namespace VRGIN.Core
         private RenderTexture _PrevRT = null;
 
         private Camera _VRGUICamera;
-        
         private int _Listeners;
 
         public void Listen()
@@ -105,23 +104,24 @@ namespace VRGIN.Core
         protected override void OnAwake()
         {
             uGuiTexture = new RenderTexture(Screen.width, Screen.height, 24, RenderTextureFormat.Default);
-            uGuiTexture.antiAliasing = 4;
             uGuiTexture.Create();
 
-            nGuiTexture = new RenderTexture(Screen.width, Screen.height, 16, RenderTextureFormat.Default);
+            nGuiTexture = new RenderTexture(Screen.width, Screen.height, 0, RenderTextureFormat.Default);
             nGuiTexture.Create();
 
             transform.localPosition = Vector3.zero;// new Vector3(0, 0, distance);
             transform.localRotation = Quaternion.identity;
-
-            gameObject.AddComponent<FastGUI>();
-            gameObject.AddComponent<SlowGUI>();
+            transform.gameObject.AddComponent<FastGUI>();
+            transform.gameObject.AddComponent<SlowGUI>();
 
             // Add GUI camera
-            _VRGUICamera = new GameObject("VRGIN_GUICamera").AddComponent<Camera>();
-            _VRGUICamera.transform.position = Vector3.zero;
-            _VRGUICamera.transform.rotation = Quaternion.identity;
+            var halfHeight = Screen.height * 0.5f;
+            var halfWidth = Screen.width * 0.5f;
 
+            _VRGUICamera = new GameObject("VRGIN_GUICamera").AddComponent<Camera>();
+            _VRGUICamera.transform.SetParent(transform);
+            _VRGUICamera.transform.position = new Vector3(halfWidth, halfHeight, 0);
+            _VRGUICamera.transform.rotation = Quaternion.identity;
 
             _VRGUICamera.cullingMask = VR.Context.UILayerMask;
             _VRGUICamera.depth = 1;
@@ -130,13 +130,16 @@ namespace VRGIN.Core
             _VRGUICamera.targetTexture = uGuiTexture;
             _VRGUICamera.backgroundColor = Color.clear;
             _VRGUICamera.clearFlags = CameraClearFlags.SolidColor;
+            _VRGUICamera.orthographic = true;
+            _VRGUICamera.orthographicSize = halfHeight;
 
             _Graphics = typeof(GraphicRegistry).GetField("m_Graphics", BindingFlags.NonPublic | BindingFlags.Instance);
             _Registry = _Graphics.GetValue(GraphicRegistry.instance) as IDictionary;
 
-            GameObject.DontDestroyOnLoad(_VRGUICamera);
+            //GameObject.DontDestroyOnLoad(_VRGUICamera);
             DontDestroyOnLoad(gameObject);
         }
+
 
         protected void CatchCanvas()
         {
@@ -144,19 +147,22 @@ namespace VRGIN.Core
 
             foreach (var canvas in canvasList.Where(c => (c.renderMode == RenderMode.ScreenSpaceOverlay || c.renderMode == RenderMode.ScreenSpaceCamera) && c.worldCamera != _VRGUICamera))
             {
-                if(VR.Context.IgnoredCanvas.Contains(canvas.name)) continue;
+                if (VR.Context.IgnoredCanvas.Contains(canvas.name)) continue;
+
                 //if (canvas.name.Contains("TexFade")) continue;
-                Logger.Info("Add {0} ({1}: {2})", canvas.name, canvas.sortingLayerName, LayerMask.LayerToName(canvas.gameObject.layer));
+                Logger.Info("Add {0} [Layer: {1}, SortingLayer: {2}, SortingOrder: {3}, RenderMode: {4}, Camera: {5}, Position: {6} ]", canvas.name, LayerMask.LayerToName(canvas.gameObject.layer), canvas.sortingLayerName, canvas.sortingOrder, canvas.renderMode, canvas.worldCamera, canvas.transform.position);
 
                 canvas.renderMode = RenderMode.ScreenSpaceCamera;
                 canvas.worldCamera = _VRGUICamera;
+
                 //canvas.gameObject.layer = LayerMask.NameToLayer(VR.Context.UILayer);
                 //foreach(var child in canvas.gameObject.GetComponentsInChildren<Transform>())
                 //{
                 //    child.gameObject.layer = LayerMask.NameToLayer(VR.Context.UILayer);
                 //}
 
-                if (VR.Context.GUIAlternativeSortingMode) {
+                if (VR.Context.GUIAlternativeSortingMode)
+                {
                     var raycaster = canvas.GetComponent<GraphicRaycaster>();
                     if (raycaster)
                     {
@@ -203,10 +209,8 @@ namespace VRGIN.Core
         {
             if (Event.current.type == EventType.Repaint)
             {
-
                 _PrevRT = RenderTexture.active;
                 RenderTexture.active = nGuiTexture;
-
                 GL.Clear(true, true, Color.clear);
             }
         }
@@ -214,7 +218,8 @@ namespace VRGIN.Core
         /// <summary>
         /// Notifies VRGUI when the legacy GUI starts rendering.
         /// </summary>
-        private class FastGUI : MonoBehaviour {
+        private class FastGUI : MonoBehaviour
+        {
             private void OnGUI()
             {
                 GUI.depth = int.MaxValue;
