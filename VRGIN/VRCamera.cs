@@ -19,7 +19,7 @@ namespace VRGIN.Core
             Blueprint = blueprint;
         }
     }
-    
+
     /// <summary>
     /// Handles the insertion of a OpenVR camera into an existing scene. The camera is controlled by a ControlMode.
     /// </summary>
@@ -30,13 +30,15 @@ namespace VRGIN.Core
         private static VRCamera _Instance;
         public SteamVR_Camera SteamCam { get; private set; }
         public Camera Blueprint { get; private set; }
+        private RenderTexture _MiniTexture;
+
         public event EventHandler<InitializeCameraEventArgs> InitializeCamera = delegate { };
 
         public static VRCamera Instance
         {
             get
             {
-                if(_Instance == null)
+                if (_Instance == null)
                 {
                     _Instance = new GameObject("VRGIN_Camera").AddComponent<AudioListener>().gameObject.AddComponent<VRCamera>();
                 }
@@ -46,6 +48,9 @@ namespace VRGIN.Core
 
         protected override void OnAwake()
         {
+            _MiniTexture = new RenderTexture(1, 1, 0);
+            _MiniTexture.Create();
+
             gameObject.AddComponent<SteamVR_Camera>();
             SteamCam = GetComponent<SteamVR_Camera>();
             SteamCam.Expand(); // Expand immediately!
@@ -61,7 +66,7 @@ namespace VRGIN.Core
 
         public void Copy(Camera blueprint)
         {
-            Logger.Info("Copying camera: {0}", blueprint ? blueprint.name : "NULL" );
+            Logger.Info("Copying camera: {0}", blueprint ? blueprint.name : "NULL");
             Blueprint = blueprint ?? GetComponent<Camera>();
 
             int cullingMask = Blueprint.cullingMask;
@@ -112,12 +117,13 @@ namespace VRGIN.Core
                 //StartCoroutine(ExecuteDelayed(delegate { CopyFX(Blueprint); }));
                 //CopyFX(Blueprint);
 
-                Blueprint.GetComponent<Camera>().cullingMask = 0;
+                Blueprint.cullingMask = 0;
+                Blueprint.targetTexture = _MiniTexture;
                 //Blueprint.gameObject.AddComponent<BlacklistThrottler>();
 
                 // Highlander principle
                 var listener = Blueprint.GetComponent<AudioListener>();
-                if(listener)
+                if (listener)
                 {
                     Destroy(listener);
                 }
@@ -130,7 +136,8 @@ namespace VRGIN.Core
             try
             {
                 action();
-            } catch(Exception e)
+            }
+            catch (Exception e)
             {
                 Logger.Error(e);
             }
@@ -157,7 +164,7 @@ namespace VRGIN.Core
                 //if (fx.GetType().Name.Contains("ColorCurves")) continue;
                 Logger.Info("Copy FX: {0} (enabled={1})", fx.GetType().Name, fx.enabled);
                 var attachedFx = gameObject.CopyComponentFrom(fx);
-                if(attachedFx)
+                if (attachedFx)
                 {
                     Logger.Info("Attached!");
                 }
@@ -181,7 +188,7 @@ namespace VRGIN.Core
         {
             base.OnUpdate();
 
-            if(SteamCam.origin)
+            if (SteamCam.origin)
             {
                 SteamCam.origin.localScale = Vector3.one * VR.Settings.IPDScale;
             }
