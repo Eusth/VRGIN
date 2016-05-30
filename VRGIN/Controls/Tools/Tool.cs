@@ -64,15 +64,29 @@ namespace VRGIN.Controls.Tools
 
         protected virtual void OnEnable()
         {
-            Core.Logger.Info("On Enable: {0}", GetType().Name);
+            VRLog.Info("On Enable: {0}", GetType().Name);
+            if (Icon)
+            {
+                Icon.SetActive(true);
+            }
+            else
+            {
+                VRLog.Info("But no icon...");
 
-            Icon.SetActive(true);
+            }
         }
 
         protected virtual void OnDisable()
         {
-            Core.Logger.Info("On Disable: {0}", GetType().Name);
-            Icon.SetActive(false);
+            VRLog.Info("On Disable: {0}", GetType().Name);
+            if (Icon)
+            {
+                Icon.SetActive(false);
+            }
+            else
+            {
+                VRLog.Info("But no icon...");
+            }
         }
 
         public virtual List<HelpText> GetHelpTexts()

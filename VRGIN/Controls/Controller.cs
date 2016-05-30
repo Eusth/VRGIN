@@ -189,8 +189,9 @@ namespace VRGIN.Controls
                 }
                 else
                 {
+                    VRLog.Info("Enable Tool #{0}", i - 1);
+                    if (tool.enabled) tool.enabled = false;
                     tool.enabled = true;
-                    VRLog.Info("Do nothing with Tool #{0}", i - 1);
                 }
             }
 
@@ -425,7 +426,6 @@ namespace VRGIN.Controls
             circle.transform.localPosition = new Vector3(0, -0.0303f, 0.0142f);
             circle.transform.localRotation = Quaternion.Euler(60, 0, 0);
             circle.GetComponent<Collider>().enabled = false;
-
         }
 
         private void CreateToolCanvas(Tool tool)
