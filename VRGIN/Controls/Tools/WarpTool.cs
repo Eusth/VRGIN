@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using Valve.VR;
-using VRGIN.Core.Helpers;
-using VRGIN.Core.Visuals;
+using VRGIN.Core;
+using VRGIN.Helpers;
+using VRGIN.Visuals;
 
-namespace VRGIN.Core.Controls
+namespace VRGIN.Controls.Tools
 {
     public class WarpTool : Tool
     {
@@ -44,7 +45,7 @@ namespace VRGIN.Core.Controls
                     } else
                     {
                         // Seems like we're too late...
-                        Logger.Info("We're too late!");
+                        Core.Logger.Info("We're too late!");
                         Destroy(gameObject);
                     }
 
@@ -103,7 +104,7 @@ namespace VRGIN.Core.Controls
 
         protected override void OnAwake()
         {
-            Logger.Info("Awake!");
+            Core.Logger.Info("Awake!");
             ArcRenderer = new GameObject("Arc Renderer").AddComponent<ArcRenderer>();
             ArcRenderer.transform.SetParent(transform, false);
             ArcRenderer.gameObject.SetActive(false);
@@ -141,14 +142,14 @@ namespace VRGIN.Core.Controls
 
         protected override void OnDestroy()
         {
-            Logger.Info("Destroy!");
+            Core.Logger.Info("Destroy!");
 
             GameObject.DestroyImmediate(PlayAreaRotation.gameObject);
         }
 
         protected override void OnStart()
         {
-            Logger.Info("Start!");
+            Core.Logger.Info("Start!");
 
             base.OnStart();
         }
@@ -308,7 +309,7 @@ namespace VRGIN.Core.Controls
                     //Logger.Info("Detected circular movement. Total: {0}", _AdditionalRotation);
                 } else
                 {
-                    Logger.Info("Discarding too large rotation: {0}", rot);
+                    Core.Logger.Info("Discarding too large rotation: {0}", rot);
                 }
             }
             points.Clear();

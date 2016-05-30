@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("VRGIN")]
+[assembly: AssemblyTitle("VRGIN.U46")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("VRGIN")]
+[assembly: AssemblyProduct("VRGIN.U46")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("22788a2c-7695-4a6a-a9f0-115ab9a05fd4")]
+[assembly: Guid("8fe87229-42a4-4cb0-846a-7a2726569b17")]
 
 // Version information for an assembly consists of the following four values:
 //

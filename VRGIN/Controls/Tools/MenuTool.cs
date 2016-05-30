@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using Valve.VR;
-using VRGIN.Core.Helpers;
-using VRGIN.Core.Native;
-using VRGIN.Core.Visuals;
-using static VRGIN.Core.Native.WindowsInterop;
+using VRGIN.Helpers;
+using VRGIN.Native;
+using VRGIN.Visuals;
+using static VRGIN.Native.WindowsInterop;
 
-namespace VRGIN.Core.Controls
+namespace VRGIN.Controls.Tools
 {
     public class MenuTool : Tool
     {

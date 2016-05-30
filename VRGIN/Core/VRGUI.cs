@@ -7,11 +7,11 @@ using System.Reflection;
 using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
-using VRGIN.Core.Helpers;
-using VRGIN.Core.Visuals;
+using VRGIN.Helpers;
+using VRGIN.Visuals;
 
 #if UNITY_4_5
-using VRGIN.Core.Native;
+using VRGIN.Native;
 #endif
 
 namespace VRGIN.Core

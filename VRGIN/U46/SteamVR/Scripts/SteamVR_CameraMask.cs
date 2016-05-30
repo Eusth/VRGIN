@@ -9,7 +9,7 @@ using System.Collections;
 using UnityEngine.Rendering;
 using System;
 using VRGIN.Core;
-using VRGIN.Core.Helpers;
+using VRGIN.Helpers;
 
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class SteamVR_CameraMask : ProtectedBehaviour

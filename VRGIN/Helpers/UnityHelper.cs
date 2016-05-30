@@ -1,13 +1,13 @@
-﻿using SimpleJSON;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using UnityEngine;
+using VRGIN.Core;
 
-namespace VRGIN.Core.Helpers
+namespace VRGIN.Helpers
 {
     /// <summary>
     /// A collection of helper methods that can be used in the Unity context.
@@ -21,7 +21,7 @@ namespace VRGIN.Core.Helpers
         internal static Shader GetShader(string name)
         {
 #if UNITY_4_5
-            var assetBundle = AssetBundle.CreateFromMemoryImmediate(U46.Resource.steamvr);
+            var assetBundle = AssetBundle.CreateFromMemoryImmediate(VRGIN.U46.Resource.steamvr);
             var shader = Shader.Instantiate(assetBundle.Load(name)) as Shader;
             assetBundle.Unload(false);
             return shader;
@@ -37,7 +37,7 @@ namespace VRGIN.Core.Helpers
                 return _SteamVR.LoadAsset<Shader>(name);
             } catch(Exception e)
             {
-                Logger.Error(e);
+                VRLog.Error(e);
                 return null;
             }
 #endif
@@ -64,7 +64,7 @@ namespace VRGIN.Core.Helpers
             }
             else
             {
-                Logger.Warn("File " + filePath + " does not exist");
+                VRLog.Warn("File " + filePath + " does not exist");
             }
             return tex;
         }
@@ -94,7 +94,7 @@ namespace VRGIN.Core.Helpers
 
         public static void DumpScene(string path)
         {
-            Logger.Info("Dumping scene...");
+            VRLog.Info("Dumping scene...");
             
             var rootArray = new JSONArray();
             foreach (var gameObject in UnityEngine.Object.FindObjectsOfType<GameObject>().Where(go => go.transform.parent == null))
@@ -103,7 +103,7 @@ namespace VRGIN.Core.Helpers
             }
 
             File.WriteAllText(path, rootArray.ToJSON(0));
-            Logger.Info("Done!");
+            VRLog.Info("Done!");
 
         }
 
@@ -131,7 +131,7 @@ namespace VRGIN.Core.Helpers
                         }
                     } catch (Exception e)
                     {
-                        Logger.Warn("Failed to get field {0}", field.Name);
+                        VRLog.Warn("Failed to get field {0}", field.Name);
                     }
                 }
 
@@ -206,7 +206,7 @@ namespace VRGIN.Core.Helpers
                 field.SetValue(obj, value);
             } else
             {
-                Logger.Warn("Prop/Field not found!");
+                VRLog.Warn("Prop/Field not found!");
             }
         }
 
@@ -225,7 +225,7 @@ namespace VRGIN.Core.Helpers
             }
             else
             {
-                Logger.Warn("Prop/Field not found!");
+                VRLog.Warn("Prop/Field not found!");
                 return null;
             }
         }

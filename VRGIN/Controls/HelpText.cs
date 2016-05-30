@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
+using VRGIN.Core;
 
-namespace VRGIN.Core.Controls
+namespace VRGIN.Controls
 {
     public class HelpText : ProtectedBehaviour
     {

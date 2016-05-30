@@ -4,11 +4,12 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using Valve.VR;
-using VRGIN.Core.Controls;
-using VRGIN.Core.Helpers;
-using VRGIN.Core.Visuals;
+using VRGIN.Controls;
+using VRGIN.Core;
+using VRGIN.Helpers;
+using VRGIN.Visuals;
 
-namespace VRGIN.Core.Modes
+namespace VRGIN.Modes
 {
     public abstract class ControlMode : ProtectedBehaviour
     {
@@ -57,10 +58,10 @@ namespace VRGIN.Core.Modes
             }
             steamCam.origin.gameObject.SetActive(true);
 
-            Logger.Info("---- Initialize left tools");
+            VRLog.Info("---- Initialize left tools");
             InitializeTools(Left, true);
 
-            Logger.Info("---- Initialize right tools");
+            VRLog.Info("---- Initialize right tools");
             InitializeTools(Right, false);
         }
 
@@ -81,7 +82,7 @@ namespace VRGIN.Core.Modes
                 controller.AddTool(type);
             }
 
-            Logger.Info("{0} tools added" , toolTypes.Count());
+            VRLog.Info("{0} tools added" , toolTypes.Count());
         }
 
         protected virtual Controller CreateLeftController()
@@ -132,13 +133,13 @@ namespace VRGIN.Core.Modes
         {
             if (!PlayerCamera.Created)
             {
-                Logger.Info("Create user camera");
+                VRLog.Info("Create user camera");
 
                 PlayerCamera.Create();
             }
             else
             {
-                Logger.Info("Remove user camera");
+                VRLog.Info("Remove user camera");
                 
                 PlayerCamera.Remove();
             }
@@ -168,7 +169,7 @@ namespace VRGIN.Core.Modes
                         var myPos = steamCam.head.position;
                         var myForward = steamCam.head.forward;
 
-                        Logger.Debug("Actor #{0} -- He: {1} -> {2} | Me: {3} -> {4}", i, hisPos, hisForward, myPos, myForward);
+                        VRLog.Debug("Actor #{0} -- He: {1} -> {2} | Me: {3} -> {4}", i, hisPos, hisForward, myPos, myForward);
                         if (Vector3.Distance(hisPos, myPos) < 0.15f && Vector3.Dot(hisForward, myForward) > 0.6f)
                         {
                             actor.HasHead = false;

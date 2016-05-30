@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
-using VRGIN.Core.Modes;
-using VRGIN.Core.Visuals;
+using VRGIN.Modes;
+using VRGIN.Visuals;
 
 namespace VRGIN.Core
 {

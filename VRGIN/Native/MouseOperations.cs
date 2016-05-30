@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using static VRGIN.Core.Native.WindowsInterop;
+using static VRGIN.Native.WindowsInterop;
 
-namespace VRGIN.Core.Native
+namespace VRGIN.Native
 {
     public class MouseOperations
     {

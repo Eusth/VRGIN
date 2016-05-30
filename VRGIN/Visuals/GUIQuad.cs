@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
-using VRGIN.Core.Modes;
+using VRGIN.Core;
+using VRGIN.Modes;
 
-namespace VRGIN.Core.Visuals
+namespace VRGIN.Visuals
 {
     public class GUIQuad : ProtectedBehaviour
     {
@@ -15,7 +16,7 @@ namespace VRGIN.Core.Visuals
 
         public static GUIQuad Create()
         {
-            Logger.Info("Create GUI");
+            VRLog.Info("Create GUI");
             var gui = GameObject.CreatePrimitive(PrimitiveType.Quad).AddComponent<GUIQuad>();
             gui.name = "GUIQuad";
 
@@ -44,14 +45,14 @@ namespace VRGIN.Core.Visuals
 
         protected virtual void OnEnable()
         {
-            Logger.Info("Listen!");
+            VRLog.Info("Listen!");
 
             VRGUI.Instance.Listen();
         }
 
         protected virtual void OnDisable()
         {
-            Logger.Info("Unlisten!");
+            VRLog.Info("Unlisten!");
 
             VRGUI.Instance.Unlisten();
         }
@@ -66,10 +67,10 @@ namespace VRGIN.Core.Visuals
 
         public virtual void UpdateGUI(bool transparent, bool renderGUI)
         {
-            //Logger.Info();
+            //VRLog.Info();
             //renderGUI = false;
             UpdateAspect();
-            if (!renderer) Logger.Warn("No renderer!");
+            if (!renderer) VRLog.Warn("No renderer!");
             try
             {
                 renderer.receiveShadows = false;
@@ -102,7 +103,7 @@ namespace VRGIN.Core.Visuals
             }
             catch (Exception e)
             {
-                Logger.Info(e);
+                VRLog.Info(e);
             }
         }
     }

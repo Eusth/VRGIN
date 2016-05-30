@@ -8,7 +8,7 @@ using UnityEngine;
 using System.Collections;
 using System;
 using VRGIN.Core;
-using VRGIN.Core.Helpers;
+using VRGIN.Helpers;
 
 public class SteamVR_CameraFlip : MonoBehaviour
 {

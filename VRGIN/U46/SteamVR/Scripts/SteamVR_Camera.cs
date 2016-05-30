@@ -10,7 +10,7 @@ using System.Reflection;
 using Valve.VR;
 using System;
 using VRGIN.Core;
-using VRGIN.Core.Helpers;
+using VRGIN.Helpers;
 
 [RequireComponent(typeof(Camera))]
 public class SteamVR_Camera : ProtectedBehaviour

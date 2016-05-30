@@ -46,7 +46,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 
-namespace SimpleJSON
+namespace VRGIN.Helpers
 {
     public enum JSONBinaryTag
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace VRGIN.Core.Controls
+namespace VRGIN.Controls
 {
     public class RightController : Controller
     {

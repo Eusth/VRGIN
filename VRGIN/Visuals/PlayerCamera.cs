@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using Valve.VR;
-using VRGIN.Core.Controls;
+using VRGIN.Controls;
+using VRGIN.Core;
 
-namespace VRGIN.Core.Visuals
+namespace VRGIN.Visuals
 {
     public class PlayerCamera : ProtectedBehaviour
     {

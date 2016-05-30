@@ -5,9 +5,9 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using UnityEngine;
-using static VRGIN.Core.Native.WindowsInterop;
+using static VRGIN.Native.WindowsInterop;
 
-namespace VRGIN.Core.Native
+namespace VRGIN.Native
 {
     public class WindowManager
     {

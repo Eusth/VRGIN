@@ -19,7 +19,7 @@ public class SteamVR_GameView : MonoBehaviour
 	{
 		if (overlayMaterial == null)
 		{
-			overlayMaterial = new Material(VRGIN.Core.Helpers.UnityHelper.GetShader("Custom/SteamVR_Overlay"));
+			overlayMaterial = new Material(VRGIN.Helpers.UnityHelper.GetShader("Custom/SteamVR_Overlay"));
 		}
 	}
 

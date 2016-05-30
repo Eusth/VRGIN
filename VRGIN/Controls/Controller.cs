@@ -5,12 +5,14 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using Valve.VR;
-using VRGIN.Core.Controls.Handlers;
-using VRGIN.Core.Helpers;
-using VRGIN.Core.Native;
-using static VRGIN.Core.Native.WindowsInterop;
+using VRGIN.Controls.Handlers;
+using VRGIN.Controls.Tools;
+using VRGIN.Core;
+using VRGIN.Helpers;
+using VRGIN.Native;
+using static VRGIN.Native.WindowsInterop;
 
-namespace VRGIN.Core.Controls
+namespace VRGIN.Controls
 {
 
     public abstract class Controller : ProtectedBehaviour
@@ -37,7 +39,7 @@ namespace VRGIN.Core.Controls
                 }
                 else
                 {
-                    Logger.Warn("Tried to release an invalid lock!");
+                    VRLog.Warn("Tried to release an invalid lock!");
                 }
             }
         }
@@ -119,7 +121,7 @@ namespace VRGIN.Core.Controls
             Model.shader = VRManager.Instance.Context.Materials.StandardShader;
             if (!Model.shader)
             {
-                Logger.Warn("Shader not found");
+                VRLog.Warn("Shader not found");
             }
             Model.transform.SetParent(transform, false);
             //Model.verbose = true;
@@ -183,12 +185,12 @@ namespace VRGIN.Core.Controls
                 if (i++ != ToolIndex && tool)
                 {
                     tool.enabled = false;
-                    Logger.Info("Kill tool #{0} ({1})", i - 1, ToolIndex);
+                    VRLog.Info("Kill tool #{0} ({1})", i - 1, ToolIndex);
                 }
                 else
                 {
                     tool.enabled = true;
-                    Logger.Info("Do nothing with Tool #{0}", i - 1);
+                    VRLog.Info("Do nothing with Tool #{0}", i - 1);
                 }
             }
 

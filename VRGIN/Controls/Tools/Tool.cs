@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
+using VRGIN.Core;
 
-namespace VRGIN.Core.Controls
+namespace VRGIN.Controls.Tools
 {
 
     /// <summary>
@@ -63,14 +64,14 @@ namespace VRGIN.Core.Controls
 
         protected virtual void OnEnable()
         {
-            Logger.Info("On Enable: {0}", GetType().Name);
+            Core.Logger.Info("On Enable: {0}", GetType().Name);
 
             Icon.SetActive(true);
         }
 
         protected virtual void OnDisable()
         {
-            Logger.Info("On Disable: {0}", GetType().Name);
+            Core.Logger.Info("On Disable: {0}", GetType().Name);
             Icon.SetActive(false);
         }
 

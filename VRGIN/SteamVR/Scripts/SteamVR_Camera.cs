@@ -146,7 +146,7 @@ public class SteamVR_Camera : MonoBehaviour
 
 		if (blitMaterial == null)
 		{
-			blitMaterial = new Material(VRGIN.Core.Helpers.UnityHelper.GetShader("Custom/SteamVR_Blit"));
+			blitMaterial = new Material(VRGIN.Helpers.UnityHelper.GetShader("Custom/SteamVR_Blit"));
 		}
 
 		// Set remaining hmd specific settings

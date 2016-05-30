@@ -7,8 +7,8 @@
     <ProjectGuid>{8FE87229-42A4-4CB0-846A-7A2726569B17}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>VRGIN.Core.U46</RootNamespace>
-    <AssemblyName>VRGIN.Core.U46</AssemblyName>
+    <RootNamespace>VRGIN.U46</RootNamespace>
+    <AssemblyName>VRGIN.U46</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -57,24 +57,25 @@
     <Compile Include="Controls\Tools\MenuTool.cs" />
     <Compile Include="Controls\Tools\Tool.cs" />
     <Compile Include="Controls\Tools\WarpTool.cs" />
-    <Compile Include="DefaultActor.cs" />
-    <Compile Include="GameInterpreter.cs" />
+    <Compile Include="Core\DefaultActor.cs" />
+    <Compile Include="Core\GameInterpreter.cs" />
     <Compile Include="Helpers\GameObjectExtensions.cs" />
     <Compile Include="Helpers\KeyStroke.cs" />
     <Compile Include="Helpers\QuaternionExtensions.cs" />
     <Compile Include="Helpers\RumbleSession.cs" />
     <Compile Include="Helpers\SimpleJSON.cs" />
     <Compile Include="Helpers\UnityHelper.cs" />
-    <Compile Include="IActor.cs" />
-    <Compile Include="Logger.cs" />
+    <Compile Include="Core\IActor.cs" />
+    <Compile Include="Core\Logger.cs" />
     <Compile Include="Modes\ControlMode.cs" />
     <Compile Include="Modes\SeatedMode.cs" />
     <Compile Include="Modes\StandingMode.cs" />
     <Compile Include="Native\MouseOperations.cs" />
     <Compile Include="Native\WindowManager.cs" />
     <Compile Include="Native\WindowsInterop.cs" />
-    <Compile Include="ProtectedBehaviour.cs" />
-    <Compile Include="Throttler.cs" />
+    <Compile Include="Core\ProtectedBehaviour.cs" />
+    <Compile Include="Core\Throttler.cs" />
+    <Compile Include="U46\Properties\AssemblyInfo.cs" />
     <Compile Include="Visuals\ArcRenderer.cs" />
     <Compile Include="Visuals\DefaultMaterialPalette.cs" />
     <Compile Include="Visuals\GUIMonitor.cs" />
@@ -83,14 +84,13 @@
     <Compile Include="Visuals\PlayerCamera.cs" />
     <Compile Include="Visuals\ProceduralPlane.cs" />
     <Compile Include="Visuals\SimulatedCursor.cs" />
-    <Compile Include="VRCamera.cs" />
-    <Compile Include="VRGUI.cs" />
-    <Compile Include="VRManager.cs" />
-    <Compile Include="VRSettings.cs" />
+    <Compile Include="Core\VRCamera.cs" />
+    <Compile Include="Core\VRGUI.cs" />
+    <Compile Include="Core\VRManager.cs" />
+    <Compile Include="Core\VRSettings.cs" />
     <Compile Include="U46\OSP\OSPAudioSource.cs" />
     <Compile Include="U46\OSP\OSPManager.cs" />
     <Compile Include="U46\OSP\OSPReflectionZone.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="U46\Resource.Designer.cs">
       <DependentUpon>Resource.resx</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -189,6 +189,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Images\" />
+    <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

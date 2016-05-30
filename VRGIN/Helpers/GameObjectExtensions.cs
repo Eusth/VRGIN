@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 using UnityEngine;
 
-namespace VRGIN.Core.Helpers
+namespace VRGIN.Helpers
 {
     public static class GameObjectExtensions
     {

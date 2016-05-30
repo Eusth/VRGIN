@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace VRGIN.Core.Helpers
+namespace VRGIN.Helpers
 {
     public interface IRumbleSession : IComparable<IRumbleSession>
     {

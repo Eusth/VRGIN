@@ -14,7 +14,7 @@ public class SteamVR_CameraFlip : MonoBehaviour
 	void OnEnable()
 	{
 		if (blitMaterial == null)
-			blitMaterial = new Material(VRGIN.Core.Helpers.UnityHelper.GetShader("Custom/SteamVR_BlitFlip"));
+			blitMaterial = new Material(VRGIN.Helpers.UnityHelper.GetShader("Custom/SteamVR_BlitFlip"));
 	}
 
 	void OnRenderImage(RenderTexture src, RenderTexture dest)

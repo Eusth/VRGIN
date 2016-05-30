@@ -4,12 +4,14 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using Valve.VR;
-using VRGIN.Core.Controls;
-using VRGIN.Core.Helpers;
-using VRGIN.Core.Visuals;
-using static VRGIN.Core.Visuals.GUIMonitor;
+using VRGIN.Controls;
+using VRGIN.Controls.Tools;
+using VRGIN.Core;
+using VRGIN.Helpers;
+using VRGIN.Visuals;
+using static VRGIN.Visuals.GUIMonitor;
 
-namespace VRGIN.Core.Modes
+namespace VRGIN.Modes
 {
     public enum LockMode
     {
@@ -146,7 +148,7 @@ namespace VRGIN.Core.Modes
 
         public void Recenter()
         {
-            Logger.Info("Recenter");
+            VRLog.Info("Recenter");
             OpenVR.System.ResetSeatedZeroPose();
         }
 

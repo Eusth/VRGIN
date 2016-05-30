@@ -7,8 +7,8 @@
     <ProjectGuid>{22788A2C-7695-4A6A-A9F0-115AB9A05FD4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>VRGIN.Core</RootNamespace>
-    <AssemblyName>VRGIN.Core</AssemblyName>
+    <RootNamespace>VRGIN</RootNamespace>
+    <AssemblyName>VRGIN</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -54,18 +54,23 @@
     <Compile Include="Controls\RightController.cs" />
     <Compile Include="Controls\Tools\Tool.cs" />
     <Compile Include="Controls\Tools\WarpTool.cs" />
-    <Compile Include="DefaultActor.cs" />
-    <Compile Include="GameInterpreter.cs" />
+    <Compile Include="Core\DefaultActor.cs" />
+    <Compile Include="Core\GameInterpreter.cs" />
+    <Compile Include="Core\IActor.cs" />
+    <Compile Include="Core\Logger.cs" />
+    <Compile Include="Core\ProtectedBehaviour.cs" />
+    <Compile Include="Core\Throttler.cs" />
+    <Compile Include="Core\VRCamera.cs" />
+    <Compile Include="Core\VRGUI.cs" />
+    <Compile Include="Core\VRManager.cs" />
+    <Compile Include="Core\VRSettings.cs" />
     <Compile Include="Helpers\GameObjectExtensions.cs" />
     <Compile Include="Helpers\KeyStroke.cs" />
     <Compile Include="Helpers\RumbleSession.cs" />
     <Compile Include="Helpers\SimpleJSON.cs" />
-    <Compile Include="IActor.cs" />
-    <Compile Include="Logger.cs" />
     <Compile Include="Controls\IShortcut.cs" />
     <Compile Include="Controls\KeyboardShortcut.cs" />
     <Compile Include="Helpers\QuaternionExtensions.cs" />
-    <Compile Include="Throttler.cs" />
     <Compile Include="Visuals\ArcRenderer.cs" />
     <Compile Include="Visuals\GUIMonitor.cs" />
     <Compile Include="Visuals\IMaterialPalette.cs" />
@@ -73,7 +78,6 @@
     <Compile Include="Visuals\PlayerCamera.cs" />
     <Compile Include="Visuals\ProceduralPlane.cs" />
     <Compile Include="Visuals\SimulatedCursor.cs" />
-    <Compile Include="VRManager.cs" />
     <Compile Include="Modes\ControlMode.cs" />
     <Compile Include="Modes\SeatedMode.cs" />
     <Compile Include="Modes\StandingMode.cs" />
@@ -81,9 +85,7 @@
     <Compile Include="Native\WindowManager.cs" />
     <Compile Include="Native\WindowsInterop.cs" />
     <Compile Include="Visuals\GUIQuad.cs" />
-    <Compile Include="VRGUI.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ProtectedBehaviour.cs" />
     <Compile Include="Resource.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -118,8 +120,6 @@
     <Compile Include="SteamVR\Scripts\SteamVR_UpdatePoses.cs" />
     <Compile Include="SteamVR\Scripts\SteamVR_Utils.cs" />
     <Compile Include="Helpers\UnityHelper.cs" />
-    <Compile Include="VRCamera.cs" />
-    <Compile Include="VRSettings.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Images\cursor.png">

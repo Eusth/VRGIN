@@ -4,9 +4,10 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using UnityEngine;
-using VRGIN.Core.Controls;
+using VRGIN.Controls;
+using VRGIN.Core;
 
-namespace VRGIN.Core.Visuals
+namespace VRGIN.Visuals
 {
     public class GUIMonitor : GUIQuad
     {
@@ -34,10 +35,10 @@ namespace VRGIN.Core.Visuals
             _Plane.xSegments = 100;
             if(_Plane)
             {
-                Logger.Info("Plane was added...");
+                VRLog.Info("Plane was added...");
             } else
             {
-                Logger.Info("No plane either?");
+                VRLog.Info("No plane either?");
             }
             UpdateGUI(true, true);
 
@@ -99,7 +100,7 @@ namespace VRGIN.Core.Visuals
 
         public void Rebuild()
         {
-            Logger.Info("Build monitor");
+            VRLog.Info("Build monitor");
             try
             {
                 transform.localPosition = new Vector3(transform.localPosition.x, VR.Settings.OffsetY, transform.localPosition.z);
@@ -112,7 +113,7 @@ namespace VRGIN.Core.Visuals
                 _Plane.Rebuild();
             } catch(Exception e)
             {
-                Logger.Error(e);
+                VRLog.Error(e);
             }
         }
     }

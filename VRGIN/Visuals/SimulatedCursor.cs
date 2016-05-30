@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
-using VRGIN.Core.Helpers;
+using VRGIN.Core;
+using VRGIN.Helpers;
 
-namespace VRGIN.Core.Visuals
+namespace VRGIN.Visuals
 {
     /// <summary>
     /// Cursor Quad that simulates a cursor when the game uses a hardware cursor.

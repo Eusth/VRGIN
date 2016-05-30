@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using Valve.VR;
 using VRGIN.Core;
-using VRGIN.Core.Helpers;
+using VRGIN.Helpers;
 
 public class SteamVR_ExternalCamera : MonoBehaviour
 {

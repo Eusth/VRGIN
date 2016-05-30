@@ -23,7 +23,7 @@
 using UnityEngine;
 using Valve.VR;
 using VRGIN.Core;
-using VRGIN.Core.Helpers;
+using VRGIN.Helpers;
 
 public class SteamVR_Fade : MonoBehaviour
 {

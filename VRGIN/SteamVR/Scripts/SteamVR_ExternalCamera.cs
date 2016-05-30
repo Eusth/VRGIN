@@ -126,9 +126,9 @@ public class SteamVR_ExternalCamera : MonoBehaviour
 		cam.useOcclusionCulling = false;
 		cam.enabled = false; // manually rendered
 
-		colorMat = new Material(VRGIN.Core.Helpers.UnityHelper.GetShader("Custom/SteamVR_ColorOut"));
-		alphaMat = new Material(VRGIN.Core.Helpers.UnityHelper.GetShader("Custom/SteamVR_AlphaOut"));
-		clipMaterial = new Material(VRGIN.Core.Helpers.UnityHelper.GetShader("Custom/SteamVR_ClearAll"));
+		colorMat = new Material(VRGIN.Helpers.UnityHelper.GetShader("Custom/SteamVR_ColorOut"));
+		alphaMat = new Material(VRGIN.Helpers.UnityHelper.GetShader("Custom/SteamVR_AlphaOut"));
+		clipMaterial = new Material(VRGIN.Helpers.UnityHelper.GetShader("Custom/SteamVR_ClearAll"));
 
 		var offset = go.transform;
 		offset.parent = transform;

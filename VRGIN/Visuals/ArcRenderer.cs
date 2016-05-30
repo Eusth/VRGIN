@@ -5,7 +5,7 @@ using System.Linq;
 using System;
 using VRGIN.Core;
 
-namespace VRGIN.Core.Visuals
+namespace VRGIN.Visuals
 {
     [RequireComponent(typeof(MeshRenderer), typeof(MeshFilter))]
     public class ArcRenderer : MonoBehaviour

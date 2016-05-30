@@ -9,7 +9,7 @@ using UnityEngine;
 using System.Collections;
 using System;
 
-namespace VRGIN.Core.Visuals
+namespace VRGIN.Visuals
 {
     [RequireComponent(typeof(MeshFilter))]
     [RequireComponent(typeof(MeshRenderer))]

@@ -77,7 +77,7 @@ public class SteamVR_Fade : MonoBehaviour
 	{
 		if (fadeMaterial == null)
 		{
-			fadeMaterial = new Material(VRGIN.Core.Helpers.UnityHelper.GetShader("Custom/SteamVR_Fade"));
+			fadeMaterial = new Material(VRGIN.Helpers.UnityHelper.GetShader("Custom/SteamVR_Fade"));
 		}
 
 		SteamVR_Utils.Event.Listen("fade", OnStartFade);

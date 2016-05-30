@@ -7,13 +7,16 @@ using System.Text;
 
 namespace VRGIN.Core
 {
+    public class Logger : VRLog
+    {
+    }
     /// <summary>
     /// Very simple logger.
     /// </summary>
-    public static class Logger
+    public class VRLog
     {
         private static string LOG_PATH = "vr.log";
-        static Logger()
+        static VRLog()
         {
             if (File.Exists(LOG_PATH))
             {
@@ -23,6 +26,7 @@ namespace VRGIN.Core
                 }
             }
         }
+        protected VRLog() { }
 
         public static LogMode Level = LogMode.Info;
         public enum LogMode

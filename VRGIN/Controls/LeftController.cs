@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace VRGIN.Core.Controls
+namespace VRGIN.Controls
 {
 
     public class LeftController : Controller
