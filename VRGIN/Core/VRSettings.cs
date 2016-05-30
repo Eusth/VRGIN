@@ -104,6 +104,7 @@ namespace VRGIN.Core
                 var serializer = new XmlSerializer(GetType());
                 using (var stream = File.OpenWrite(path))
                 {
+                    stream.SetLength(0);
                     serializer.Serialize(stream, this);
                 }
             }
