@@ -39,5 +39,15 @@ namespace VRGIN.Core
         {
             yield break;
         }
+
+        /// <summary>
+        /// Checks whether the collider is to be interpreted as body part.
+        /// </summary>
+        /// <param name="collider"></param>
+        /// <returns></returns>
+        public virtual bool IsBody(Collider collider)
+        {
+            return false;
+        }
     }
 }

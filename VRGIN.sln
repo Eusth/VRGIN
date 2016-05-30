@@ -5,7 +5,7 @@ VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VRGIN.Core", "VRGIN\VRGIN.Core.csproj", "{22788A2C-7695-4A6A-A9F0-115AB9A05FD4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VRGIN.Core.U46", "VRGIN.Core.U46\VRGIN.Core.U46.csproj", "{8FE87229-42A4-4CB0-846A-7A2726569B17}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VRGIN.Core.U46", "VRGIN\VRGIN.Core.U46.csproj", "{8FE87229-42A4-4CB0-846A-7A2726569B17}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

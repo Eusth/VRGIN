@@ -5,13 +5,14 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using Valve.VR;
+using VRGIN.Core.Controls.Handlers;
 using VRGIN.Core.Helpers;
 using VRGIN.Core.Native;
 using static VRGIN.Core.Native.WindowsInterop;
 
 namespace VRGIN.Core.Controls
 {
-   
+
     public abstract class Controller : ProtectedBehaviour
     {
         public class Lock
@@ -28,20 +29,18 @@ namespace VRGIN.Core.Controls
 
             public void Release()
             {
-                if(IsValid)
+                if (IsValid)
                 {
                     _Controller._Lock = null;
                     _Controller.OnUnlock();
                     IsValid = false;
-                } else
+                }
+                else
                 {
                     Logger.Warn("Tried to release an invalid lock!");
                 }
             }
         }
-
-        const float MILLI_TO_SECONDS = 1f / 1000f;
-        public const float MIN_INTERVAL = 5 * MILLI_TO_SECONDS;
 
         private bool _Started = false;
 
@@ -51,9 +50,7 @@ namespace VRGIN.Core.Controls
 
         private Vector2? mouseDownPosition;
         private float? appButtonPressTime;
-        private List<IRumbleSession> _RumbleSessions = new List<IRumbleSession>();
-        private float _LastImpulse;
-        
+
         private LineRenderer Laser;
 
         public List<Tool> Tools = new List<Tool>();
@@ -63,21 +60,23 @@ namespace VRGIN.Core.Controls
         private const float APP_BUTTON_TIME_THRESHOLD = 0.5f; // seconds
         private bool helpShown;
         private List<HelpText> helpTexts;
-        private Dictionary<Collider, RumbleSession> _TouchRumbles = new Dictionary<Collider, RumbleSession>();
 
         private Canvas _Canvas;
         private Lock _Lock;
         private Lock _LaserLock;
 
+
+        public RumbleManager Rumble { get; private set; }
         public bool AcquireFocus(out Lock lockObj)
         {
             lockObj = null;
 
-            if(_Lock == null)
+            if (_Lock == null)
             {
                 lockObj = new Lock(this);
                 return true;
-            } else
+            }
+            else
             {
                 return false;
             }
@@ -101,7 +100,9 @@ namespace VRGIN.Core.Controls
         protected void SetUp()
         {
             Tracking = gameObject.AddComponent<SteamVR_TrackedObject>();
-            
+            Rumble = gameObject.AddComponent<RumbleManager>();
+            gameObject.AddComponent<BodyRumbleHandler>();
+
             Laser = new GameObject().AddComponent<LineRenderer>();
             Laser.transform.SetParent(transform, false);
             Laser.material = Resources.GetBuiltinResource<Material>("Sprites-Default.mat");
@@ -116,7 +117,7 @@ namespace VRGIN.Core.Controls
             // Add model
             Model = new GameObject("Model").AddComponent<SteamVR_RenderModel>();
             Model.shader = VRManager.Instance.Context.Materials.StandardShader;
-            if(!Model.shader)
+            if (!Model.shader)
             {
                 Logger.Warn("Shader not found");
             }
@@ -131,40 +132,11 @@ namespace VRGIN.Core.Controls
             Collider.center = new Vector3(0, -0.02f, -0.06f);
             Collider.size = new Vector3(-0.05f, 0.05f, 0.2f);
             Collider.isTrigger = true;
-            
+
             gameObject.AddComponent<Rigidbody>().isKinematic = true;
         }
 
-        protected void OnTriggerEnter(Collider collider)
-        {
-            if (collider.gameObject.layer == LayerMask.NameToLayer("ToLiquidCollision"))
-            {
-                if (_TouchRumbles.Values.Count == 0)
-                {
-                    StartRumble(new RumbleImpulse(200));
-                }
 
-                var session = _TouchRumbles[collider] = new RumbleSession(50, 10, 1f);
-                StartRumble(session);
-            }
-        }
-
-        protected void OnTriggerStay(Collider collider)
-        {
-            if (collider.gameObject.layer == LayerMask.NameToLayer("ToLiquidCollision"))
-            {
-                _TouchRumbles[collider].Restart();
-            }
-        }
-
-        protected void OnTriggerExit(Collider collider)
-        {
-            if (collider.gameObject.layer == LayerMask.NameToLayer("ToLiquidCollision"))
-            {
-                _TouchRumbles[collider].Close();
-                _TouchRumbles.Remove(collider);
-            }
-        }
 
         protected override void OnAwake()
         {
@@ -211,8 +183,9 @@ namespace VRGIN.Core.Controls
                 if (i++ != ToolIndex && tool)
                 {
                     tool.enabled = false;
-                    Logger.Info("Kill tool #{0} ({1})", i - 1 , ToolIndex);
-                } else
+                    Logger.Info("Kill tool #{0} ({1})", i - 1, ToolIndex);
+                }
+                else
                 {
                     tool.enabled = true;
                     Logger.Info("Do nothing with Tool #{0}", i - 1);
@@ -228,8 +201,8 @@ namespace VRGIN.Core.Controls
             //{
             //    ActiveTool.enabled = Tracking.isValid && !LaserVisible;
             //}
-            
-            if(Laser.gameObject.activeSelf)
+
+            if (Laser.gameObject.activeSelf)
             {
                 Laser.SetPosition(0, Laser.transform.position);
                 Laser.SetPosition(1, Laser.transform.position + Laser.transform.forward);
@@ -237,7 +210,7 @@ namespace VRGIN.Core.Controls
             //Logger.Info(transform.position);
             if (Other)
             {
-                if(Other.ActiveTool != null && Other.ActiveTool is MenuTool)
+                if (Other.ActiveTool != null && Other.ActiveTool is MenuTool)
                 {
 
                     var menuTool = Other.ActiveTool as MenuTool;
@@ -268,7 +241,7 @@ namespace VRGIN.Core.Controls
 
                                 if (!mouseDownPosition.HasValue || Vector2.Distance(mouseDownPosition.Value, newPos) > MOUSE_STABILIZER_THRESHOLD)
                                 {
-                                    MouseOperations.SetClientCursorPosition((int)newPos.x , (int)newPos.y);
+                                    MouseOperations.SetClientCursorPosition((int)newPos.x, (int)newPos.y);
                                     mouseDownPosition = null;
                                 }
                                 laserVisible = true;
@@ -278,15 +251,16 @@ namespace VRGIN.Core.Controls
                                 laserVisible = false;
                             }
                         }
-                        
+
                         LaserVisible = laserVisible;
-                    } else
+                    }
+                    else
                     {
                         LaserVisible = false;
                     }
 
                 }
-                else if(LaserVisible)
+                else if (LaserVisible)
                 {
                     LaserVisible = false;
                 }
@@ -294,10 +268,7 @@ namespace VRGIN.Core.Controls
             }
         }
 
-        protected virtual void OnDisable()
-        {
-            _RumbleSessions.Clear();
-        }
+
 
         public bool LaserVisible
         {
@@ -307,22 +278,23 @@ namespace VRGIN.Core.Controls
             }
             set
             {
-                if(value && _LaserLock == null)
+                if (value && _LaserLock == null)
                 {
-                    if(!AcquireFocus(out _LaserLock))
+                    if (!AcquireFocus(out _LaserLock))
                     {
                         // Could not get focus, do nothing.
                         return;
                     }
-                } else if(!value && _LaserLock != null)
+                }
+                else if (!value && _LaserLock != null)
                 {
                     _LaserLock.Release();
                     _LaserLock = null;
                 }
 
                 Laser.gameObject.SetActive(value);
-                
-                if(value)
+
+                if (value)
                 {
                     Laser.SetPosition(0, Laser.transform.position);
                 }
@@ -355,7 +327,7 @@ namespace VRGIN.Core.Controls
 
             if (LaserVisible)
             {
-                if(device.GetPressDown(EVRButtonId.k_EButton_SteamVR_Trigger))
+                if (device.GetPressDown(EVRButtonId.k_EButton_SteamVR_Trigger))
                 {
                     MouseOperations.MouseEvent(MouseEventFlags.LeftDown);
                     mouseDownPosition = new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y);
@@ -366,13 +338,13 @@ namespace VRGIN.Core.Controls
                     mouseDownPosition = null;
                 }
             }
-            else if(_Lock == null)
+            else if (_Lock == null)
             {
-                if(device.GetPressDown(EVRButtonId.k_EButton_ApplicationMenu))
+                if (device.GetPressDown(EVRButtonId.k_EButton_ApplicationMenu))
                 {
                     appButtonPressTime = Time.time;
-                } 
-                if(device.GetPress(EVRButtonId.k_EButton_ApplicationMenu) && (Time.time - appButtonPressTime) > APP_BUTTON_TIME_THRESHOLD)
+                }
+                if (device.GetPress(EVRButtonId.k_EButton_ApplicationMenu) && (Time.time - appButtonPressTime) > APP_BUTTON_TIME_THRESHOLD)
                 {
                     ShowHelp();
                     appButtonPressTime = null;
@@ -388,7 +360,7 @@ namespace VRGIN.Core.Controls
                         if (ActiveTool)
                         {
                             ActiveTool.enabled = false;
-                        } 
+                        }
 
                         ToolIndex = (ToolIndex + 1) % Tools.Count;
 
@@ -402,40 +374,13 @@ namespace VRGIN.Core.Controls
                 }
             }
 
-
-            UpdateRumble();
-        }
-
-
-        private void UpdateRumble()
-        {
-            if (_RumbleSessions.Count > 0)
-            {
-                var session = _RumbleSessions.Max();
-                float timeSinceLastImpulse = Time.time - _LastImpulse;
-                
-                if (Tracking.isValid && timeSinceLastImpulse >= session.MilliInterval * MILLI_TO_SECONDS && timeSinceLastImpulse > MIN_INTERVAL)
-                {
-                    if (VR.Settings.Rumble)
-                    {
-                        SteamVR_Controller.Input((int)Tracking.index).TriggerHapticPulse(session.MicroDuration);
-                    }
-                    _LastImpulse = Time.time;
-
-                    session.Consume();
-                    if(session.IsOver)
-                    {
-                        _RumbleSessions.Remove(session);
-                    }
-                }
-            }
         }
 
         public void StartRumble(IRumbleSession session)
         {
-            _RumbleSessions.Add(session);
+            Rumble.StartRumble(session);
         }
-        
+
         private void HideHelp()
         {
             if (helpShown)
@@ -456,7 +401,7 @@ namespace VRGIN.Core.Controls
 
         private void BuildCanvas()
         {
-           
+
             var canvas = _Canvas = new GameObject().AddComponent<Canvas>();
             canvas.renderMode = RenderMode.WorldSpace;
             canvas.transform.SetParent(transform, false);
@@ -465,10 +410,10 @@ namespace VRGIN.Core.Controls
             canvas.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 950);
             canvas.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 950);
 
-            canvas.transform.localPosition = new Vector3(0, -0.02725995f, 0.0279f); 
+            canvas.transform.localPosition = new Vector3(0, -0.02725995f, 0.0279f);
             canvas.transform.localRotation = Quaternion.Euler(30, 180, 180);
             canvas.transform.localScale = new Vector3(4.930151e-05f, 4.930148e-05f, 0);
-            
+
             canvas.gameObject.layer = 0;
 
             // Hack for alpha order
