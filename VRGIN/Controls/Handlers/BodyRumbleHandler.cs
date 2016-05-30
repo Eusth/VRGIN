@@ -72,8 +72,11 @@ namespace VRGIN.Controls.Handlers
         protected void OnStop()
         {
             _TouchCounter = 0;
-            _Rumble.Close();
-            _Rumble = null;
+            if (_Rumble != null)
+            {
+                _Rumble.Close();
+                _Rumble = null;
+            }
         }
     }
 }
