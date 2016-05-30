@@ -1,4 +1,4 @@
-# VRGIN.Core
+# VRGIN
 VR injection framework for Unity -- helps you integrate VR into games that don't natively support it.
 
 ## What it does
