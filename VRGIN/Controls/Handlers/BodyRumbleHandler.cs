@@ -21,6 +21,19 @@ namespace VRGIN.Controls.Handlers
             _Controller = GetComponent<Controller>();
         }
 
+        protected override void OnLevel(int level)
+        {
+            base.OnLevel(level);
+            OnStop();
+
+        }
+
+        protected void OnDisable()
+        {
+            OnStop();
+
+        }
+
         protected void OnTriggerEnter(Collider collider)
         {
             if (VR.Interpreter.IsBody(collider))
@@ -51,10 +64,16 @@ namespace VRGIN.Controls.Handlers
 
                 if (_TouchCounter == 0)
                 {
-                    _Rumble.Close();
-                    _Rumble = null;
+                    OnStop();
                 }
             }
+        }
+
+        protected void OnStop()
+        {
+            _TouchCounter = 0;
+            _Rumble.Close();
+            _Rumble = null;
         }
     }
 }
