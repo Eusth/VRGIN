@@ -23,6 +23,8 @@ namespace VRGIN.Modes
             targetPosition = new Vector3(targetPosition.x, 0, targetPosition.z);
             var myPosition = new Vector3(VR.Camera.SteamCam.head.position.x, 0, VR.Camera.SteamCam.head.position.z);
             VR.Camera.SteamCam.origin.position += (targetPosition - myPosition);
+
+            OpenVR.ChaperoneSetup.ReloadFromDisk(EChaperoneConfigFile.Live);
         }
 
         public override void OnDestroy()

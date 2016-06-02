@@ -42,6 +42,8 @@ namespace VRGIN.Modes
 
             Monitor = GUIMonitor.Create();
             Monitor.transform.SetParent(VR.Camera.SteamCam.origin, false);
+
+            OpenVR.ChaperoneSetup.SetWorkingPlayAreaSize(1000, 1000); // Make it really big
         }
 
         //protected virtual void OnLevel()
