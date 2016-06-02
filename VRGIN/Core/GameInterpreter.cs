@@ -6,6 +6,10 @@ using UnityEngine;
 
 namespace VRGIN.Core
 {
+    /// <summary>
+    /// Class that is responsible to collect all required data from the game 
+    /// that is created or managed at runtime.
+    /// </summary>
     public abstract class GameInterpreter : ProtectedBehaviour
     {
         /// <summary>

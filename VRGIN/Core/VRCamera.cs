@@ -32,8 +32,14 @@ namespace VRGIN.Core
         public Camera Blueprint { get; private set; }
         private RenderTexture _MiniTexture;
 
+        /// <summary>
+        /// Called when a camera is being initialized.
+        /// </summary>
         public event EventHandler<InitializeCameraEventArgs> InitializeCamera = delegate { };
 
+        /// <summary>
+        /// Gets the current instance of VRCamera or creates one if need be.
+        /// </summary>
         public static VRCamera Instance
         {
             get
@@ -48,6 +54,7 @@ namespace VRGIN.Core
 
         protected override void OnAwake()
         {
+            // Dummy texture to let the old main camera render to
             _MiniTexture = new RenderTexture(1, 1, 0);
             _MiniTexture.Create();
 
@@ -55,21 +62,31 @@ namespace VRGIN.Core
             SteamCam = GetComponent<SteamVR_Camera>();
             SteamCam.Expand(); // Expand immediately!
 
+            Destroy(SteamCam.head.GetComponent<SteamVR_GameView>());
+            Destroy(SteamCam.head.GetComponent<Camera>()); // Save GPU power
+
             // Set render scale to the value defined by the user
             SteamVR_Camera.sceneResolutionScale = VR.Settings.RenderScale;
 
+            // Needed for the Camera Modifications mod to work. It's an artifact from DK2 days
             var legacyAnchor = new GameObject("CenterEyeAnchor");
             legacyAnchor.transform.SetParent(SteamCam.head);
 
             DontDestroyOnLoad(SteamCam.origin.gameObject);
         }
 
+        /// <summary>
+        /// Copies the values of a in-game camera to the VR camera.
+        /// </summary>
+        /// <param name="blueprint">The camera to copy.</param>
         public void Copy(Camera blueprint)
         {
             Logger.Info("Copying camera: {0}", blueprint ? blueprint.name : "NULL");
             Blueprint = blueprint ?? GetComponent<Camera>();
 
             int cullingMask = Blueprint.cullingMask;
+
+            // If the camera is blind, set it to see everything instead
             if (cullingMask == 0)
             {
                 cullingMask = int.MaxValue;
@@ -86,6 +103,7 @@ namespace VRGIN.Core
                 }
             }
 
+            // Remove layers that are captured by other cameras (see VRGUI)
             cullingMask &= ~(VRManager.Instance.Context.UILayerMask | LayerMask.GetMask(VR.Context.HMDLayer));
 
             Logger.Info("The camera sees {0}", string.Join(", ", UnityHelper.GetLayerNames(cullingMask)));
@@ -98,7 +116,7 @@ namespace VRGIN.Core
                 targetCamera.cullingMask = cullingMask;
                 targetCamera.clearFlags = Blueprint.clearFlags;
                 targetCamera.backgroundColor = Blueprint.backgroundColor;
-                //Logger.Info(ovrCamera.clearFlags);
+
                 var skybox = Blueprint.GetComponent<Skybox>();
                 if (skybox != null)
                 {
@@ -112,6 +130,7 @@ namespace VRGIN.Core
                 InitializeCamera(this, new InitializeCameraEventArgs(targetCamera, Blueprint));
             });
 
+            // Only execute this code when the blueprint is a different camera
             if (Blueprint != GetComponent<Camera>())
             {
                 //StartCoroutine(ExecuteDelayed(delegate { CopyFX(Blueprint); }));
@@ -190,6 +209,7 @@ namespace VRGIN.Core
 
             if (SteamCam.origin)
             {
+                // Make sure the scale is right
                 SteamCam.origin.localScale = Vector3.one * VR.Settings.IPDScale;
             }
         }

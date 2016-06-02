@@ -44,6 +44,12 @@ namespace VRGIN.Core
         public IVRManagerContext Context { get; private set; }
         public GameInterpreter Interpreter { get; private set; }
 
+        /// <summary>
+        /// Creates the manager with a context and an interpeter.
+        /// </summary>
+        /// <typeparam name="T">The interpreter that keeps track of actors and cameras, etc.</typeparam>
+        /// <param name="context">The context of the game (materials, layers, settings...)</param>
+        /// <returns></returns>
         public static VRManager Create<T>(IVRManagerContext context) where T : GameInterpreter
         {
             if(_Instance == null)
@@ -58,9 +64,15 @@ namespace VRGIN.Core
             return _Instance;
         }
 
+        /// <summary>
+        /// Sets the mode the game works in.
+        /// 
+        /// A mode is required for the VR support to work. Refer to <see cref="SeatedMode"/> and <see cref="StandingMode"/> for
+        /// example implementations. It is recommended to extend them.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
         public void SetMode<T>() where T : ControlMode
         {
-            
             if(Mode == null || !(Mode is T))
             {
                 ModeType = typeof(T);

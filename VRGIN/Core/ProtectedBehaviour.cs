@@ -8,6 +8,9 @@ using UnityEngine;
 
 namespace VRGIN.Core
 {
+    /// <summary>
+    /// Behaviour that wraps a few of Unity's methods in try/catch blocks.
+    /// </summary>
     public class ProtectedBehaviour : MonoBehaviour
     {
         private static IDictionary<string, long> PerformanceTable = new Dictionary<string, long>();
