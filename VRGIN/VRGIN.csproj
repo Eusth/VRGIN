@@ -58,6 +58,7 @@
     <Compile Include="Core\GameInterpreter.cs" />
     <Compile Include="Core\IActor.cs" />
     <Compile Include="Core\Logger.cs" />
+    <Compile Include="Core\PlayArea.cs" />
     <Compile Include="Core\ProtectedBehaviour.cs" />
     <Compile Include="Core\Throttler.cs" />
     <Compile Include="Core\VRCamera.cs" />

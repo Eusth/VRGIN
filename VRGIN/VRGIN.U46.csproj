@@ -59,6 +59,7 @@
     <Compile Include="Controls\Tools\WarpTool.cs" />
     <Compile Include="Core\DefaultActor.cs" />
     <Compile Include="Core\GameInterpreter.cs" />
+    <Compile Include="Core\PlayArea.cs" />
     <Compile Include="Helpers\GameObjectExtensions.cs" />
     <Compile Include="Helpers\KeyStroke.cs" />
     <Compile Include="Helpers\QuaternionExtensions.cs" />
@@ -182,7 +183,6 @@
     <Content Include="U46\SteamVR\Textures\portalworkshop.png" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Images\" />
     <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
