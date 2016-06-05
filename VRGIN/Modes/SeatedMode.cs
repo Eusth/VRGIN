@@ -21,11 +21,13 @@ namespace VRGIN.Modes
 
     public class SeatedMode : ControlMode
     {
-      
+
         private static bool _IsFirstStart = true;
 
         protected GUIMonitor Monitor;
         protected IActor LockTarget;
+        protected ImpersonationMode LockMode;
+
         public bool RotationLock = true;
 
 
@@ -33,7 +35,7 @@ namespace VRGIN.Modes
         {
             base.OnStart();
 
-            if(_IsFirstStart)
+            if (_IsFirstStart)
             {
                 VR.Camera.SteamCam.origin.transform.position = new Vector3(0, 0, 0);
                 Recenter();
@@ -58,20 +60,29 @@ namespace VRGIN.Modes
             // Move origin
             if (VR.Camera.Blueprint)
             {
-                if(LockTarget != null && LockTarget.IsValid)
+                if (LockTarget != null && LockTarget.IsValid)
                 {
                     VR.Camera.Blueprint.transform.position = LockTarget.Eyes.position;
-                    VR.Camera.Blueprint.transform.rotation = LockTarget.Eyes.rotation;
+
+                    if (LockMode == ImpersonationMode.Approximately)
+                    {
+                        VR.Camera.Blueprint.transform.eulerAngles = new Vector3(0, LockTarget.Eyes.eulerAngles.y, 0);
+                    }
+                    else
+                    {
+                        VR.Camera.Blueprint.transform.rotation = LockTarget.Eyes.rotation;
+                    }
                 }
 
                 VR.Camera.SteamCam.origin.transform.position = VR.Camera.Blueprint.transform.position;
 
-                if(RotationLock && LockTarget == null)
+                if ((RotationLock && LockTarget == null))
                 {
                     VR.Camera.SteamCam.origin.transform.eulerAngles = new Vector3(0, VR.Camera.Blueprint.transform.eulerAngles.y, 0);
 
                     CorrectRotationLock();
-                } else
+                }
+                else
                 {
                     VR.Camera.SteamCam.origin.transform.rotation = VR.Camera.Blueprint.transform.rotation;
                 }
@@ -87,13 +98,16 @@ namespace VRGIN.Modes
 
         }
 
-        public override void Impersonate(IActor actor)
+        public override void Impersonate(IActor actor, ImpersonationMode mode)
         {
-            SyncCameras();
+            base.Impersonate(actor, mode);
 
+            SyncCameras();
             LockTarget = actor;
+            LockMode = mode;
+            Recenter();
         }
-        
+
         public override void OnDestroy()
         {
             base.OnDestroy();
@@ -131,7 +145,8 @@ namespace VRGIN.Modes
                 new KeyboardShortcut(new KeyStroke("Ctrl + Shift + KeypadPlus"), delegate { VR.Settings.Rotation -= Time.deltaTime * 50f; }, KeyMode.Press),
                 new KeyboardShortcut(new KeyStroke("F4"), ChangeProjection),
                 new KeyboardShortcut(new KeyStroke("F5"), ToggleRotationLock),
-                new KeyboardShortcut(new KeyStroke("Ctrl + X"), delegate { if(LockTarget == null || !LockTarget.IsValid) { Impersonate(VR.Interpreter.Actors.FirstOrDefault()); } else { Impersonate(null); } }),
+                new KeyboardShortcut(new KeyStroke("Ctrl + X"), delegate { if(LockTarget == null || !LockTarget.IsValid) { Impersonate(VR.Interpreter.Actors.FirstOrDefault(), ImpersonationMode.Approximately); } else { Impersonate(null); } }),
+                new KeyboardShortcut(new KeyStroke("Ctrl + Shift + X"), delegate { if(LockTarget == null || !LockTarget.IsValid) { Impersonate(VR.Interpreter.Actors.FirstOrDefault(), ImpersonationMode.Exactly); } else { Impersonate(null); } }),
                 new KeyboardShortcut(new KeyStroke("F12"), Recenter)
             }.Concat(base.CreateShortcuts());
         }
@@ -161,6 +176,6 @@ namespace VRGIN.Modes
                 VR.Settings.OffsetY += speed * Time.deltaTime;
             };
         }
-        
+
     }
 }

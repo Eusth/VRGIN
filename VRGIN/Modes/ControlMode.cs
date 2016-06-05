@@ -11,9 +11,26 @@ using VRGIN.Visuals;
 
 namespace VRGIN.Modes
 {
+    public enum ImpersonationMode
+    {
+        Approximately,
+        Exactly
+    }
+
     public abstract class ControlMode : ProtectedBehaviour
     {
-        public abstract void Impersonate(IActor actor);
+        public virtual void Impersonate(IActor actor)
+        {
+            this.Impersonate(actor, ImpersonationMode.Approximately);
+        }
+
+        public virtual void Impersonate(IActor actor, ImpersonationMode mode)
+        {
+            if (actor != null)
+            {
+                actor.HasHead = false;
+            }
+        }
 
         public abstract ETrackingUniverseOrigin TrackingOrigin { get; }
 
@@ -31,7 +48,7 @@ namespace VRGIN.Modes
             Shortcuts = CreateShortcuts();
             SteamVR_Render.instance.trackingSpace = TrackingOrigin;
         }
-        
+
         /// <summary>
         /// Creates both controllers by using <see cref="CreateRightController"/> and <see cref="CreateLeftController"/>.
         /// Override those methods to change the controller implementation to be used.
@@ -77,12 +94,12 @@ namespace VRGIN.Modes
             // Combine
             var toolTypes = Tools.Concat(isLeft ? LeftTools : RightTools).Distinct();
 
-            foreach(var type in toolTypes)
+            foreach (var type in toolTypes)
             {
                 controller.AddTool(type);
             }
 
-            VRLog.Info("{0} tools added" , toolTypes.Count());
+            VRLog.Info("{0} tools added", toolTypes.Count());
         }
 
         protected virtual Controller CreateLeftController()
@@ -140,11 +157,11 @@ namespace VRGIN.Modes
             else
             {
                 VRLog.Info("Remove user camera");
-                
+
                 PlayerCamera.Remove();
             }
         }
-        
+
         protected override void OnUpdate()
         {
             base.OnUpdate();
@@ -190,8 +207,8 @@ namespace VRGIN.Modes
         protected override void OnFixedUpdate()
         {
             base.OnFixedUpdate();
-            
-            foreach(var shortcut in Shortcuts)
+
+            foreach (var shortcut in Shortcuts)
             {
                 shortcut.Evaluate();
             }

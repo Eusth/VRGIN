@@ -6,6 +6,7 @@ using UnityEngine;
 using Valve.VR;
 using VRGIN.Core;
 using VRGIN.Helpers;
+using VRGIN.Modes;
 using VRGIN.Visuals;
 
 namespace VRGIN.Controls.Tools
@@ -68,8 +69,9 @@ namespace VRGIN.Controls.Tools
         Transform HeightIndicator;
         private PlayArea _CurrentPlayArea = new PlayArea();
         private PlayArea _ProspectedPlayArea = new PlayArea();
-        private const float SCALE_THRESHOLD = 0.2f;
-        private const float TRANSLATE_THRESHOLD = 0.2f;
+        private const float SCALE_THRESHOLD = 0.15f;
+        private const float TRANSLATE_THRESHOLD = 0.15f;
+        private const float TRANSFORM_THRESHOLD = 0.3f;
 
 
 
@@ -85,10 +87,12 @@ namespace VRGIN.Controls.Tools
         private bool _Scaling = false;
         private bool _Translating = false;
         private float? _GripStartTime = null;
+        private float? _TriggerDownTime = null;
         bool Showing = false;
 
         private List<Vector2> _Points = new List<Vector2>();
         private const float GRIP_THRESHOLD = 1;
+        private float EXACT_IMPERSONATION_TIME = 1;
 
         public override Texture2D Image
         {
@@ -292,10 +296,11 @@ namespace VRGIN.Controls.Tools
             {
                 _GripStartTime = Time.time;
             }
-            if (_GripStartTime != null)
+            if (_GripStartTime != null && Controller.GetPress(EVRButtonId.k_EButton_Grip))
             {
                 if (Time.time - _GripStartTime.Value > GRIP_THRESHOLD)
                 {
+                    GetComponent<Controller>().Rumble.StartRumble(new RumbleImpulse(800));
                     _ProspectedPlayArea.Height = 0;
                     _ProspectedPlayArea.Scale = 1.0f;
                     _GripStartTime = null;
@@ -336,9 +341,23 @@ namespace VRGIN.Controls.Tools
 
             //if (_CanImpersonate)
             {
-                if (VRManager.Instance.Interpreter.Actors.Any() && Controller.GetHairTriggerDown())
+                if (Controller.GetHairTriggerDown())
                 {
-                    VRManager.Instance.Mode.Impersonate(VRManager.Instance.Interpreter.Actors.First());
+                    _TriggerDownTime = Time.time;
+                }
+                if (_TriggerDownTime != null)
+                {
+                    if (Controller.GetHairTrigger() && (Time.time - _TriggerDownTime) > EXACT_IMPERSONATION_TIME)
+                    {
+                        VRManager.Instance.Mode.Impersonate(VRManager.Instance.Interpreter.Actors.First(),
+                            ImpersonationMode.Exactly);
+                        _TriggerDownTime = null;
+                    }
+                    if (VRManager.Instance.Interpreter.Actors.Any() && Controller.GetHairTriggerUp())
+                    {
+                        VRManager.Instance.Mode.Impersonate(VRManager.Instance.Interpreter.Actors.First(),
+                            ImpersonationMode.Approximately);
+                    }
                 }
             }
         }
@@ -402,7 +421,7 @@ namespace VRGIN.Controls.Tools
                 }
                 else
                 {
-                    Core.Logger.Info("Discarding too large rotation: {0}", rot);
+                    VRLog.Info("Discarding too large rotation: {0}", rot);
                 }
             }
             _Points.Clear();
