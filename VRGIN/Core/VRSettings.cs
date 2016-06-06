@@ -67,6 +67,9 @@ namespace VRGIN.Core
         /// </summary>
         public float RenderScale { get { return _RenderScale; } set { _RenderScale = Mathf.Clamp(value, 0.1f, 4f); TriggerPropertyChanged("RenderScale"); } }
 
+        private bool _MirrorScreen = false;
+        public bool MirrorScreen { get { return _MirrorScreen; } set { _MirrorScreen = value; TriggerPropertyChanged("MirrorScreen"); } }
+
         public event EventHandler<PropertyChangedEventArgs> PropertyChanged = delegate { };
 
         public VRSettings()
