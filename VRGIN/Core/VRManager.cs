@@ -23,6 +23,15 @@ namespace VRGIN.Core
         public static VRManager Manager { get { return VRManager.Instance; } }
     }
 
+    public class ModeInitializedEventArgs : EventArgs
+    {
+        public ControlMode Mode { get; private set; }
+
+        public ModeInitializedEventArgs(ControlMode mode) {
+            Mode = mode;
+        }
+    }
+
     public class VRManager : ProtectedBehaviour
     {
         private VRGUI _Gui;
@@ -43,6 +52,7 @@ namespace VRGIN.Core
 
         public IVRManagerContext Context { get; private set; }
         public GameInterpreter Interpreter { get; private set; }
+        public event EventHandler<ModeInitializedEventArgs> ModeInitialized = delegate { };
 
         /// <summary>
         /// Creates the manager with a context and an interpeter.
@@ -81,12 +91,14 @@ namespace VRGIN.Core
                 if (Mode != null)
                 {
                     // Get on clean grounds
+                    Mode.ControllersCreated -= OnControllersCreated;
                     GameObject.DestroyImmediate(Mode);
                 }
 
                 if (_CameraLoaded)
                 {
                     Mode = VRCamera.Instance.gameObject.AddComponent<T>();
+                    Mode.ControllersCreated += OnControllersCreated;
                 }
             }
         }
@@ -135,9 +147,15 @@ namespace VRGIN.Core
             if (!Mode && ModeType != null && ModeType.IsSubclassOf(typeof(ControlMode)))
             {
                 Mode = VRCamera.Instance.gameObject.AddComponent(ModeType) as ControlMode;
+                Mode.ControllersCreated += OnControllersCreated;
             }
 
             _CameraLoaded = true;
+        }
+
+        private void OnControllersCreated(object sender, EventArgs e)
+        {
+            ModeInitialized(this, new ModeInitializedEventArgs(Mode));
         }
     }
 

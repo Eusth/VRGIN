@@ -40,6 +40,7 @@ namespace VRGIN.Modes
         protected IEnumerable<IShortcut> Shortcuts { get; private set; }
 
         protected SteamVR_ControllerManager ControllerManager;
+        internal event EventHandler<EventArgs> ControllersCreated = delegate { };
 
         protected override void OnStart()
         {
@@ -80,6 +81,8 @@ namespace VRGIN.Modes
 
             VRLog.Info("---- Initialize right tools");
             InitializeTools(Right, false);
+
+            ControllersCreated(this, new EventArgs());
         }
 
         public virtual void OnDestroy()
