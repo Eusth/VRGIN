@@ -161,6 +161,11 @@ namespace VRGIN.Controls
             }
         }
 
+        public void AddTool<T>() where T : Tool
+        {
+            AddTool(typeof(T));
+        }
+
         public virtual int ToolIndex { get; set; }
 
         public Tool ActiveTool

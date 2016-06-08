@@ -41,16 +41,19 @@ namespace VRGIN.Controls
 
                 if (_Controller.Tracking.isValid && timeSinceLastImpulse >= session.MilliInterval * MILLI_TO_SECONDS && timeSinceLastImpulse > MIN_INTERVAL)
                 {
-                    if (VR.Settings.Rumble)
-                    {
-                        SteamVR_Controller.Input((int)_Controller.Tracking.index).TriggerHapticPulse(session.MicroDuration);
-                    }
-                    _LastImpulse = Time.time;
 
-                    session.Consume();
                     if (session.IsOver)
                     {
                         _RumbleSessions.Remove(session);
+                    }
+                    else
+                    {
+                        if (VR.Settings.Rumble)
+                        {
+                            SteamVR_Controller.Input((int)_Controller.Tracking.index).TriggerHapticPulse(session.MicroDuration);
+                        }
+                        _LastImpulse = Time.time;
+                        session.Consume();
                     }
                 }
             }

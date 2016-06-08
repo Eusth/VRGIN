@@ -14,10 +14,11 @@ namespace VRGIN.Controls.Tools
     public class WarpTool : Tool
     {
 
-        public enum WarpMode
+        private enum WarpState
         {
-            Rotate,
-            TranslateAndScale
+            None,
+            Rotating,
+            Transforming
         }
 
         private class HMDLoader : ProtectedBehaviour
@@ -69,21 +70,21 @@ namespace VRGIN.Controls.Tools
         Transform HeightIndicator;
         private PlayArea _CurrentPlayArea = new PlayArea();
         private PlayArea _ProspectedPlayArea = new PlayArea();
-        private const float SCALE_THRESHOLD = 0.15f;
-        private const float TRANSLATE_THRESHOLD = 0.15f;
-        private const float TRANSFORM_THRESHOLD = 0.3f;
+        private const float SCALE_THRESHOLD = 0.05f;
+        private const float TRANSLATE_THRESHOLD = 0.05f;
 
 
 
         /// <summary>
         /// Gets or sets what the user can do by touching the thumbpad
         /// </summary>
-        public WarpMode Mode = WarpMode.Rotate;
+        private WarpState State = WarpState.None;
 
         private RumbleSession _RumbleSession;
+        private TravelDistanceRumble _TravelRumble;
 
         private bool _CanImpersonate = false;
-        private Vector2 _StartPoint;
+        private Vector3 _PrevPoint;
         private bool _Scaling = false;
         private bool _Translating = false;
         private float? _GripStartTime = null;
@@ -92,7 +93,7 @@ namespace VRGIN.Controls.Tools
 
         private List<Vector2> _Points = new List<Vector2>();
         private const float GRIP_THRESHOLD = 1;
-        private float EXACT_IMPERSONATION_TIME = 1;
+        private const float EXACT_IMPERSONATION_TIME = 1;
 
         public override Texture2D Image
         {
@@ -111,7 +112,6 @@ namespace VRGIN.Controls.Tools
             PlayArea.size = SteamVR_PlayArea.Size.Calibrated;
 
             PlayArea.transform.SetParent(PlayAreaRotation, false);
-
 
             DirectionIndicator = CreateClone();
             DontDestroyOnLoad(PlayAreaRotation.gameObject);
@@ -207,6 +207,7 @@ namespace VRGIN.Controls.Tools
         {
             base.OnDisable();
 
+            EnterState(WarpState.None);
             SetVisibility(false);
         }
 
@@ -266,6 +267,7 @@ namespace VRGIN.Controls.Tools
                 PlayAreaRotation.localScale = Vector3.one * _ProspectedPlayArea.Scale;
                 PlayArea.transform.localPosition = -new Vector3(steamCam.head.transform.localPosition.x, 0, steamCam.head.transform.localPosition.z);
                 PlayAreaRotation.rotation = Quaternion.Euler(0, _ProspectedPlayArea.Rotation, 0);
+
                 ArcRenderer.Offset = _ProspectedPlayArea.Height;
                 ArcRenderer.Scale = VR.Settings.IPDScale;
 
@@ -281,61 +283,49 @@ namespace VRGIN.Controls.Tools
         {
             if (Controller.GetTouchDown(EVRButtonId.k_EButton_Axis0))
             {
-                SetVisibility(true);
-
-                Reset();
-                _StartPoint = Controller.GetAxis(EVRButtonId.k_EButton_SteamVR_Touchpad);
-                _CurrentPlayArea = _ProspectedPlayArea;
+                EnterState(WarpState.Rotating);
             }
             if (Controller.GetTouchUp(EVRButtonId.k_EButton_Axis0))
             {
-                SetVisibility(false);
+                EnterState(WarpState.None);
             }
 
-            if (Controller.GetPressDown(EVRButtonId.k_EButton_Grip))
+            if (Controller.GetPressUp(EVRButtonId.k_EButton_Grip))
             {
-                _GripStartTime = Time.time;
+                GetComponent<Controller>().Rumble.StartRumble(new RumbleImpulse(800));
+                _ProspectedPlayArea.Height = 0;
+                _ProspectedPlayArea.Scale = 1.0f;
             }
-            if (_GripStartTime != null && Controller.GetPress(EVRButtonId.k_EButton_Grip))
-            {
-                if (Time.time - _GripStartTime.Value > GRIP_THRESHOLD)
-                {
-                    GetComponent<Controller>().Rumble.StartRumble(new RumbleImpulse(800));
-                    _ProspectedPlayArea.Height = 0;
-                    _ProspectedPlayArea.Scale = 1.0f;
-                    _GripStartTime = null;
-                }
-            }
-
-            if (Controller.GetPressUp(EVRButtonId.k_EButton_Grip) && _GripStartTime != null)
-            {
-                Mode = (WarpMode)((((int)Mode) + 1) % Enum.GetValues(typeof(WarpMode)).Length);
-            }
-
 
             if (Controller.GetPressDown(EVRButtonId.k_EButton_Axis0))
             {
+                EnterState(WarpState.Transforming);
+            }
+            if (Controller.GetPress(EVRButtonId.k_EButton_Axis0))
+            {
+                DetectTranslationAndScale();
+            }
+            if (Controller.GetPressUp(EVRButtonId.k_EButton_Axis0))
+            {
                 var steamCam = VRCamera.Instance.SteamCam;
 
+                if (_TravelRumble != null)
+                {
+                    _TravelRumble.Close();
+                    _TravelRumble = null;
+                }
                 // Warp!
                 ApplyPlayArea(_ProspectedPlayArea);
+                EnterState(WarpState.Rotating);
             }
 
-            if (Showing)
+            if (Showing && State == WarpState.Rotating)
             {
+                _Points.Add(Controller.GetAxis(EVRButtonId.k_EButton_Axis0));
 
-                if (Mode == WarpMode.Rotate)
+                if (_Points.Count > 2)
                 {
-                    _Points.Add(Controller.GetAxis(EVRButtonId.k_EButton_Axis0));
-
-                    if (_Points.Count > 2)
-                    {
-                        DetectCircle();
-                    }
-                }
-                else if (Mode == WarpMode.TranslateAndScale)
-                {
-                    DetectTranslationAndScale();
+                    DetectCircle();
                 }
             }
 
@@ -364,16 +354,14 @@ namespace VRGIN.Controls.Tools
 
         private void DetectTranslationAndScale()
         {
-            var point = Controller.GetAxis(EVRButtonId.k_EButton_SteamVR_Touchpad);
-            float sx = point.x - _StartPoint.x;
-            float sy = point.y - _StartPoint.y;
-
+            var point = transform.position;
+            var v = VR.Camera.SteamCam.head.transform.InverseTransformVector(point - _PrevPoint);
             // Update state
-            if (!_Scaling && !_Translating && Mathf.Abs(sx) > SCALE_THRESHOLD)
+            if (!_Scaling && !_Translating && Mathf.Abs(v.z) > SCALE_THRESHOLD)
             {
                 _Scaling = true;
             }
-            if (!_Translating && !_Scaling && Mathf.Abs(sy) > TRANSLATE_THRESHOLD)
+            if (!_Translating && !_Scaling && Mathf.Abs(v.y) > TRANSLATE_THRESHOLD)
             {
                 _Translating = true;
             }
@@ -382,14 +370,20 @@ namespace VRGIN.Controls.Tools
             if (_Scaling)
             {
                 // [-2..2] -> [-0.6..0.6] -> [0.6..1.6]
-                _ProspectedPlayArea.Scale = _CurrentPlayArea.Scale * (sx * 0.3f + 1);
+                _ProspectedPlayArea.Scale = Mathf.Clamp(_ProspectedPlayArea.Scale + v.z, 0.01f, 50f);
             }
 
             if (_Translating)
             {
                 // [-2..2] -> [-1..1]
-                _ProspectedPlayArea.Height = _CurrentPlayArea.Height + (sy * 0.5f);
+                _ProspectedPlayArea.Height += (v.y);
             }
+
+            if (_Scaling || _Translating)
+            {
+                _PrevPoint = point;
+            }
+
         }
 
         private void DetectCircle()
@@ -427,6 +421,36 @@ namespace VRGIN.Controls.Tools
             _Points.Clear();
         }
 
+        private void EnterState(WarpState state)
+        {
+            switch (state)
+            {
+                case WarpState.None:
+                    if (_TravelRumble != null)
+                    {
+                        _TravelRumble.Close();
+                        _TravelRumble = null;
+                    }
+                    SetVisibility(false);
+                    break;
+                case WarpState.Rotating:
+                    SetVisibility(true);
+                    Reset();
+                    _CurrentPlayArea = _ProspectedPlayArea;
+                    break;
+                case WarpState.Transforming:
+                    _PrevPoint = transform.position;
+                    ArcRenderer.gameObject.SetActive(false);
+
+                    _TravelRumble = new TravelDistanceRumble(500, 0.1f, transform);
+                    Owner.StartRumble(_TravelRumble);
+                    break;
+            }
+
+            State = state;
+
+        }
+
         private void Reset()
         {
             _Scaling = false;
@@ -453,11 +477,11 @@ namespace VRGIN.Controls.Tools
         public override List<HelpText> GetHelpTexts()
         {
             return new List<HelpText>(new HelpText[] {
-                HelpText.Create("Tap to teleport", FindAttachPosition("trackpad"), new Vector3(0, 0.02f, 0.05f)),
+                HelpText.Create("Press to teleport", FindAttachPosition("trackpad"), new Vector3(0, 0.02f, 0.05f)),
                 HelpText.Create("Circle to rotate", FindAttachPosition("trackpad"), new Vector3(0.05f, 0.02f, 0), new Vector3(0.015f, 0, 0)),
-                HelpText.Create("Swipe to transform", FindAttachPosition("trackpad"), new Vector3(-0.05f, 0.02f, 0), new Vector3(-0.015f, 0, 0)),
+                HelpText.Create("press & move controller", FindAttachPosition("trackpad"), new Vector3(-0.05f, 0.02f, 0), new Vector3(-0.015f, 0, 0)),
                 HelpText.Create("Warp into main char", FindAttachPosition("trigger"), new Vector3(0.06f, 0.04f, -0.05f)),
-                HelpText.Create("rotate / transform", FindAttachPosition("lgrip"), new Vector3(-0.06f, 0.0f, -0.05f))
+                HelpText.Create("reset area", FindAttachPosition("lgrip"), new Vector3(-0.06f, 0.0f, -0.05f))
             });
         }
     }
