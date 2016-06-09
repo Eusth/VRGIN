@@ -155,11 +155,12 @@ namespace VRGIN.Core
                 canvas.renderMode = RenderMode.ScreenSpaceCamera;
                 canvas.worldCamera = _VRGUICamera;
 
-                //canvas.gameObject.layer = LayerMask.NameToLayer(VR.Context.UILayer);
-                //foreach(var child in canvas.gameObject.GetComponentsInChildren<Transform>())
-                //{
-                //    child.gameObject.layer = LayerMask.NameToLayer(VR.Context.UILayer);
-                //}
+                // Make sure that all Canvas are in the UI layer
+                canvas.gameObject.layer = LayerMask.NameToLayer(VR.Context.UILayer);
+                foreach (var child in canvas.gameObject.GetComponentsInChildren<Transform>())
+                {
+                    child.gameObject.layer = LayerMask.NameToLayer(VR.Context.UILayer);
+                }
 
                 if (VR.Context.GUIAlternativeSortingMode)
                 {
