@@ -49,10 +49,16 @@ namespace VRGIN.Modes
         {
             base.OnUpdate();
 
-            var origin = VRCamera.Instance.SteamCam.origin;
+            if (VRCamera.Instance.HasValidBlueprint)
+            {
+                SyncCameras();
+            }
+        }
 
-            VRCamera.Instance.Blueprint.transform.position = VR.Camera.transform.position;
-            VRCamera.Instance.Blueprint.transform.rotation = VR.Camera.transform.rotation;
+        protected virtual void SyncCameras()
+        {
+            VRCamera.Instance.Blueprint.transform.position = VR.Camera.SteamCam.head.position;
+            VRCamera.Instance.Blueprint.transform.rotation = VR.Camera.SteamCam.head.rotation;
         }
 
         public override IEnumerable<Type> Tools

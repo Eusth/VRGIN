@@ -31,7 +31,7 @@ namespace VRGIN.Core
         public SteamVR_Camera SteamCam { get; private set; }
         public Camera Blueprint { get; private set; }
         private RenderTexture _MiniTexture;
-
+        public bool HasValidBlueprint { get; private set; }
         /// <summary>
         /// Called when a camera is being initialized.
         /// </summary>
@@ -134,13 +134,14 @@ namespace VRGIN.Core
             });
 
             // Only execute this code when the blueprint is a different camera
-            if (Blueprint != GetComponent<Camera>())
+            HasValidBlueprint = Blueprint != GetComponent<Camera>();
+            if (HasValidBlueprint)
             {
                 //StartCoroutine(ExecuteDelayed(delegate { CopyFX(Blueprint); }));
                 //CopyFX(Blueprint);
 
                 Blueprint.cullingMask = 0;
-                Blueprint.targetTexture = _MiniTexture;
+                //Blueprint.targetTexture = _MiniTexture;
                 //Blueprint.gameObject.AddComponent<BlacklistThrottler>();
 
                 // Highlander principle
