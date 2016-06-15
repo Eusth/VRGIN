@@ -209,6 +209,18 @@ namespace VRGIN.Controls.Tools
 
             EnterState(WarpState.None);
             SetVisibility(false);
+
+            // Clean up
+            if(_RumbleSession != null)
+            {
+                _RumbleSession.Close();
+                _RumbleSession = null;
+            }
+            if(_TravelRumble != null)
+            {
+                _TravelRumble.Close();
+                _TravelRumble = null;
+            }
         }
 
         protected override void OnUpdate()
