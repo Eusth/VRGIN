@@ -15,6 +15,8 @@ namespace VRGIN.Core
     /// 
     /// In order to create your own settings file, extend this class and add your own properties. Make sure to call <see cref="TriggerPropertyChanged(string)"/> if you want to use
     /// the events.
+    /// IMPORTANT: When extending, add an XmlRoot annotation to the class like so:
+    /// <code>[XmlRoot("Settings")]</code>
     /// </summary>
     [XmlRoot("Settings")]
     public class VRSettings
