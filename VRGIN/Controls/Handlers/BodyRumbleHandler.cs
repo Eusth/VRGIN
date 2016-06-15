@@ -50,7 +50,7 @@ namespace VRGIN.Controls.Handlers
 
         protected void OnTriggerStay(Collider collider)
         {
-            if (collider.gameObject.layer == LayerMask.NameToLayer("ToLiquidCollision"))
+            if (VR.Interpreter.IsBody(collider))
             {
                 _Rumble.Restart();
             }
@@ -58,7 +58,7 @@ namespace VRGIN.Controls.Handlers
 
         protected void OnTriggerExit(Collider collider)
         {
-            if (collider.gameObject.layer == LayerMask.NameToLayer("ToLiquidCollision"))
+            if (VR.Interpreter.IsBody(collider))
             {
                 _TouchCounter--;
 
