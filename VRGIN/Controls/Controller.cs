@@ -79,6 +79,7 @@ namespace VRGIN.Controls
         private Canvas _Canvas;
         private Lock _Lock;
         private Lock _LaserLock;
+        private GameObject _AlphaConcealer;
 
 
         public RumbleManager Rumble { get; private set; }
@@ -133,11 +134,13 @@ namespace VRGIN.Controls
         protected virtual void OnLock()
         {
             ToolEnabled = false;
+            _AlphaConcealer.SetActive(false);
         }
 
         protected virtual void OnUnlock()
         {
             ToolEnabled = true;
+            _AlphaConcealer.SetActive(true);
         }
 
         protected virtual void OnDestroy()
@@ -471,12 +474,12 @@ namespace VRGIN.Controls
             canvas.gameObject.layer = 0;
 
             // Hack for alpha order
-            var circle = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            circle.transform.SetParent(transform, false);
-            circle.transform.localScale = new Vector3(0.05f, 0, 0.05f);
-            circle.transform.localPosition = new Vector3(0, -0.0303f, 0.0142f);
-            circle.transform.localRotation = Quaternion.Euler(60, 0, 0);
-            circle.GetComponent<Collider>().enabled = false;
+            _AlphaConcealer = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            _AlphaConcealer.transform.SetParent(transform, false);
+            _AlphaConcealer.transform.localScale = new Vector3(0.05f, 0, 0.05f);
+            _AlphaConcealer.transform.localPosition = new Vector3(0, -0.0303f, 0.0142f);
+            _AlphaConcealer.transform.localRotation = Quaternion.Euler(60, 0, 0);
+            _AlphaConcealer.GetComponent<Collider>().enabled = false;
         }
 
         private void CreateToolCanvas(Tool tool)
