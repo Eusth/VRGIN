@@ -60,7 +60,7 @@ namespace VRGIN.Controls
         private bool _Started = false;
 
         public SteamVR_TrackedObject Tracking;
-        protected SteamVR_RenderModel Model;
+        public SteamVR_RenderModel Model { get; private set; }
         protected BoxCollider Collider;
 
         private Vector2? mouseDownPosition;
