@@ -21,6 +21,19 @@ namespace VRGIN.Controls
         {
             public bool IsValid { get; private set; }
             private Controller _Controller;
+
+            public static Lock Invalid
+            {
+                get
+                {
+                    return new Lock();
+                }
+            }
+            private Lock()
+            {
+                IsValid = false;
+            }
+
             internal Lock(Controller controller)
             {
                 IsValid = true;
@@ -69,11 +82,28 @@ namespace VRGIN.Controls
 
 
         public RumbleManager Rumble { get; private set; }
+
+        /// <summary>
+        /// Tries to acquire the focus of the controller, meaning that tools will be temporarily halted.
+        /// </summary>
+        /// <param name="lockObj">Lock object to fill. Will be assigned NULL when it failed.</param>
+        /// <returns>Whether or not the process was successful.</returns>
+        [Obsolete("Use TryAcquireFocus() or AcquireFocus()")]
         public bool AcquireFocus(out Lock lockObj)
+        {
+            return TryAcquireFocus(out lockObj);
+        }
+
+        /// <summary>
+        /// Tries to acquire the focus of the controller, meaning that tools will be temporarily halted.
+        /// </summary>
+        /// <param name="lockObj">Lock object to fill. Will be assigned NULL when it failed.</param>
+        /// <returns>Whether or not the process was successful.</returns>
+        public bool TryAcquireFocus(out Lock lockObj)
         {
             lockObj = null;
 
-            if (_Lock == null)
+            if (_Lock == null || !_Lock.IsValid)
             {
                 lockObj = new Lock(this);
                 return true;
@@ -81,6 +111,22 @@ namespace VRGIN.Controls
             else
             {
                 return false;
+            }
+        }
+
+        /// <summary>
+        /// Tries to acquire the focus of the controller, meaning that tools will be temporarily halted.
+        /// </summary>
+        /// <returns>The lock object. Might be valid or invalid.</returns>
+        public Lock AcquireFocus()
+        {
+            Lock lockObj;
+            if(TryAcquireFocus(out lockObj))
+            {
+                return lockObj;
+            } else
+            {
+                return Lock.Invalid;
             }
         }
 
