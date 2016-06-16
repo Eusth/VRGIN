@@ -26,6 +26,15 @@ namespace VRGIN.Core
         }
 
         /// <summary>
+        /// Finds the first actor who has no head (= is impersonated) or NULL.
+        /// </summary>
+        /// <returns></returns>
+        public IActor FindImpersonatedActor()
+        {
+            return Actors.FirstOrDefault(a => !a.HasHead);
+        }
+
+        /// <summary>
         /// Finds the main camera object.
         /// </summary>
         /// <returns></returns>

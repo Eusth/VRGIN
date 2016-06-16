@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using Valve.VR;
+using VRGIN.Core;
 using VRGIN.Helpers;
 using VRGIN.Native;
 using VRGIN.Visuals;
@@ -13,11 +14,40 @@ namespace VRGIN.Controls.Tools
 {
     public class MenuTool : Tool
     {
-        public GUIQuad Gui;
-        
+        /// <summary>
+        /// GUI that is attached to this controller
+        /// </summary>
+        public GUIQuad Gui { get; private set; }
+
         private float pressDownTime;
         private Vector2 touchDownPosition;
         private POINT touchDownMousePosition;
+        private float timeAbandoned;
+
+        public void TakeGUI(GUIQuad quad)
+        {
+            if (quad && !Gui && !quad.IsOwned)
+            {
+                Gui = quad;
+                Gui.transform.parent = transform;
+                Gui.transform.SetParent(transform, true);
+                Gui.transform.localPosition = new Vector3(0, 0.05f, -0.06f);
+                Gui.transform.localRotation = Quaternion.Euler(90, 0, 0);
+
+                quad.IsOwned = true;
+            }
+        }
+
+        public void AbandonGUI()
+        {
+            if (Gui)
+            {
+                timeAbandoned = Time.time;
+                Gui.IsOwned = false;
+                Gui.transform.SetParent(null, true);
+                Gui = null;
+            }
+        }
 
         public override Texture2D Image
         {
@@ -30,17 +60,21 @@ namespace VRGIN.Controls.Tools
         protected override void OnAwake()
         {
             base.OnAwake();
-        }
-
-        protected override void OnStart()
-        {
-            base.OnStart();
 
             Gui = GUIQuad.Create();
             Gui.transform.parent = transform;
             Gui.transform.localScale = Vector3.one * .3f;
             Gui.transform.localPosition = new Vector3(0, 0.05f, -0.06f);
             Gui.transform.localRotation = Quaternion.Euler(90, 0, 0);
+            Gui.IsOwned = true;
+            DontDestroyOnLoad(Gui.gameObject);
+
+        }
+
+        protected override void OnStart()
+        {
+            base.OnStart();
+
         }
 
         protected override void OnDestroy()
@@ -51,13 +85,21 @@ namespace VRGIN.Controls.Tools
         protected override void OnDisable()
         {
             base.OnDisable();
-            Gui.gameObject.SetActive(false);
+
+            if (Gui)
+            {
+                Gui.gameObject.SetActive(false);
+            }
 
         }
         protected override void OnEnable()
         {
             base.OnEnable();
-            Gui.gameObject.SetActive(true);
+
+            if (Gui)
+            {
+                Gui.gameObject.SetActive(true);
+            }
         }
 
         protected override void OnFixedUpdate()
@@ -65,21 +107,34 @@ namespace VRGIN.Controls.Tools
             base.OnFixedUpdate();
 
             var device = this.Controller;
-   
+
             if (device.GetPressDown(EVRButtonId.k_EButton_Axis0))
             {
                 MouseOperations.MouseEvent(MouseEventFlags.LeftDown);
                 pressDownTime = Time.time;
             }
-            if(device.GetTouchDown(EVRButtonId.k_EButton_Axis0))
+
+            if (device.GetPressUp(EVRButtonId.k_EButton_Grip))
+            {
+                if (Gui)
+                {
+                    AbandonGUI();
+                }
+                else
+                {
+                    TakeGUI(GUIQuadRegistry.Quads.FirstOrDefault(q => !q.IsOwned));
+                }
+            }
+
+            if (device.GetTouchDown(EVRButtonId.k_EButton_Axis0))
             {
                 touchDownPosition = device.GetAxis();
                 touchDownMousePosition = MouseOperations.GetClientCursorPosition();
             }
             if (device.GetTouch(EVRButtonId.k_EButton_Axis0) && (Time.time - pressDownTime) > 0.3f)
-            {   
+            {
                 var P = touchDownMousePosition;
-                var diff =  device.GetAxis() - touchDownPosition;
+                var diff = device.GetAxis() - touchDownPosition;
 
                 P.X = (int)(P.X + (diff.x * Screen.width * 0.25f));
                 P.Y = (int)(P.Y + (-diff.y * Screen.height * 0.25f));

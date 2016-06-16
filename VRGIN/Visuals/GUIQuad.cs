@@ -8,12 +8,35 @@ using VRGIN.Modes;
 
 namespace VRGIN.Visuals
 {
+    public static class GUIQuadRegistry
+    {
+        static HashSet<GUIQuad> _Quads = new HashSet<GUIQuad>();
+
+        public static IEnumerable<GUIQuad> Quads
+        {
+            get
+            {
+                return _Quads;
+            }
+        }
+
+        internal static void Register(GUIQuad quad)
+        {
+            _Quads.Add(quad);
+        }
+
+        internal static void Unregister(GUIQuad quad)
+        {
+            _Quads.Remove(quad);
+        }
+
+    }
     public class GUIQuad : ProtectedBehaviour
     {
 #if !UNITY_4_5
         private Renderer renderer;
 #endif
-
+        public bool IsOwned = false;
         public static GUIQuad Create()
         {
             VRLog.Info("Create GUI");
@@ -46,6 +69,7 @@ namespace VRGIN.Visuals
         protected virtual void OnEnable()
         {
             VRLog.Info("Listen!");
+            GUIQuadRegistry.Register(this);
 
             VRGUI.Instance.Listen();
         }
@@ -53,10 +77,11 @@ namespace VRGIN.Visuals
         protected virtual void OnDisable()
         {
             VRLog.Info("Unlisten!");
+            GUIQuadRegistry.Unregister(this);
 
             VRGUI.Instance.Unlisten();
         }
-        
+
         public virtual void UpdateAspect()
         {
             var height = transform.localScale.y;

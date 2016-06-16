@@ -22,13 +22,8 @@ namespace VRGIN.Controls
             public bool IsValid { get; private set; }
             private Controller _Controller;
 
-            public static Lock Invalid
-            {
-                get
-                {
-                    return new Lock();
-                }
-            }
+            public static readonly Lock Invalid = new Lock();
+
             private Lock()
             {
                 IsValid = false;
@@ -63,22 +58,18 @@ namespace VRGIN.Controls
         public SteamVR_RenderModel Model { get; private set; }
         protected BoxCollider Collider;
 
-        private Vector2? mouseDownPosition;
         private float? appButtonPressTime;
 
-        private LineRenderer Laser;
 
         public List<Tool> Tools = new List<Tool>();
 
         public Controller Other;
-        private const int MOUSE_STABILIZER_THRESHOLD = 30; // pixels
         private const float APP_BUTTON_TIME_THRESHOLD = 0.5f; // seconds
         private bool helpShown;
         private List<HelpText> helpTexts;
 
         private Canvas _Canvas;
-        private Lock _Lock;
-        private Lock _LaserLock;
+        private Lock _Lock = Lock.Invalid;
         private GameObject _AlphaConcealer;
 
 
@@ -104,7 +95,7 @@ namespace VRGIN.Controls
         {
             lockObj = null;
 
-            if (_Lock == null || !_Lock.IsValid)
+            if (CanAcquireFocus())
             {
                 lockObj = new Lock(this);
                 return true;
@@ -122,13 +113,19 @@ namespace VRGIN.Controls
         public Lock AcquireFocus()
         {
             Lock lockObj;
-            if(TryAcquireFocus(out lockObj))
+            if (TryAcquireFocus(out lockObj))
             {
                 return lockObj;
-            } else
+            }
+            else
             {
                 return Lock.Invalid;
             }
+        }
+
+        public bool CanAcquireFocus()
+        {
+            return _Lock == null || !_Lock.IsValid;
         }
 
         protected virtual void OnLock()
@@ -153,17 +150,7 @@ namespace VRGIN.Controls
             Tracking = gameObject.AddComponent<SteamVR_TrackedObject>();
             Rumble = gameObject.AddComponent<RumbleManager>();
             gameObject.AddComponent<BodyRumbleHandler>();
-
-            Laser = new GameObject().AddComponent<LineRenderer>();
-            Laser.transform.SetParent(transform, false);
-            Laser.material = Resources.GetBuiltinResource<Material>("Sprites-Default.mat");
-            Laser.material.renderQueue += 1000;
-            Laser.SetColors(Color.cyan, Color.cyan);
-            Laser.transform.localRotation = Quaternion.Euler(60, 0, 0);
-            Laser.transform.position += Laser.transform.forward * 0.07f;
-            Laser.SetVertexCount(2);
-            Laser.useWorldSpace = true;
-            Laser.SetWidth(0.002f, 0.002f);
+            gameObject.AddComponent<MenuHandler>();
 
             // Add model
             Model = new GameObject("Model").AddComponent<SteamVR_RenderModel>();
@@ -239,7 +226,7 @@ namespace VRGIN.Controls
                 if (i++ != ToolIndex && tool)
                 {
                     tool.enabled = false;
-                    VRLog.Info("Kill tool #{0} ({1})", i - 1, ToolIndex);
+                    VRLog.Info("Disable tool #{0} ({1})", i - 1, ToolIndex);
                 }
                 else
                 {
@@ -259,103 +246,8 @@ namespace VRGIN.Controls
             //    ActiveTool.enabled = Tracking.isValid && !LaserVisible;
             //}
 
-            if (Laser.gameObject.activeSelf)
-            {
-                Laser.SetPosition(0, Laser.transform.position);
-                Laser.SetPosition(1, Laser.transform.position + Laser.transform.forward);
-            }
             //Logger.Info(transform.position);
-            if (Other)
-            {
-                if (Other.ActiveTool != null && Other.ActiveTool is MenuTool)
-                {
 
-                    var menuTool = Other.ActiveTool as MenuTool;
-
-                    if (menuTool.Gui)
-                    {
-                        float range = 0.25f;
-
-                        var normal = -menuTool.Gui.transform.forward;
-                        var otherPos = menuTool.Gui.transform.position;
-
-                        var myPos = Laser.transform.position;
-                        var laser = Laser.transform.forward;
-                        var heightOverMenu = -menuTool.Gui.transform.InverseTransformPoint(myPos).z;
-
-                        bool laserVisible = heightOverMenu > 0 && heightOverMenu < range
-                            && Vector3.Dot(normal, laser) < 0; // They have to point the other way
-
-                        if (laserVisible)
-                        {
-                            // So far so good. Now raycast!
-                            RaycastHit hit;
-                            if (Physics.Raycast(myPos, laser, out hit, range, LayerMask.GetMask(VRManager.Instance.Context.GuiLayer)))
-                            {
-                                Laser.SetPosition(1, hit.point);
-
-                                var newPos = new Vector2(hit.textureCoord.x * Screen.width, (1 - hit.textureCoord.y) * Screen.height);
-
-                                if (!mouseDownPosition.HasValue || Vector2.Distance(mouseDownPosition.Value, newPos) > MOUSE_STABILIZER_THRESHOLD)
-                                {
-                                    MouseOperations.SetClientCursorPosition((int)newPos.x, (int)newPos.y);
-                                    mouseDownPosition = null;
-                                }
-                                laserVisible = true;
-                            }
-                            else
-                            {
-                                laserVisible = false;
-                            }
-                        }
-
-                        LaserVisible = laserVisible;
-                    }
-                    else
-                    {
-                        LaserVisible = false;
-                    }
-
-                }
-                else if (LaserVisible)
-                {
-                    LaserVisible = false;
-                }
-
-            }
-        }
-
-
-
-        public bool LaserVisible
-        {
-            get
-            {
-                return Laser.gameObject.activeSelf;
-            }
-            set
-            {
-                if (value && _LaserLock == null)
-                {
-                    if (!AcquireFocus(out _LaserLock))
-                    {
-                        // Could not get focus, do nothing.
-                        return;
-                    }
-                }
-                else if (!value && _LaserLock != null)
-                {
-                    _LaserLock.Release();
-                    _LaserLock = null;
-                }
-
-                Laser.gameObject.SetActive(value);
-
-                if (value)
-                {
-                    Laser.SetPosition(0, Laser.transform.position);
-                }
-            }
         }
 
         public bool ToolEnabled
@@ -382,20 +274,7 @@ namespace VRGIN.Controls
         {
             var device = SteamVR_Controller.Input((int)Tracking.index);
 
-            if (LaserVisible)
-            {
-                if (device.GetPressDown(EVRButtonId.k_EButton_SteamVR_Trigger))
-                {
-                    MouseOperations.MouseEvent(MouseEventFlags.LeftDown);
-                    mouseDownPosition = new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y);
-                }
-                if (device.GetPressUp(EVRButtonId.k_EButton_SteamVR_Trigger))
-                {
-                    MouseOperations.MouseEvent(MouseEventFlags.LeftUp);
-                    mouseDownPosition = null;
-                }
-            }
-            else if (_Lock == null)
+            if (_Lock == null || !_Lock.IsValid)
             {
                 if (device.GetPressDown(EVRButtonId.k_EButton_ApplicationMenu))
                 {
