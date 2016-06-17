@@ -44,7 +44,7 @@ namespace VRGIN.Controls.Tools
             {
                 timeAbandoned = Time.time;
                 Gui.IsOwned = false;
-                Gui.transform.SetParent(null, true);
+                Gui.transform.SetParent(VR.Camera.SteamCam.origin, true);
                 Gui = null;
             }
         }
