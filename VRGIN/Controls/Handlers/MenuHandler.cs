@@ -118,6 +118,8 @@ namespace VRGIN.Controls.Handlers
         protected override void OnFixedUpdate()
         {
             base.OnFixedUpdate();
+            IsPressing = false;
+
             if (LaserVisible)
             {
                 if (_Other.LaserVisible && _Other._Target == _Target)
@@ -134,11 +136,18 @@ namespace VRGIN.Controls.Handlers
                 {
                     if (Device.GetPressDown(EVRButtonId.k_EButton_SteamVR_Trigger))
                     {
+                        IsPressing = true;
+
                         MouseOperations.MouseEvent(MouseEventFlags.LeftDown);
                         mouseDownPosition = new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y);
                     }
+                    if (Device.GetPress(EVRButtonId.k_EButton_SteamVR_Trigger))
+                    {
+                        IsPressing = true;
+                    }
                     if (Device.GetPressUp(EVRButtonId.k_EButton_SteamVR_Trigger))
                     {
+                        IsPressing = true;
                         MouseOperations.MouseEvent(MouseEventFlags.LeftUp);
                         mouseDownPosition = null;
                     }
@@ -179,7 +188,7 @@ namespace VRGIN.Controls.Handlers
 
         float GetRange(GUIQuad quad)
         {
-            return Mathf.Max(RANGE, quad.transform.localScale.sqrMagnitude * RANGE);
+            return Mathf.Clamp(quad.transform.localScale.magnitude * RANGE, RANGE, RANGE * 5);
         }
         bool IsWithinRange(GUIQuad quad)
         {
@@ -191,8 +200,7 @@ namespace VRGIN.Controls.Handlers
 
             var myPos = Laser.transform.position;
             var laser = Laser.transform.forward;
-            var heightOverMenu = -quad.transform.InverseTransformPoint(myPos).z;
-
+            var heightOverMenu = -quad.transform.InverseTransformPoint(myPos).z * quad.transform.localScale.magnitude;
             return heightOverMenu > 0 && heightOverMenu < GetRange(quad)
                 && Vector3.Dot(normal, laser) < 0; // They have to point the other way
 
@@ -218,14 +226,17 @@ namespace VRGIN.Controls.Handlers
                 RaycastHit hit;
                 if (IsWithinRange(_Target) && Raycast(_Target, out hit))
                 {
+
                     Laser.SetPosition(1, hit.point);
-
-                    var newPos = new Vector2(hit.textureCoord.x * Screen.width, (1 - hit.textureCoord.y) * Screen.height);
-
-                    if (!mouseDownPosition.HasValue || Vector2.Distance(mouseDownPosition.Value, newPos) > MOUSE_STABILIZER_THRESHOLD)
+                    if (!IsOtherWorkingOn(_Target))
                     {
-                        MouseOperations.SetClientCursorPosition((int)newPos.x, (int)newPos.y);
-                        mouseDownPosition = null;
+                        var newPos = new Vector2(hit.textureCoord.x * Screen.width, (1 - hit.textureCoord.y) * Screen.height);
+
+                        if (!mouseDownPosition.HasValue || Vector2.Distance(mouseDownPosition.Value, newPos) > MOUSE_STABILIZER_THRESHOLD)
+                        {
+                            MouseOperations.SetClientCursorPosition((int)newPos.x, (int)newPos.y);
+                            mouseDownPosition = null;
+                        }
                     }
                 }
                 else
@@ -241,6 +252,10 @@ namespace VRGIN.Controls.Handlers
             }
         }
 
+        private bool IsOtherWorkingOn(GUIQuad target)
+        {
+            return _Other && _Other.LaserVisible && _Other._Target == target && _Other.IsPressing;
+        }
 
         public bool LaserVisible
         {
@@ -281,6 +296,8 @@ namespace VRGIN.Controls.Handlers
                 }
             }
         }
+
+        public bool IsPressing { get; private set; }
 
         class ResizeHandler : ProtectedBehaviour
         {
