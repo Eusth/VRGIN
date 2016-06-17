@@ -120,7 +120,7 @@ namespace VRGIN.Controls.Handlers
             base.OnFixedUpdate();
             IsPressing = false;
 
-            if (LaserVisible)
+            if (LaserVisible && _Target)
             {
                 if (_Other.LaserVisible && _Other._Target == _Target)
                 {
