@@ -40,7 +40,7 @@ namespace VRGIN.Visuals
             {
                 VRLog.Info("No plane either?");
             }
-            UpdateGUI(true, true);
+            UpdateGUI();
 
             Rebuild();
         }

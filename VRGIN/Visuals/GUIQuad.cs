@@ -43,7 +43,7 @@ namespace VRGIN.Visuals
             var gui = GameObject.CreatePrimitive(PrimitiveType.Quad).AddComponent<GUIQuad>();
             gui.name = "GUIQuad";
 
-            gui.UpdateGUI(true, true);
+            gui.UpdateGUI();
 
             return gui;
         }
@@ -90,7 +90,7 @@ namespace VRGIN.Visuals
             transform.localScale = new Vector3(width, height, 1);
         }
 
-        public virtual void UpdateGUI(bool transparent, bool renderGUI)
+        public virtual void UpdateGUI()
         {
             //VRLog.Info();
             //renderGUI = false;
@@ -104,27 +104,9 @@ namespace VRGIN.Visuals
 #else
                 renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
 #endif
-
-                renderer.castShadows = false;
-                if (transparent)
-                {
-                    if (renderGUI)
-                    {
-                        renderer.material = VRManager.Instance.Context.Materials.UnlitTransparentCombined;
-                        renderer.material.SetTexture("_MainTex", VRGUI.Instance.uGuiTexture);
-                        renderer.material.SetTexture("_SubTex", VRGUI.Instance.nGuiTexture);
-                    }
-                    else
-                    {
-                        renderer.material = VRManager.Instance.Context.Materials.UnlitTransparent;
-                        renderer.material.mainTexture = VRGUI.Instance.uGuiTexture;
-                    }
-                }
-                else
-                {
-                    renderer.material = VRManager.Instance.Context.Materials.Unlit;
-                    renderer.material.mainTexture = VRGUI.Instance.uGuiTexture;
-                }
+                renderer.material = VR.Context.Materials.UnlitTransparentCombined;
+                renderer.material.SetTexture("_MainTex", VRGUI.Instance.uGuiTexture);
+                renderer.material.SetTexture("_SubTex", VRGUI.Instance.nGuiTexture);
             }
             catch (Exception e)
             {
