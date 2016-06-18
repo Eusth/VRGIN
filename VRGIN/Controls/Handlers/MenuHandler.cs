@@ -210,9 +210,16 @@ namespace VRGIN.Controls.Handlers
             var myPos = Laser.transform.position;
             var laser = Laser.transform.forward;
             var collider = quad.GetComponent<Collider>();
-            var ray = new Ray(myPos, laser);
-            // So far so good. Now raycast!
-            return collider.Raycast(ray, out hit, GetRange(quad));
+            if (collider)
+            {
+                var ray = new Ray(myPos, laser);
+                // So far so good. Now raycast!
+                return collider.Raycast(ray, out hit, GetRange(quad));
+            } else
+            {
+                hit = new RaycastHit();
+                return false;
+            }
         }
 
         void UpdateLaser()
