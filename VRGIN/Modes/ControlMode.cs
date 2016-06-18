@@ -19,6 +19,9 @@ namespace VRGIN.Modes
 
     public abstract class ControlMode : ProtectedBehaviour
     {
+        private static bool _ControllerFound = false;
+
+
         public virtual void Impersonate(IActor actor)
         {
             this.Impersonate(actor, ImpersonationMode.Approximately);
@@ -48,6 +51,16 @@ namespace VRGIN.Modes
 
             Shortcuts = CreateShortcuts();
             SteamVR_Render.instance.trackingSpace = TrackingOrigin;
+        }
+
+        protected virtual void OnEnable()
+        {
+            SteamVR_Utils.Event.Listen("device_connected", OnDeviceConnected);
+        }
+
+        protected virtual void OnDisable()
+        {
+            SteamVR_Utils.Event.Listen("device_connected", OnDeviceConnected);
         }
 
         /// <summary>
@@ -215,6 +228,32 @@ namespace VRGIN.Modes
             {
                 shortcut.Evaluate();
             }
+        }
+
+        private void OnDeviceConnected(object[] args)
+        {
+            if (!_ControllerFound)
+            {
+                var index = (uint)(int)args[0];
+                var connected = (bool)args[1];
+                VRLog.Info("Device connected: {0}", index);
+
+                if (connected && index > OpenVR.k_unTrackedDeviceIndex_Hmd)
+                {
+                    var system = OpenVR.System;
+                    if (system != null && system.GetTrackedDeviceClass(index) == ETrackedDeviceClass.Controller)
+                    {
+                        _ControllerFound = true;
+
+                        // Switch to standing mode
+                        ChangeModeOnControllersDetected();
+                    }
+                }
+            }
+        }
+
+        protected virtual void ChangeModeOnControllersDetected()
+        {
         }
     }
 }

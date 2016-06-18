@@ -26,7 +26,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;UNITY_5_3</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -42,6 +42,9 @@
     <Reference Include="UnityEngine.UI">
       <HintPath>..\Libs\Unity 5.3.4\UnityEngine.UI.dll</HintPath>
       <Private>True</Private>
+    </Reference>
+    <Reference Include="WindowsInput">
+      <HintPath>..\Libs\WindowsInput.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

@@ -6,6 +6,7 @@ using System.Text;
 using UnityEngine;
 using VRGIN.Modes;
 using VRGIN.Visuals;
+using WindowsInput;
 
 namespace VRGIN.Core
 {
@@ -21,6 +22,7 @@ namespace VRGIN.Core
         public static ControlMode Mode { get { return VRManager.Instance.Mode; } }
         public static VRSettings Settings { get { return Context.Settings; } }
         public static VRManager Manager { get { return VRManager.Instance; } }
+        public static InputSimulator Input { get { return VRManager.Instance.Input; } }
     }
 
     public class ModeInitializedEventArgs : EventArgs
@@ -68,6 +70,7 @@ namespace VRGIN.Core
                 _Instance.Context = context;
                 _Instance.Interpreter = _Instance.gameObject.AddComponent<T>();
                 _Instance._Gui = VRGUI.Instance;
+                _Instance.Input = new InputSimulator();
 
                 // Makes sure that the GUI is instanciated
             }
@@ -108,6 +111,7 @@ namespace VRGIN.Core
             get;
             private set;
         }
+        public InputSimulator Input { get; internal set; }
 
         private static Type ModeType;
 

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using UnityEngine;
+using VRGIN.Core;
 using static VRGIN.Native.WindowsInterop;
 
 namespace VRGIN.Native
@@ -62,19 +63,22 @@ namespace VRGIN.Native
             {
                 if(_Handle == null)
                 {
+                    int currentWidth = 0;
+                    RECT rect = new RECT();
                     var name = Process.GetCurrentProcess().ProcessName;
                     var handles = GetRootWindowsOfProcess(Process.GetCurrentProcess().Id);
                     foreach (var handle in handles)
                     {
-                        if (GetWindowText(handle) == name)
+                        if(GetWindowRect(handle, ref rect) && (rect.Right - rect.Left) > currentWidth)
                         {
+                            currentWidth = rect.Right - rect.Left;
                             _Handle = handle;
-                            break;
                         }
                     }
 
                     if(!_Handle.HasValue)
                     {
+                        VRLog.Warn("Fall back to first handle!");
                         _Handle = handles.First();
                     }
 

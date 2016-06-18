@@ -110,7 +110,7 @@ namespace VRGIN.Controls.Tools
 
             if (device.GetPressDown(EVRButtonId.k_EButton_Axis0))
             {
-                MouseOperations.MouseEvent(MouseEventFlags.LeftDown);
+                VR.Input.Mouse.LeftButtonDown();
                 pressDownTime = Time.time;
             }
 
@@ -133,18 +133,19 @@ namespace VRGIN.Controls.Tools
             }
             if (device.GetTouch(EVRButtonId.k_EButton_Axis0) && (Time.time - pressDownTime) > 0.3f)
             {
-                var P = touchDownMousePosition;
                 var diff = device.GetAxis() - touchDownPosition;
 
-                P.X = (int)(P.X + (diff.x * Screen.width * 0.25f));
-                P.Y = (int)(P.Y + (-diff.y * Screen.height * 0.25f));
+                int deltaX = (int)((diff.x * Screen.width * 0.25f));
+                int deltaY = (int)((-diff.y * Screen.height * 0.25f));
 
-                MouseOperations.SetClientCursorPosition(P.X, P.Y);
+                VR.Input.Mouse.MoveMouseBy(deltaX, deltaY);
+                touchDownPosition = device.GetAxis();
+
             }
 
             if (device.GetPressUp(EVRButtonId.k_EButton_Axis0))
             {
-                MouseOperations.MouseEvent(MouseEventFlags.LeftUp);
+                VR.Input.Mouse.LeftButtonUp();
                 pressDownTime = 0;
             }
         }

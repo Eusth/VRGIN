@@ -44,6 +44,9 @@
       <HintPath>..\Libs\Unity 4.6\UnityEngine.UI.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="WindowsInput">
+      <HintPath>..\Libs\WindowsInput.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controls\Controller.cs" />

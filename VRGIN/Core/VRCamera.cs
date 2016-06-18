@@ -108,7 +108,7 @@ namespace VRGIN.Core
 
             // Remove layers that are captured by other cameras (see VRGUI)
             cullingMask &= ~(VRManager.Instance.Context.UILayerMask | LayerMask.GetMask(VR.Context.HMDLayer));
-
+            cullingMask |= LayerMask.GetMask("Default");
             Logger.Info("The camera sees {0}", string.Join(", ", UnityHelper.GetLayerNames(cullingMask)));
 
             // Apply to both the head camera and the VR camera
@@ -117,7 +117,8 @@ namespace VRGIN.Core
                 targetCamera.nearClipPlane = 0.01f;
                 targetCamera.farClipPlane = Blueprint.farClipPlane;
                 targetCamera.cullingMask = cullingMask;
-                targetCamera.clearFlags = Blueprint.clearFlags;
+                targetCamera.clearFlags = Blueprint.clearFlags == CameraClearFlags.Skybox ? CameraClearFlags.Skybox : CameraClearFlags.SolidColor;
+
                 targetCamera.backgroundColor = Blueprint.backgroundColor;
 
                 var skybox = Blueprint.GetComponent<Skybox>();

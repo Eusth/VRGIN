@@ -52,7 +52,7 @@ namespace VRGIN.Controls.Handlers
             Laser = new GameObject().AddComponent<LineRenderer>();
             Laser.transform.SetParent(transform, false);
             Laser.material = Resources.GetBuiltinResource<Material>("Sprites-Default.mat");
-            Laser.material.renderQueue += 1000;
+            Laser.material.renderQueue += 5000;
             Laser.SetColors(Color.cyan, Color.cyan);
             Laser.transform.localRotation = Quaternion.Euler(60, 0, 0);
             Laser.transform.position += Laser.transform.forward * 0.07f;
@@ -137,8 +137,7 @@ namespace VRGIN.Controls.Handlers
                     if (Device.GetPressDown(EVRButtonId.k_EButton_SteamVR_Trigger))
                     {
                         IsPressing = true;
-
-                        MouseOperations.MouseEvent(MouseEventFlags.LeftDown);
+                        VR.Input.Mouse.LeftButtonDown();
                         mouseDownPosition = new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y);
                     }
                     if (Device.GetPress(EVRButtonId.k_EButton_SteamVR_Trigger))
@@ -148,7 +147,7 @@ namespace VRGIN.Controls.Handlers
                     if (Device.GetPressUp(EVRButtonId.k_EButton_SteamVR_Trigger))
                     {
                         IsPressing = true;
-                        MouseOperations.MouseEvent(MouseEventFlags.LeftUp);
+                        VR.Input.Mouse.LeftButtonUp();
                         mouseDownPosition = null;
                     }
 
@@ -231,7 +230,7 @@ namespace VRGIN.Controls.Handlers
                     if (!IsOtherWorkingOn(_Target))
                     {
                         var newPos = new Vector2(hit.textureCoord.x * Screen.width, (1 - hit.textureCoord.y) * Screen.height);
-
+                        //VRLog.Info("New Pos: {0}, textureCoord: {1}", newPos, hit.textureCoord);
                         if (!mouseDownPosition.HasValue || Vector2.Distance(mouseDownPosition.Value, newPos) > MOUSE_STABILIZER_THRESHOLD)
                         {
                             MouseOperations.SetClientCursorPosition((int)newPos.x, (int)newPos.y);
@@ -261,7 +260,7 @@ namespace VRGIN.Controls.Handlers
         {
             get
             {
-                return Laser.gameObject.activeSelf;
+                return Laser && Laser.gameObject.activeSelf;
             }
             set
             {
