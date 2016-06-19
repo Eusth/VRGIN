@@ -317,9 +317,9 @@ namespace VRGIN.Controls
             Rumble.StartRumble(session);
         }
 
-        public void StopRumble(TravelDistanceRumble _Rumble)
+        public void StopRumble(IRumbleSession session)
         {
-            Rumble.StopRumble(_Rumble);
+            Rumble.StopRumble(session);
         }
 
         private void HideHelp()
@@ -365,11 +365,6 @@ namespace VRGIN.Controls
             _AlphaConcealer.transform.localRotation = Quaternion.Euler(60, 0, 0);
             _AlphaConcealer.GetComponent<Collider>().enabled = false;
         }
-        public void StopRumble(TravelDistanceRumble _Rumble)
-        {
-            Rumble.StopRumble(_Rumble);
-        }
-
 
         private void CreateToolCanvas(Tool tool)
         {

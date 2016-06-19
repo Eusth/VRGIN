@@ -64,7 +64,7 @@ namespace VRGIN.Controls
             _RumbleSessions.Add(session);
         }
 
-        internal void StopRumble(TravelDistanceRumble session)
+        internal void StopRumble(IRumbleSession session)
         {
             _RumbleSessions.Remove(session);
         }
