@@ -15,7 +15,7 @@ namespace VRGIN.Controls
     {
         const float MILLI_TO_SECONDS = 1f / 1000f;
         public const float MIN_INTERVAL = 5 * MILLI_TO_SECONDS;
-        private List<IRumbleSession> _RumbleSessions = new List<IRumbleSession>();
+        private HashSet<IRumbleSession> _RumbleSessions = new HashSet<IRumbleSession>();
         private float _LastImpulse;
         private Controller _Controller;
 
@@ -64,5 +64,9 @@ namespace VRGIN.Controls
             _RumbleSessions.Add(session);
         }
 
+        internal void StopRumble(TravelDistanceRumble session)
+        {
+            _RumbleSessions.Remove(session);
+        }
     }
 }
