@@ -16,19 +16,27 @@ namespace VRGIN.Modes
         {
             base.Impersonate(actor, mode);
 
-            var targetYaw = Quaternion.Euler(0, actor.Eyes.rotation.eulerAngles.y, 0);
+            MoveToPosition(actor.Eyes.position, actor.Eyes.rotation.eulerAngles.y, mode == ImpersonationMode.Approximately);
+
+            OpenVR.ChaperoneSetup.ReloadFromDisk(EChaperoneConfigFile.Live);
+        }
+
+        protected void MoveToPosition(Vector3 targetPosition, bool ignoreHeight = true)
+        {
+            MoveToPosition(targetPosition, VR.Camera.SteamCam.head.eulerAngles.y, ignoreHeight);
+        }
+
+        protected void MoveToPosition(Vector3 targetPosition, float rotation = 0, bool ignoreHeight = true)
+        {
+            var targetYaw = Quaternion.Euler(0, rotation, 0);
             var myYaw = Quaternion.Euler(0, VR.Camera.SteamCam.head.eulerAngles.y, 0);
             VR.Camera.SteamCam.origin.rotation *= Quaternion.Inverse(myYaw) * targetYaw;
 
-
-            var targetPosition = actor.Eyes.position;
-            float targetY = mode == ImpersonationMode.Approximately ? 0 : targetPosition.y;
-            float myY = mode == ImpersonationMode.Approximately ? 0 : VR.Camera.SteamCam.head.position.y;
+            float targetY = ignoreHeight ? 0 : targetPosition.y;
+            float myY = ignoreHeight ? 0 : VR.Camera.SteamCam.head.position.y;
             targetPosition = new Vector3(targetPosition.x, targetY, targetPosition.z);
             var myPosition = new Vector3(VR.Camera.SteamCam.head.position.x, myY, VR.Camera.SteamCam.head.position.z);
             VR.Camera.SteamCam.origin.position += (targetPosition - myPosition);
-
-            OpenVR.ChaperoneSetup.ReloadFromDisk(EChaperoneConfigFile.Live);
         }
 
         public override void OnDestroy()
