@@ -120,12 +120,12 @@ namespace VRGIN.Core
 
             _VRGUICamera = new GameObject("VRGIN_GUICamera").AddComponent<Camera>();
             _VRGUICamera.transform.SetParent(transform);
-            _VRGUICamera.transform.position = new Vector3(halfWidth, halfHeight, 0);
+            _VRGUICamera.transform.position = new Vector3(halfWidth, halfHeight, -1f);
             _VRGUICamera.transform.rotation = Quaternion.identity;
 
             _VRGUICamera.cullingMask = VR.Context.UILayerMask;
             _VRGUICamera.depth = 1;
-            _VRGUICamera.nearClipPlane = 99f;
+            _VRGUICamera.nearClipPlane = 0f;
             _VRGUICamera.farClipPlane = 10000;
             _VRGUICamera.targetTexture = uGuiTexture;
             _VRGUICamera.backgroundColor = Color.clear;
@@ -143,9 +143,11 @@ namespace VRGIN.Core
 
         protected void CatchCanvas()
         {
+            _VRGUICamera.targetTexture = uGuiTexture;
             var canvasList = (_Registry.Keys as ICollection<Canvas>).Where(c => c).SelectMany(canvas => canvas.gameObject.GetComponentsInChildren<Canvas>()).ToList();
-
-            foreach (var canvas in canvasList.Where(c => (c.renderMode == RenderMode.ScreenSpaceOverlay || c.renderMode == RenderMode.ScreenSpaceCamera) && c.worldCamera != _VRGUICamera))
+            //var canvasList = GameObject.FindObjectsOfType<Canvas>();
+            foreach (var canvas in canvasList
+                                        .Where(c => (c.renderMode == RenderMode.ScreenSpaceOverlay || c.renderMode == RenderMode.ScreenSpaceCamera) && c.worldCamera != _VRGUICamera))
             {
                 if (VR.Context.IgnoredCanvas.Contains(canvas.name)) continue;
 
