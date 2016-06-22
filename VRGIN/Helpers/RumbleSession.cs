@@ -129,7 +129,10 @@ namespace VRGIN.Helpers
         protected Vector3 PrevPosition;
         protected Vector3 CurrentPosition;
 
-
+        public void Reset()
+        {
+            PrevPosition = _Transform.position;
+        }
         public bool IsOver
         {
             get; private set;
