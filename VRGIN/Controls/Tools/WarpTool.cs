@@ -80,7 +80,6 @@ namespace VRGIN.Controls.Tools
         /// </summary>
         private WarpState State = WarpState.None;
 
-        private RumbleSession _RumbleSession;
         private TravelDistanceRumble _TravelRumble;
 
         private bool _CanImpersonate = false;
@@ -123,6 +122,10 @@ namespace VRGIN.Controls.Tools
         {
             var model = new GameObject("Model").AddComponent<HMDLoader>();
             model.NewParent = PlayArea.transform;
+
+            // Prepare rumble definitions
+            _TravelRumble = new TravelDistanceRumble(500, 0.1f, transform);
+
             return model.transform;
         }
 
@@ -151,7 +154,7 @@ namespace VRGIN.Controls.Tools
                 //renderer.reflectionProbeUsage = UnityEngine.Rendering.ReflectionProbeUsage.Off;
                 //renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
 #if UNITY_4_5
-            renderer.castShadows = false;
+                renderer.castShadows = false;
 #else
                 renderer.reflectionProbeUsage = UnityEngine.Rendering.ReflectionProbeUsage.Off;
                 renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
@@ -210,60 +213,8 @@ namespace VRGIN.Controls.Tools
             EnterState(WarpState.None);
             SetVisibility(false);
 
-            // Clean up
-            if(_RumbleSession != null)
-            {
-                _RumbleSession.Close();
-                _RumbleSession = null;
-            }
-            if(_TravelRumble != null)
-            {
-                _TravelRumble.Close();
-                _TravelRumble = null;
-            }
-        }
-
-        protected override void OnUpdate()
-        {
-            base.OnUpdate();
-
-            bool triggerHapticImpulse = false;
-
-            if (!IsTracking) return;
-
-            _CanImpersonate = false;
-
-            if (VRManager.Instance.Interpreter.IsEveryoneHeaded)
-            {
-                var firstMember = VRManager.Instance.Interpreter.Actors.FirstOrDefault();
-                if (firstMember != null && firstMember.IsValid)
-                {
-                    var hisRot = Quaternion.Euler(firstMember.Eyes.rotation.ToPitchYawRollRad().x * Mathf.Rad2Deg, 0, 0);
-                    var hisHeight = firstMember.Eyes.position.y;
-                    var steamCam = VRCamera.Instance.SteamCam;
-
-                    var myRot = Quaternion.Euler(steamCam.head.rotation.ToPitchYawRollRad().x * Mathf.Rad2Deg, 0, 0);
-                    var myHeight = steamCam.head.position.y;
-
-                    if (Quaternion.Dot(hisRot, myRot) > 0.96f && Mathf.Abs(myHeight - hisHeight) < 0.05f)
-                    {
-                        triggerHapticImpulse = true;
-                        _CanImpersonate = true;
-                    }
-                }
-            }
-
-            if (triggerHapticImpulse && _RumbleSession == null)
-            {
-                _RumbleSession = new RumbleSession(100, 10);
-                Owner.StartRumble(_RumbleSession);
-
-            }
-            else if (!triggerHapticImpulse && _RumbleSession != null)
-            {
-                _RumbleSession.Close();
-                _RumbleSession = null;
-            }
+            // Always stop rumbling when we're disabled
+            Owner.StopRumble(_TravelRumble);
         }
 
         protected override void OnLateUpdate()
@@ -304,7 +255,7 @@ namespace VRGIN.Controls.Tools
 
             if (Controller.GetPressUp(EVRButtonId.k_EButton_Grip))
             {
-                GetComponent<Controller>().Rumble.StartRumble(new RumbleImpulse(800));
+                Owner.StartRumble(new RumbleImpulse(800));
                 _ProspectedPlayArea.Height = 0;
                 _ProspectedPlayArea.Scale = 1.0f;
             }
@@ -321,11 +272,6 @@ namespace VRGIN.Controls.Tools
             {
                 var steamCam = VRCamera.Instance.SteamCam;
 
-                if (_TravelRumble != null)
-                {
-                    _TravelRumble.Close();
-                    _TravelRumble = null;
-                }
                 // Warp!
                 ApplyPlayArea(_ProspectedPlayArea);
                 EnterState(WarpState.Rotating);
@@ -435,14 +381,26 @@ namespace VRGIN.Controls.Tools
 
         private void EnterState(WarpState state)
         {
+            // LEAVE state
+            switch (State)
+            {
+                case WarpState.None:
+
+
+                    break;
+                case WarpState.Rotating:
+
+                    break;
+                case WarpState.Transforming:
+                    Owner.StopRumble(_TravelRumble);
+                    break;
+            }
+
+
+            // ENTER state
             switch (state)
             {
                 case WarpState.None:
-                    if (_TravelRumble != null)
-                    {
-                        _TravelRumble.Close();
-                        _TravelRumble = null;
-                    }
                     SetVisibility(false);
                     break;
                 case WarpState.Rotating:
@@ -454,13 +412,12 @@ namespace VRGIN.Controls.Tools
                     _PrevPoint = transform.position;
                     ArcRenderer.gameObject.SetActive(false);
 
-                    _TravelRumble = new TravelDistanceRumble(500, 0.1f, transform);
+                    _TravelRumble.Reset();
                     Owner.StartRumble(_TravelRumble);
                     break;
             }
 
             State = state;
-
         }
 
         private void Reset()
