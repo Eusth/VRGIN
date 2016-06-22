@@ -215,7 +215,8 @@ namespace VRGIN.Controls.Handlers
                 var ray = new Ray(myPos, laser);
                 // So far so good. Now raycast!
                 return collider.Raycast(ray, out hit, GetRange(quad));
-            } else
+            }
+            else
             {
                 hit = new RaycastHit();
                 return false;
@@ -313,6 +314,8 @@ namespace VRGIN.Controls.Handlers
             Vector3? _StartScale;
             Quaternion? _StartRotation;
             Vector3? _StartPosition;
+            Quaternion _StartRotationController;
+            Vector3? _OffsetFromCenter;
 
             public bool IsDragging { get; private set; }
             protected override void OnStart()
@@ -338,16 +341,14 @@ namespace VRGIN.Controls.Handlers
 
                     var distance = Vector3.Distance(newLeft, newRight);
                     var originalDistance = Vector3.Distance(_StartLeft.Value, _StartRight.Value);
-                    var originalDirection = _StartRight.Value - _StartLeft.Value;
                     var newDirection = newRight - newLeft;
-                    var originalCenter = _StartLeft.Value + originalDirection * 0.5f;
                     var newCenter = newLeft + newDirection * 0.5f;
-
-                    var rotation = Quaternion.FromToRotation(originalDirection, newDirection);
+                    var rotation = GetAverageRotation() * Quaternion.Inverse(_StartRotationController);
 
                     _Gui.transform.localScale = (distance / originalDistance) * _StartScale.Value;
                     _Gui.transform.localRotation = rotation * _StartRotation.Value;
-                    _Gui.transform.position = _StartPosition.Value + (newCenter - originalCenter);
+
+                    _Gui.transform.position = newCenter + rotation * _OffsetFromCenter.Value;
 
                 }
                 else
@@ -356,6 +357,18 @@ namespace VRGIN.Controls.Handlers
                 }
 
             }
+
+            private Quaternion GetAverageRotation()
+            {
+                var leftPos = VR.Mode.Left.transform.position;
+                var rightPos = VR.Mode.Right.transform.position;
+
+                var right = (rightPos - leftPos).normalized;
+                var up = Vector3.Lerp(VR.Mode.Left.transform.forward, VR.Mode.Right.transform.forward, 0.5f);
+                var forward = Vector3.Cross(right, up).normalized;
+
+                return Quaternion.LookRotation(forward, up);
+            }
             private void Initialize()
             {
                 _StartLeft = VR.Mode.Left.transform.position;
@@ -363,6 +376,14 @@ namespace VRGIN.Controls.Handlers
                 _StartScale = _Gui.transform.localScale;
                 _StartRotation = _Gui.transform.localRotation;
                 _StartPosition = _Gui.transform.position;
+                _StartRotationController = GetAverageRotation();
+
+
+                var originalDistance = Vector3.Distance(_StartLeft.Value, _StartRight.Value);
+                var originalDirection = _StartRight.Value - _StartLeft.Value;
+                var originalCenter = _StartLeft.Value + originalDirection * 0.5f;
+                _OffsetFromCenter = transform.position - originalCenter;
+
             }
 
 
