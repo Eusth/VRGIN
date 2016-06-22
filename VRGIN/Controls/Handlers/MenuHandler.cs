@@ -343,12 +343,16 @@ namespace VRGIN.Controls.Handlers
                     var originalDistance = Vector3.Distance(_StartLeft.Value, _StartRight.Value);
                     var newDirection = newRight - newLeft;
                     var newCenter = newLeft + newDirection * 0.5f;
-                    var rotation = GetAverageRotation() * Quaternion.Inverse(_StartRotationController);
+
+                    // It would probably be easier than that but Quaternions have never been a strength of mine...
+                    var inverseOriginRot = Quaternion.Inverse(VR.Camera.SteamCam.origin.rotation);
+                    var avgRot = GetAverageRotation();
+                    var rotation = (inverseOriginRot * avgRot) * Quaternion.Inverse(inverseOriginRot * _StartRotationController);
 
                     _Gui.transform.localScale = (distance / originalDistance) * _StartScale.Value;
                     _Gui.transform.localRotation = rotation * _StartRotation.Value;
 
-                    _Gui.transform.position = newCenter + rotation * _OffsetFromCenter.Value;
+                    _Gui.transform.position = newCenter + (avgRot * Quaternion.Inverse(_StartRotationController)) * _OffsetFromCenter.Value;
 
                 }
                 else
