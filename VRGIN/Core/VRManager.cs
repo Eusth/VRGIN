@@ -202,11 +202,6 @@ namespace VRGIN.Core
         string InvisibleLayer { get; }
 
         /// <summary>
-        /// Gets a list of canvas names that should be ignored entirely.
-        /// </summary>
-        string[] IgnoredCanvas { get; }
-
-        /// <summary>
         /// Gets whether the library should make a cursor of its own. Needed when the game uses a hardware cursor.
         /// </summary>
         bool SimulateCursor { get; }

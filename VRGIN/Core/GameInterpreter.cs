@@ -62,5 +62,15 @@ namespace VRGIN.Core
         {
             return false;
         }
+
+        /// <summary>
+        /// Checks if a given canvas should be ignored.
+        /// </summary>
+        /// <param name="canvas"></param>
+        /// <returns></returns>
+        public virtual bool IsIgnoredCanvas(Canvas canvas)
+        {
+            return false;
+        }
     }
 }

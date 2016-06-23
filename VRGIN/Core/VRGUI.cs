@@ -149,8 +149,8 @@ namespace VRGIN.Core
             foreach (var canvas in canvasList
                                         .Where(c => (c.renderMode == RenderMode.ScreenSpaceOverlay || c.renderMode == RenderMode.ScreenSpaceCamera) && c.worldCamera != _VRGUICamera))
             {
-                if (VR.Context.IgnoredCanvas.Contains(canvas.name)) continue;
-                if ((VR.Context.UILayerMask & (1 << canvas.gameObject.layer)) == 0) continue;
+                if (VR.Interpreter.IsIgnoredCanvas(canvas)) continue;
+
                 VRLog.Info("Add {0} [Layer: {1}, SortingLayer: {2}, SortingOrder: {3}, RenderMode: {4}, Camera: {5}, Position: {6} ]", canvas.name, LayerMask.LayerToName(canvas.gameObject.layer), canvas.sortingLayerName, canvas.sortingOrder, canvas.renderMode, canvas.worldCamera, canvas.transform.position);
 
                 //if (canvas.name.Contains("TexFade")) continue;
