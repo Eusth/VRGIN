@@ -107,7 +107,7 @@ namespace VRGIN.Core
             }
 
             // Remove layers that are captured by other cameras (see VRGUI)
-            cullingMask &= ~(VRManager.Instance.Context.UILayerMask | LayerMask.GetMask(VR.Context.HMDLayer));
+            cullingMask &= ~(LayerMask.GetMask(VR.Context.InvisibleLayer));
             cullingMask |= LayerMask.GetMask("Default");
             Logger.Info("The camera sees {0}", string.Join(", ", UnityHelper.GetLayerNames(cullingMask)));
 

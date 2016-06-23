@@ -70,7 +70,7 @@ namespace VRGIN.Visuals
             model.transform.SetParent(VR.Camera.SteamCam.head, false);
             model.shader = VR.Context.Materials.StandardShader;
             model.SetDeviceIndex((int)OpenVR.k_unTrackedDeviceIndex_Hmd);
-            model.gameObject.layer = LayerMask.NameToLayer(VR.Context.HMDLayer);
+            model.gameObject.layer = LayerMask.NameToLayer(VR.Context.InvisibleLayer);
 
             var cam = gameObject.AddComponent<Camera>();
             cam.depth = 1;

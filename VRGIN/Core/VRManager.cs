@@ -199,7 +199,7 @@ namespace VRGIN.Core
         /// <summary>
         /// Gets the layer that can be used to add objects that will be ignored by the in-game player but that will appear on screen.
         /// </summary>
-        string HMDLayer { get; }
+        string InvisibleLayer { get; }
 
         /// <summary>
         /// Gets a list of canvas names that should be ignored entirely.
