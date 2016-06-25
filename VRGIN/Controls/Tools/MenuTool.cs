@@ -24,6 +24,9 @@ namespace VRGIN.Controls.Tools
         private POINT touchDownMousePosition;
         private float timeAbandoned;
 
+        private double _DeltaX = 0;
+        private double _DeltaY = 0;
+
         public void TakeGUI(GUIQuad quad)
         {
             if (quad && !Gui && !quad.IsOwned)
@@ -133,14 +136,20 @@ namespace VRGIN.Controls.Tools
             }
             if (device.GetTouch(EVRButtonId.k_EButton_Axis0) && (Time.time - pressDownTime) > 0.3f)
             {
-                var diff = device.GetAxis() - touchDownPosition;
+                var pos = device.GetAxis();
+                var diff = pos - touchDownPosition;
 
-                int deltaX = (int)((diff.x * Screen.width * 0.25f));
-                int deltaY = (int)((-diff.y * Screen.height * 0.25f));
+                _DeltaX += (diff.x * VRGUI.Width * 0.1);
+                _DeltaY += (-diff.y * VRGUI.Height * 0.2);
+
+                int deltaX = (int)(_DeltaX > 0 ? Math.Floor(_DeltaX) : Math.Ceiling(_DeltaX));
+                int deltaY = (int)(_DeltaY > 0 ? Math.Floor(_DeltaY) : Math.Ceiling(_DeltaY));
+
+                _DeltaX -= deltaX;
+                _DeltaY -= deltaY;
 
                 VR.Input.Mouse.MoveMouseBy(deltaX, deltaY);
-                touchDownPosition = device.GetAxis();
-
+                touchDownPosition = pos;
             }
 
             if (device.GetPressUp(EVRButtonId.k_EButton_Axis0))
