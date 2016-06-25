@@ -50,6 +50,17 @@ namespace VRGIN.Core
         private IDictionary _Registry;
 
         /// <summary>
+        /// Gets the real width of the game window.
+        /// </summary>
+        public static int Width { get; private set; }
+
+        /// <summary>
+        /// Gets the real height of the game window.
+        /// </summary>
+        public static int Height { get; private set; }
+
+
+        /// <summary>
         /// Gets an instance of VRGUI.
         /// </summary>
         public static VRGUI Instance
@@ -103,6 +114,10 @@ namespace VRGIN.Core
         }
         protected override void OnAwake()
         {
+            var window = WindowManager.GetClientRect();
+            Width = window.Right - window.Left;
+            Height = window.Bottom - window.Top;
+
             uGuiTexture = new RenderTexture(Screen.width, Screen.height, 24, RenderTextureFormat.Default);
             uGuiTexture.Create();
 

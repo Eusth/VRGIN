@@ -237,7 +237,7 @@ namespace VRGIN.Controls.Handlers
                     Laser.SetPosition(1, hit.point);
                     if (!IsOtherWorkingOn(_Target))
                     {
-                        var newPos = new Vector2(hit.textureCoord.x * Screen.width, (1 - hit.textureCoord.y) * Screen.height);
+                        var newPos = new Vector2(hit.textureCoord.x * VRGUI.Width, (1 - hit.textureCoord.y) * VRGUI.Height);
                         //VRLog.Info("New Pos: {0}, textureCoord: {1}", newPos, hit.textureCoord);
                         if (!mouseDownPosition.HasValue || Vector2.Distance(mouseDownPosition.Value, newPos) > MOUSE_STABILIZER_THRESHOLD)
                         {
