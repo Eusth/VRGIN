@@ -25,9 +25,11 @@ namespace VRGIN.Controls.Tools
         {
             public Transform NewParent;
             private SteamVR_RenderModel _Model;
-
+                
             protected override void OnStart()
             {
+                DontDestroyOnLoad(this);
+
                 transform.localScale = Vector3.zero;
 
                 _Model = gameObject.AddComponent<SteamVR_RenderModel>();
@@ -42,6 +44,11 @@ namespace VRGIN.Controls.Tools
             {
                 base.OnUpdate();
 
+                if(!NewParent && !this.enabled)
+                {
+                    DestroyImmediate(gameObject);    
+                }
+
                 if (GetComponent<Renderer>())
                 {
                     if (NewParent)
@@ -50,11 +57,13 @@ namespace VRGIN.Controls.Tools
                         transform.SetParent(NewParent, false);
                         transform.localScale = Vector3.one;
                         GetComponent<Renderer>().material.color = VR.Context.PrimaryColor;
+
+                        this.enabled = false;
                     }
                     else
                     {
                         // Seems like we're too late...
-                        Core.Logger.Info("We're too late!");
+                        VRLog.Info("We're too late!");
                         Destroy(gameObject);
                     }
 
