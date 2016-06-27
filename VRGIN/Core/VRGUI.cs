@@ -8,11 +8,8 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using VRGIN.Helpers;
-using VRGIN.Visuals;
-
-#if UNITY_4_5
 using VRGIN.Native;
-#endif
+using VRGIN.Visuals;
 
 namespace VRGIN.Core
 {
@@ -21,7 +18,7 @@ namespace VRGIN.Core
     /// 
     /// This works in two layers:
     ///   - the new UI is caught by redirecting all canvas to be renderer by the VRGUI camera into <see cref="uGuiTexture"/>
-    ///   - the old UI is caught by setting the global render texture to <see cref="nGuiTexture"/> while the system is rendering
+    ///   - the old UI is caught by setting the global render texture to <see cref="IMGuiTexture"/> while the system is rendering
     /// </summary>
     public class VRGUI : ProtectedBehaviour
     {
@@ -79,7 +76,7 @@ namespace VRGIN.Core
                         var cursor = SimulatedCursor.Create();
                         cursor.transform.SetParent(_Instance.transform, false);
 
-                        Logger.Info("Cursor is simulated");
+                        VRLog.Info("Cursor is simulated");
                     }
                 }
                 return _Instance;
@@ -92,9 +89,9 @@ namespace VRGIN.Core
         public RenderTexture uGuiTexture { get; private set; }
 
         /// <summary>
-        /// Gets the texture used for nGUI rendering. (Legacy)
+        /// Gets the texture used for immediate GUI rendering. (Legacy)
         /// </summary>
-        public RenderTexture nGuiTexture { get; private set; }
+        public RenderTexture IMGuiTexture { get; private set; }
 
         private FieldInfo _Graphics;
 
@@ -121,8 +118,8 @@ namespace VRGIN.Core
             uGuiTexture = new RenderTexture(Screen.width, Screen.height, 24, RenderTextureFormat.Default);
             uGuiTexture.Create();
 
-            nGuiTexture = new RenderTexture(Screen.width, Screen.height, 0, RenderTextureFormat.Default);
-            nGuiTexture.Create();
+            IMGuiTexture = new RenderTexture(Screen.width, Screen.height, 0, RenderTextureFormat.Default);
+            IMGuiTexture.Create();
 
             transform.localPosition = Vector3.zero;// new Vector3(0, 0, distance);
             transform.localRotation = Quaternion.identity;
@@ -228,7 +225,7 @@ namespace VRGIN.Core
             if (Event.current.type == EventType.Repaint)
             {
                 _PrevRT = RenderTexture.active;
-                RenderTexture.active = nGuiTexture;
+                RenderTexture.active = IMGuiTexture;
                 GL.Clear(true, true, Color.clear);
             }
         }

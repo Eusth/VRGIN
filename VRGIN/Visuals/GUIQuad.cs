@@ -106,7 +106,7 @@ namespace VRGIN.Visuals
 #endif
                 renderer.material = VR.Context.Materials.UnlitTransparentCombined;
                 renderer.material.SetTexture("_MainTex", VRGUI.Instance.uGuiTexture);
-                renderer.material.SetTexture("_SubTex", VRGUI.Instance.nGuiTexture);
+                renderer.material.SetTexture("_SubTex", VRGUI.Instance.IMGuiTexture);
             }
             catch (Exception e)
             {
