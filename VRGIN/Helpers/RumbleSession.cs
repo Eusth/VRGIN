@@ -129,9 +129,12 @@ namespace VRGIN.Helpers
         protected Vector3 PrevPosition;
         protected Vector3 CurrentPosition;
 
+        private bool _UseLocalPosition = false;
+        public bool UseLocalPosition { get { return _UseLocalPosition; } set { _UseLocalPosition = value; Reset(); } }
+
         public void Reset()
         {
-            PrevPosition = _Transform.position;
+            PrevPosition = _UseLocalPosition ? _Transform.localPosition : _Transform.position;
         }
         public bool IsOver
         {
@@ -147,7 +150,7 @@ namespace VRGIN.Helpers
         {
             get
             {
-                CurrentPosition = _Transform.position;
+                CurrentPosition = _UseLocalPosition ? _Transform.localPosition : _Transform.position;
                 var distance = DistanceTraveled;
                 if (distance > _Distance)
                 {

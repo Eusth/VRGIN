@@ -18,14 +18,15 @@ namespace VRGIN.Controls.Tools
         {
             None,
             Rotating,
-            Transforming
+            Transforming,
+            Grabbing
         }
 
         private class HMDLoader : ProtectedBehaviour
         {
             public Transform NewParent;
             private SteamVR_RenderModel _Model;
-                
+
             protected override void OnStart()
             {
                 DontDestroyOnLoad(this);
@@ -44,9 +45,9 @@ namespace VRGIN.Controls.Tools
             {
                 base.OnUpdate();
 
-                if(!NewParent && !this.enabled)
+                if (!NewParent && !this.enabled)
                 {
-                    DestroyImmediate(gameObject);    
+                    DestroyImmediate(gameObject);
                 }
 
                 if (GetComponent<Renderer>())
@@ -102,6 +103,7 @@ namespace VRGIN.Controls.Tools
         private List<Vector2> _Points = new List<Vector2>();
         private const float GRIP_THRESHOLD = 1;
         private const float EXACT_IMPERSONATION_TIME = 1;
+        private Vector3 _PrevControllerPos;
 
         public override Texture2D Image
         {
@@ -134,6 +136,7 @@ namespace VRGIN.Controls.Tools
 
             // Prepare rumble definitions
             _TravelRumble = new TravelDistanceRumble(500, 0.1f, transform);
+            _TravelRumble.UseLocalPosition = true;
 
             return model.transform;
         }
@@ -253,37 +256,69 @@ namespace VRGIN.Controls.Tools
 
         protected override void OnFixedUpdate()
         {
-            if (Controller.GetTouchDown(EVRButtonId.k_EButton_Axis0))
+
+            if (State == WarpState.None)
             {
-                EnterState(WarpState.Rotating);
+                if (Controller.GetTouchDown(EVRButtonId.k_EButton_Axis0))
+                {
+                    EnterState(WarpState.Rotating);
+                }
+                else if (Controller.GetPressDown(EVRButtonId.k_EButton_Grip))
+                {
+                    EnterState(WarpState.Grabbing);
+                }
             }
-            if (Controller.GetTouchUp(EVRButtonId.k_EButton_Axis0))
+            if (State == WarpState.Grabbing)
             {
-                EnterState(WarpState.None);
+                if (Controller.GetPress(EVRButtonId.k_EButton_Grip))
+                {
+                    var diff = transform.position - _PrevControllerPos;
+
+                    VR.Camera.SteamCam.origin.transform.position -= diff;
+                    _ProspectedPlayArea.Height -= diff.y;
+                    _PrevControllerPos = transform.position;
+                }
+                if (Controller.GetPressUp(EVRButtonId.k_EButton_Grip))
+                {
+                    EnterState(WarpState.None);
+                    if (Time.time - _GripStartTime < 0.5f)
+                    {
+                        Owner.StartRumble(new RumbleImpulse(800));
+                        _ProspectedPlayArea.Height = 0;
+                        _ProspectedPlayArea.Scale = 1.0f;
+                    }
+                }
             }
 
-            if (Controller.GetPressUp(EVRButtonId.k_EButton_Grip))
+
+            if (State == WarpState.Rotating)
             {
-                Owner.StartRumble(new RumbleImpulse(800));
-                _ProspectedPlayArea.Height = 0;
-                _ProspectedPlayArea.Scale = 1.0f;
+                if (Controller.GetPressDown(EVRButtonId.k_EButton_Axis0))
+                {
+                    EnterState(WarpState.Transforming);
+                }
+
+                if (Controller.GetTouchUp(EVRButtonId.k_EButton_Axis0))
+                {
+                    EnterState(WarpState.None);
+                }
             }
 
-            if (Controller.GetPressDown(EVRButtonId.k_EButton_Axis0))
+            if (State == WarpState.Transforming)
             {
-                EnterState(WarpState.Transforming);
-            }
-            if (Controller.GetPress(EVRButtonId.k_EButton_Axis0))
-            {
-                DetectTranslationAndScale();
-            }
-            if (Controller.GetPressUp(EVRButtonId.k_EButton_Axis0))
-            {
-                var steamCam = VRCamera.Instance.SteamCam;
 
-                // Warp!
-                ApplyPlayArea(_ProspectedPlayArea);
-                EnterState(WarpState.Rotating);
+                if (Controller.GetPress(EVRButtonId.k_EButton_Axis0))
+                {
+                    DetectTranslationAndScale();
+                }
+                if (Controller.GetPressUp(EVRButtonId.k_EButton_Axis0))
+                {
+                    var steamCam = VRCamera.Instance.SteamCam;
+
+                    // Warp!
+                    ApplyPlayArea(_ProspectedPlayArea);
+                    EnterState(WarpState.Rotating);
+                }
             }
 
             if (Showing && State == WarpState.Rotating)
@@ -403,6 +438,10 @@ namespace VRGIN.Controls.Tools
                 case WarpState.Transforming:
                     Owner.StopRumble(_TravelRumble);
                     break;
+
+                case WarpState.Grabbing:
+                    Owner.StopRumble(_TravelRumble);
+                    break;
             }
 
 
@@ -420,7 +459,12 @@ namespace VRGIN.Controls.Tools
                 case WarpState.Transforming:
                     _PrevPoint = transform.position;
                     ArcRenderer.gameObject.SetActive(false);
-
+                    _TravelRumble.Reset();
+                    Owner.StartRumble(_TravelRumble);
+                    break;
+                case WarpState.Grabbing:
+                    _PrevControllerPos = transform.position;
+                    _GripStartTime = Time.time;
                     _TravelRumble.Reset();
                     Owner.StartRumble(_TravelRumble);
                     break;
