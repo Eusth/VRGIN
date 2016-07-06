@@ -158,7 +158,6 @@ namespace VRGIN.Modes
         private void ChangeProjection()
         {
             VR.Settings.Projection = (CurvinessState)(((int)VR.Settings.Projection + 1) % Enum.GetValues(typeof(CurvinessState)).Length);
-            Monitor.TargetCurviness = (CurvinessState)(((int)Monitor.TargetCurviness + 1) % Enum.GetValues(typeof(CurvinessState)).Length);
         }
 
         public void Recenter()
