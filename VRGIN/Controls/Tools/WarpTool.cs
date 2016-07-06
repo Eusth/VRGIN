@@ -101,7 +101,9 @@ namespace VRGIN.Controls.Tools
         bool Showing = false;
 
         private List<Vector2> _Points = new List<Vector2>();
-        private const float GRIP_THRESHOLD = 1;
+        private const float GRIP_TIME_THRESHOLD = 0.5f;
+        private const float GRIP_DIFF_THRESHOLD = 0.03f;
+
         private const float EXACT_IMPERSONATION_TIME = 1;
         private Vector3 _PrevControllerPos;
 
@@ -273,15 +275,18 @@ namespace VRGIN.Controls.Tools
                 if (Controller.GetPress(EVRButtonId.k_EButton_Grip))
                 {
                     var diff = transform.position - _PrevControllerPos;
-
-                    VR.Camera.SteamCam.origin.transform.position -= diff;
-                    _ProspectedPlayArea.Height -= diff.y;
-                    _PrevControllerPos = transform.position;
+                    if (Time.time - _GripStartTime > GRIP_TIME_THRESHOLD || diff.magnitude > GRIP_DIFF_THRESHOLD)
+                    {
+                        VR.Camera.SteamCam.origin.transform.position -= diff;
+                        _ProspectedPlayArea.Height -= diff.y;
+                        _PrevControllerPos = transform.position;
+                        _GripStartTime = 0; // To make sure that pos is not reset
+                    }
                 }
                 if (Controller.GetPressUp(EVRButtonId.k_EButton_Grip))
                 {
                     EnterState(WarpState.None);
-                    if (Time.time - _GripStartTime < 0.5f)
+                    if (Time.time - _GripStartTime < GRIP_TIME_THRESHOLD)
                     {
                         Owner.StartRumble(new RumbleImpulse(800));
                         _ProspectedPlayArea.Height = 0;
