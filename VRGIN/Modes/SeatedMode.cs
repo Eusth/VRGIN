@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using UnityEngine;
@@ -28,13 +29,10 @@ namespace VRGIN.Modes
         protected IActor LockTarget;
         protected ImpersonationMode LockMode;
 
-        public bool RotationLock = true;
-
-
         protected override void OnStart()
         {
             base.OnStart();
-
+            
             if (_IsFirstStart)
             {
                 VR.Camera.SteamCam.origin.transform.position = new Vector3(0, 0, 0);
@@ -76,7 +74,7 @@ namespace VRGIN.Modes
 
                 VR.Camera.SteamCam.origin.transform.position = VR.Camera.Blueprint.transform.position;
 
-                if ((RotationLock && LockTarget == null))
+                if ((VR.Settings.PitchLock && LockTarget == null))
                 {
                     VR.Camera.SteamCam.origin.transform.eulerAngles = new Vector3(0, VR.Camera.Blueprint.transform.eulerAngles.y, 0);
 
@@ -154,12 +152,12 @@ namespace VRGIN.Modes
         private void ToggleRotationLock()
         {
             SyncCameras();
-
-            RotationLock = !RotationLock;
+            VR.Settings.PitchLock = !VR.Settings.PitchLock;
         }
 
         private void ChangeProjection()
         {
+            VR.Settings.Projection = (CurvinessState)(((int)VR.Settings.Projection + 1) % Enum.GetValues(typeof(CurvinessState)).Length);
             Monitor.TargetCurviness = (CurvinessState)(((int)Monitor.TargetCurviness + 1) % Enum.GetValues(typeof(CurvinessState)).Length);
         }
 

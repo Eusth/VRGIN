@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Xml.Serialization;
 using UnityEngine;
+using static VRGIN.Visuals.GUIMonitor;
 
 namespace VRGIN.Core
 {
@@ -71,6 +72,18 @@ namespace VRGIN.Core
 
         private bool _MirrorScreen = false;
         public bool MirrorScreen { get { return _MirrorScreen; } set { _MirrorScreen = value; TriggerPropertyChanged("MirrorScreen"); } }
+
+        private bool _PitchLock = true;
+        /// <summary>
+        /// Gets or sets whether or not rotating around the horizontal axis is allowed.
+        /// </summary>
+        public bool PitchLock { get { return _PitchLock; } set { _PitchLock = value; TriggerPropertyChanged("PitchLock"); } }
+
+        private CurvinessState _Projection = CurvinessState.Curved;
+        /// <summary>
+        /// Gets or sets the curviness of the monitor in seated mode.
+        /// </summary>
+        public CurvinessState Projection { get { return _Projection; } set { _Projection = value; TriggerPropertyChanged("Projection"); } }
 
         public event EventHandler<PropertyChangedEventArgs> PropertyChanged = delegate { };
 

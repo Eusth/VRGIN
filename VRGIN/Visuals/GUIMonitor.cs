@@ -80,6 +80,9 @@ namespace VRGIN.Visuals
                     case "Rotation":
                          Rebuild();
                         break;
+                    case "Projection":
+                        TargetCurviness = VR.Settings.Projection;
+                        break;
                 }
             }
         }
