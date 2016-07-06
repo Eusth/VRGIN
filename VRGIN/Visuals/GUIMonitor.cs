@@ -19,7 +19,7 @@ namespace VRGIN.Visuals
             Spherical = 2
         }
 
-        public CurvinessState TargetCurviness = CurvinessState.Curved;
+        public CurvinessState TargetCurviness = VR.Settings.Projection;
         private float _Curviness = 1;
 
         public float Angle = 0;
