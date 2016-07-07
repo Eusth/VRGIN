@@ -5,6 +5,7 @@ using System.Text;
 using UnityEngine;
 using Valve.VR;
 using VRGIN.Controls;
+using VRGIN.Controls.Speech;
 using VRGIN.Core;
 using VRGIN.Helpers;
 using VRGIN.Visuals;
@@ -103,6 +104,14 @@ namespace VRGIN.Modes
             Destroy(ControllerManager);
             Destroy(Left);
             Destroy(Right);
+
+            if (Shortcuts != null)
+            {
+                foreach (var shortcut in Shortcuts)
+                {
+                    shortcut.Dispose();
+                }
+            }
         }
 
         protected virtual void InitializeTools(Controller controller, bool isLeft)
@@ -148,12 +157,17 @@ namespace VRGIN.Modes
             return new List<IShortcut>()
             {
                 new KeyboardShortcut(new KeyStroke("Alt + KeypadMinus"), delegate { VR.Settings.IPDScale += Time.deltaTime * 0.1f; }, KeyMode.Press ),
+                new VoiceShortcut(VoiceCommands.Larger, delegate { VR.Settings.IPDScale *= 1.1f; }),
                 new KeyboardShortcut(new KeyStroke("Alt + KeypadPlus"), delegate { VR.Settings.IPDScale -= Time.deltaTime * 0.1f; }, KeyMode.Press ),
+                new VoiceShortcut(VoiceCommands.Smaller, delegate { VR.Settings.IPDScale *= 0.9f; }),
                 new MultiKeyboardShortcut(new KeyStroke("Ctrl + C"), new KeyStroke("Ctrl + D"), delegate { UnityHelper.DumpScene("dump.json"); } ),
                 new MultiKeyboardShortcut(new KeyStroke("Ctrl + C"), new KeyStroke("Ctrl + V"), ToggleUserCamera),
                 new KeyboardShortcut(new KeyStroke("Alt + S"), delegate { VR.Settings.Save(); }),
+                new VoiceShortcut(VoiceCommands.SaveSettings, delegate { VR.Settings.Save(); }),
                 new KeyboardShortcut(new KeyStroke("Alt + L"), delegate { VR.Settings.Reload(); }),
+                new VoiceShortcut(VoiceCommands.LoadSettings, delegate { VR.Settings.Reload(); }),
                 new KeyboardShortcut(new KeyStroke("Ctrl + Alt + L"), delegate { VR.Settings.Reset(); }),
+                new VoiceShortcut(VoiceCommands.ResetSettings, delegate { VR.Settings.Reset(); }),
                 //new MultiKeyboardShortcut(new KeyStroke("Ctrl + C"), new KeyStroke("Ctrl+B"), delegate {
                 //    ProtectedBehaviour.DumpTable();
                 //})

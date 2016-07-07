@@ -27,6 +27,10 @@ namespace VRGIN.Controls
                 Action();
             }
         }
+
+        public void Dispose()
+        {
+        }
     }
 
     public class MultiKeyboardShortcut : IShortcut
@@ -76,6 +80,10 @@ namespace VRGIN.Controls
                     _Time = Time.time;
                 }
             }
+        }
+
+        public void Dispose()
+        {
         }
     }
 }

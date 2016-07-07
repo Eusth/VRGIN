@@ -5,7 +5,7 @@ using System.Text;
 
 namespace VRGIN.Controls
 {
-    public interface IShortcut
+    public interface IShortcut : IDisposable
     {
         void Evaluate();
     }

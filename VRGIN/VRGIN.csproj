@@ -54,6 +54,8 @@
     <Compile Include="Controls\HelpText.cs" />
     <Compile Include="Controls\LeftController.cs" />
     <Compile Include="Controls\RumbleManager.cs" />
+    <Compile Include="Controls\Speech\SpeechManager.cs" />
+    <Compile Include="Controls\Speech\VoiceShortcut.cs" />
     <Compile Include="Controls\Tools\MenuTool.cs" />
     <Compile Include="Controls\RightController.cs" />
     <Compile Include="Controls\Tools\Tool.cs" />
@@ -180,12 +182,22 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\SpeechTransport\SpeechTransport.csproj">
+      <Project>{DDE60800-3EB9-4601-9C82-9AD7332C22AA}</Project>
+      <Name>SpeechTransport</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
-  <Target Name="AfterBuild">
-  </Target>
   -->
+  <Target Name="AfterBuild">
+    <ItemGroup>
+      <SpeechServer Include="..\SpeechServer\$(OutputPath)SpeechServer.exe" />
+    </ItemGroup>
+    <Copy SourceFiles="@(SpeechServer)" DestinationFolder="$(OutputPath)Plugins\VR" />
+  </Target>
 </Project>

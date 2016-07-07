@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using VRGIN.Controls.Speech;
 using VRGIN.Modes;
 using VRGIN.Visuals;
 using WindowsInput;
@@ -23,6 +24,7 @@ namespace VRGIN.Core
         public static VRSettings Settings { get { return Context.Settings; } }
         public static VRManager Manager { get { return VRManager.Instance; } }
         public static InputSimulator Input { get { return VRManager.Instance.Input; } }
+        public static SpeechManager Speech { get { return VRManager.Instance.Speech; } }
     }
 
     public class ModeInitializedEventArgs : EventArgs
@@ -54,6 +56,7 @@ namespace VRGIN.Core
 
         public IVRManagerContext Context { get; private set; }
         public GameInterpreter Interpreter { get; private set; }
+        public SpeechManager Speech { get; private set; }
         public event EventHandler<ModeInitializedEventArgs> ModeInitialized = delegate { };
 
         /// <summary>
@@ -71,6 +74,11 @@ namespace VRGIN.Core
                 _Instance.Interpreter = _Instance.gameObject.AddComponent<T>();
                 _Instance._Gui = VRGUI.Instance;
                 _Instance.Input = new InputSimulator();
+                
+                if(VR.Settings.SpeechRecognition)
+                {
+                    _Instance.Speech = _Instance.gameObject.AddComponent<SpeechManager>();
+                }
 
                 // Makes sure that the GUI is instanciated
             }

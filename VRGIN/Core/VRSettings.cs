@@ -84,6 +84,18 @@ namespace VRGIN.Core
         /// Gets or sets the curviness of the monitor in seated mode.
         /// </summary>
         public CurvinessState Projection { get { return _Projection; } set { _Projection = value; TriggerPropertyChanged("Projection"); } }
+        
+        private bool _SpeechRecognition = false;
+        /// <summary>
+        /// Gets or sets whether or not speech recognition is enabled.
+        /// </summary>
+        public bool SpeechRecognition { get { return _SpeechRecognition; } set { _SpeechRecognition = value; TriggerPropertyChanged("SpeechRecognition"); } }
+
+        private int _SpeechRecognitionPort = 8000;
+        /// <summary>
+        /// Gets or sets which port is used to transfer speech data to the Unity application.
+        /// </summary>
+        public int SpeechRecognitionPort { get { return _SpeechRecognitionPort; } set { _SpeechRecognitionPort = value; TriggerPropertyChanged("SpeechRecognitionPort"); } }
 
         public event EventHandler<PropertyChangedEventArgs> PropertyChanged = delegate { };
 
