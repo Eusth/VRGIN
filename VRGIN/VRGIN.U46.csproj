@@ -209,6 +209,6 @@
     <ItemGroup>
       <SpeechServer Include="..\SpeechServer\$(OutputPath)SpeechServer.exe" />
     </ItemGroup>
-    <Copy SourceFiles="@(SpeechServer)" DestinationFolder="$(OutputPath)Plugins\VR" />
+    <Copy SourceFiles="@(SpeechServer)" DestinationFolder="$(OutputPath)Libs\Plugins\VR" />
   </Target>
 </Project>
