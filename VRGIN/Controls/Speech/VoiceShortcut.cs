@@ -13,9 +13,9 @@ namespace VRGIN.Controls.Speech
         int _MinID = 0;
 
         Action _Action;
-        VoiceCommands _Command;
+        VoiceCommand _Command;
 
-        public VoiceShortcut(VoiceCommands command, Action action)
+        public VoiceShortcut(VoiceCommand command, Action action)
         {
             _Action = action;
             _Command = command;
@@ -47,10 +47,11 @@ namespace VRGIN.Controls.Speech
         { 
             if(_LastResult.HasValue)
             {
-                if(_Command.IsMatch(_LastResult.Value.Text))
+                if(_Command.Matches(_LastResult.Value.Text))
                 {
-                    if (_LastResult.Value.Confidence > 0.6f || _LastResult.Value.Final)
+                    if (_LastResult.Value.Confidence > 0.2f || _LastResult.Value.Final)
                     {
+                        VRLog.Info(_Command);
                         _Action();
                         _MinID = _LastResult.Value.ID + 1;
                     }

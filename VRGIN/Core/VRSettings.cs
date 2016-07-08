@@ -28,74 +28,74 @@ namespace VRGIN.Core
         [XmlIgnore]
         public string Path { get; set; }
 
-        private float _Distance = 0.3f;
         /// <summary>
         /// Gets or sets the distance between the camera and the GUI at [0,0,0] [seated]
         /// </summary>
         public float Distance { get { return _Distance; } set { _Distance = Mathf.Clamp(value, 0.1f, 10f); TriggerPropertyChanged("Distance"); } }
+        private float _Distance = 0.3f;
 
-        private float _Angle = 170f;
         /// <summary>
         /// Gets or sets the width of the arc the GUI takes up. [seated]
         /// </summary>
         public float Angle { get { return _Angle; } set { _Angle = Mathf.Clamp(value, 50f, 360f); TriggerPropertyChanged("Angle"); } }
+        private float _Angle = 170f;
 
-        private float _IPDScale = 1f;
         /// <summary>
         /// Gets or sets the scale of the camera. The higher, the more gigantic the player is.
         /// </summary>
         public float IPDScale { get { return _IPDScale; } set { _IPDScale = Mathf.Clamp(value, 0.01f, 10f); TriggerPropertyChanged("IPDScale"); } }
+        private float _IPDScale = 1f;
 
-        private float _OffsetY = 0f;
         /// <summary>
         /// Gets or sets the vertical offset of the GUI in meters. [seated]
         /// </summary>
         public float OffsetY { get { return _OffsetY; } set { _OffsetY = value; TriggerPropertyChanged("OffsetY"); } }
+        private float _OffsetY = 0f;
 
-        private float _Rotation = 0f;
         /// <summary>
         /// Gets or sets by how many degrees the GUI is rotated (around the y axis) [seated]
         /// </summary>
         public float Rotation { get { return _Rotation; } set { _Rotation = value; TriggerPropertyChanged("Rotation"); } }
+        private float _Rotation = 0f;
 
-        private bool _Rumble = true;
         /// <summary>
         /// Gets or sets whether or not rumble is activated.
         /// </summary>
         public bool Rumble { get { return _Rumble; } set { _Rumble = value; TriggerPropertyChanged("Rumble"); } }
+        private bool _Rumble = true;
 
-        private float _RenderScale = 1f;
         /// <summary>
         /// Gets or sets the render scale of the renderer. Increase for better quality but less performance, decrease for more performance but poor quality.
         /// </summary>
         public float RenderScale { get { return _RenderScale; } set { _RenderScale = Mathf.Clamp(value, 0.1f, 4f); TriggerPropertyChanged("RenderScale"); } }
+        private float _RenderScale = 1f;
 
-        private bool _MirrorScreen = false;
         public bool MirrorScreen { get { return _MirrorScreen; } set { _MirrorScreen = value; TriggerPropertyChanged("MirrorScreen"); } }
+        private bool _MirrorScreen = false;
 
-        private bool _PitchLock = true;
         /// <summary>
         /// Gets or sets whether or not rotating around the horizontal axis is allowed.
         /// </summary>
         public bool PitchLock { get { return _PitchLock; } set { _PitchLock = value; TriggerPropertyChanged("PitchLock"); } }
+        private bool _PitchLock = true;
 
-        private CurvinessState _Projection = CurvinessState.Curved;
         /// <summary>
         /// Gets or sets the curviness of the monitor in seated mode.
         /// </summary>
         public CurvinessState Projection { get { return _Projection; } set { _Projection = value; TriggerPropertyChanged("Projection"); } }
+        private CurvinessState _Projection = CurvinessState.Curved;
         
-        private bool _SpeechRecognition = false;
         /// <summary>
         /// Gets or sets whether or not speech recognition is enabled.
         /// </summary>
         public bool SpeechRecognition { get { return _SpeechRecognition; } set { _SpeechRecognition = value; TriggerPropertyChanged("SpeechRecognition"); } }
-
-        private int _SpeechRecognitionPort = 8000;
+        private bool _SpeechRecognition = false;
+        
         /// <summary>
-        /// Gets or sets which port is used to transfer speech data to the Unity application.
+        /// Gets or sets which locale to use for speech recognition. A dictionary file will automatically be generated at <i>UserData/dictionaries</i>.
         /// </summary>
-        public int SpeechRecognitionPort { get { return _SpeechRecognitionPort; } set { _SpeechRecognitionPort = value; TriggerPropertyChanged("SpeechRecognitionPort"); } }
+        public string Locale { get { return _Locale; } set { _Locale = value; TriggerPropertyChanged("Locale"); } }
+        private string _Locale = "en-US";
 
         public event EventHandler<PropertyChangedEventArgs> PropertyChanged = delegate { };
 

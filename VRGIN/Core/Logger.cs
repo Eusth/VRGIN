@@ -16,6 +16,8 @@ namespace VRGIN.Core
     public class VRLog
     {
         private static string LOG_PATH = "vr.log";
+        private static object _LOCK = new object();
+
         static VRLog()
         {
             if (File.Exists(LOG_PATH))
@@ -108,8 +110,11 @@ namespace VRGIN.Core
                 Console.BackgroundColor = backgroundColor;
 #endif
                 string formatted = String.Format(Format(text, severity), args);
-                Console.WriteLine(formatted);
-                File.AppendAllText(LOG_PATH, formatted + "\n");
+                lock (_LOCK)
+                {
+                    Console.WriteLine(formatted);
+                    File.AppendAllText(LOG_PATH, formatted + "\n");
+                }
 
 #if COLOR_SUPPORT
                 Console.ForegroundColor = oldForegroundColor;

@@ -10,33 +10,10 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using UnityEngine;
 using VRGIN.Core;
+using System.Diagnostics;
 
 namespace VRGIN.Controls.Speech
 {
-    public static class VoiceCommandsExtensions
-    {
-        public static bool IsMatch(this VoiceCommands command, String text)
-        {
-            return text.Replace(" ", "").Equals(Enum.GetName(typeof(VoiceCommands), command), StringComparison.OrdinalIgnoreCase);
-        }
-    }
-    public enum VoiceCommands
-    {
-        Next,
-        Previous,
-        Start,
-        Faster,
-        Slower,
-        ToggleMenu,
-        Impersonate,
-        Larger,
-        Smaller,
-        Save,
-        SaveSettings,
-        LoadSettings,
-        ResetSettings
-    }
-
     public class SpeechRecognizedEventArgs : EventArgs
     {
         public SpeechResult Result { get; private set; }
@@ -53,13 +30,13 @@ namespace VRGIN.Controls.Speech
         UdpClient client;
         SpeechResult? result;
 
-        private const string LOCALHOST = "127.0.0.1";
-        private const string CAMEL_CASE_REGEX = @"(\B[A-Z]+?(?=[A-Z][^A-Z])|\B[A-Z]+?(?=[^A-Z]))";
+        const string LOCALHOST = "127.0.0.1";
+        const string CAMEL_CASE_REGEX = @"(\B[A-Z]+?(?=[A-Z][^A-Z])|\B[A-Z]+?(?=[^A-Z]))";
+        const string DICT_PATH = @"UserData\dictionaries";
+        string _ServerPath;
+        object LOCK = new object();
 
-        private string _ServerPath;
-        private object LOCK = new object();
-
-        private static System.Diagnostics.Process server;
+        static System.Diagnostics.Process server;
 
         public event EventHandler<SpeechRecognizedEventArgs> SpeechRecognized = delegate { };
 
@@ -67,79 +44,109 @@ namespace VRGIN.Controls.Speech
         // Use this for initialization
         protected override void OnStart()
         {
-            base.OnStart();
 
+            base.OnStart();
+            InitializeDictionary();
+            StartServer();
+        }
+
+        private void StartServer()
+        {
             _ServerPath = Application.dataPath + "/../Plugins/VR/SpeechServer.exe";
 
-            if(!File.Exists(_ServerPath))
+            if (!File.Exists(_ServerPath))
             {
                 VRLog.Error("Could not find SpeechServer at {0}", _ServerPath);
                 this.enabled = false;
                 return;
             }
 
+
             var serverBin = new FileInfo(_ServerPath);
 
-            receiveThread = new Thread(new ThreadStart(ReceiveData));
-            receiveThread.IsBackground = true;
-            receiveThread.Start();
+            //receiveThread = new Thread(new ThreadStart(ReceiveData));
+            //receiveThread.IsBackground = true;
+            //receiveThread.Start();
 
             if (server == null)
             {
-                Debug.Log(serverBin.FullName);
+                VRLog.Info(serverBin.FullName);
                 server = new System.Diagnostics.Process();
                 server.StartInfo.FileName = serverBin.FullName;
                 server.StartInfo.UseShellExecute = false;
                 server.StartInfo.CreateNoWindow = true;
-                server.StartInfo.Arguments = String.Format("{0} \"{1}\"", VR.Settings.SpeechRecognitionPort, GetVoiceCommands());
+                server.StartInfo.Arguments = String.Format("--words \"{0}\" --locale {1}", GetVoiceCommands(), VR.Settings.Locale);
+
+                server.StartInfo.RedirectStandardOutput = true;
+                server.StartInfo.RedirectStandardError = true;
+                server.StartInfo.RedirectStandardInput = true; // This makes sure that the child process will exit along with this application
+                server.StartInfo.StandardOutputEncoding = Encoding.UTF8;
+                server.StartInfo.StandardErrorEncoding = Encoding.UTF8;
+                server.OutputDataReceived += OnOutputReceived;
+                server.ErrorDataReceived += OnErrorReceived;
                 
+                VRLog.Info("Starting speech server: {0}", server.StartInfo.Arguments);
+
                 server.Start();
+                server.BeginOutputReadLine();
+                server.BeginErrorReadLine();
+                VRLog.Info("Started!");
+            }
+        }
+
+        private void OnErrorReceived(object sender, DataReceivedEventArgs e)
+        {
+            VRLog.Error(e.Data);
+        }
+
+        private void InitializeDictionary()
+        {
+            var path = CombinePath(Application.dataPath, "..", DICT_PATH, VR.Settings.Locale + ".txt");
+            var reader = new DictionaryReader(VR.Context.VoiceCommandType);
+
+            // Load dictionary and save immediately
+            VRLog.Info("Loading dictionary at {0}...", path);
+            reader.LoadDictionary(path);
+            VRLog.Info("Saving dictionary at {0}...", path);
+            reader.SaveDictionary(path);
+        }
+
+
+        private string CombinePath(params string[] paths)
+        {
+            string res = paths[0];
+            for(int i = 1; i < paths.Length; i++)
+            {
+                res = Path.Combine(res, paths[i]);
+            }
+
+            return res;
+        }
+
+        private void OnOutputReceived(object sender, DataReceivedEventArgs e)
+        {
+            try
+            {
+                lock (LOCK)
+                {
+                    result = SpeechResult.Deserialize(e.Data);
+                    VRLog.Info("RECEIVED MESSAGE: " + e.Data);
+                }
+            }
+            catch (Exception err)
+            {
+                VRLog.Error(err);
             }
         }
 
         private String GetVoiceCommands()
         {
-            return string.Join(";", Enum.GetNames(typeof(VoiceCommands)).Select( command => Regex.Replace(command, CAMEL_CASE_REGEX, " $1")).ToArray());
+            return string.Join(";", DictionaryReader.ExtractCommandObjects(VR.Context.VoiceCommandType).SelectMany(command => command.Texts).ToArray());
         }
 
-        private void ReceiveData()
-        {
-            client = new UdpClient(VR.Settings.SpeechRecognitionPort);
-            IPEndPoint myIP = new IPEndPoint(IPAddress.Parse(LOCALHOST), VR.Settings.SpeechRecognitionPort);
-
-            while (this)
-            {
-                try
-                {
-                    string message;
-                    byte[] data = client.Receive(ref myIP);
-                    message = Encoding.UTF8.GetString(data);
-
-                    lock (LOCK)
-                    {
-                        result = SpeechResult.Deserialize(message);
-                    }
-                }
-                catch (Exception err)
-                {
-                    VRLog.Error(err);
-                }
-            }
-        }
-        
+       
         void OnDisable()
         {
-            if (server != null)
-            {
-                try
-                {
-                    server.Kill();
-                }
-                catch (Exception e) { }
-                server.Dispose();
-                server = null;
-            }
-
             if (receiveThread != null)
             {
                 receiveThread.Abort();

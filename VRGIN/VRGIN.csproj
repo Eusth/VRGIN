@@ -31,6 +31,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="SpeechTransport, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libs\Plugins\VR\SpeechTransport.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -54,7 +58,9 @@
     <Compile Include="Controls\HelpText.cs" />
     <Compile Include="Controls\LeftController.cs" />
     <Compile Include="Controls\RumbleManager.cs" />
+    <Compile Include="Controls\Speech\DictionaryReader.cs" />
     <Compile Include="Controls\Speech\SpeechManager.cs" />
+    <Compile Include="Controls\Speech\VoiceCommand.cs" />
     <Compile Include="Controls\Speech\VoiceShortcut.cs" />
     <Compile Include="Controls\Tools\MenuTool.cs" />
     <Compile Include="Controls\RightController.cs" />
@@ -63,6 +69,7 @@
     <Compile Include="Core\DefaultActor.cs" />
     <Compile Include="Core\GameInterpreter.cs" />
     <Compile Include="Core\IActor.cs" />
+    <Compile Include="Core\IVRManagerContext.cs" />
     <Compile Include="Core\Logger.cs" />
     <Compile Include="Core\PlayArea.cs" />
     <Compile Include="Core\ProtectedBehaviour.cs" />
@@ -147,6 +154,12 @@
     <Content Include="Libs\Data\Plugins\x86_64\openvr_api.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Libs\Plugins\VR\SpeechServer.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Libs\Plugins\VR\SpeechTransport.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="SteamVR\Textures\arrow.png" />
     <Content Include="SteamVR\Textures\background.png" />
     <Content Include="SteamVR\Textures\logo.png" />
@@ -182,22 +195,17 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup />
-  <ItemGroup>
-    <ProjectReference Include="..\SpeechTransport\SpeechTransport.csproj">
-      <Project>{DDE60800-3EB9-4601-9C82-9AD7332C22AA}</Project>
-      <Name>SpeechTransport</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
-  -->
+
   <Target Name="AfterBuild">
     <ItemGroup>
       <SpeechServer Include="..\SpeechServer\$(OutputPath)SpeechServer.exe" />
     </ItemGroup>
     <Copy SourceFiles="@(SpeechServer)" DestinationFolder="$(OutputPath)Libs\Plugins\VR" />
   </Target>
+    -->
 </Project>
