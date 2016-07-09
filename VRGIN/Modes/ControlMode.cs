@@ -1,13 +1,16 @@
-﻿using System;
+﻿using Leap.Unity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
 using Valve.VR;
 using VRGIN.Controls;
+using VRGIN.Controls.LeapMotion;
 using VRGIN.Controls.Speech;
 using VRGIN.Core;
 using VRGIN.Helpers;
+using VRGIN.U46.Controls.Leap;
 using VRGIN.Visuals;
 
 namespace VRGIN.Modes
@@ -21,7 +24,6 @@ namespace VRGIN.Modes
     public abstract class ControlMode : ProtectedBehaviour
     {
         private static bool _ControllerFound = false;
-
 
         public virtual void Impersonate(IActor actor)
         {
@@ -38,8 +40,27 @@ namespace VRGIN.Modes
 
         public abstract ETrackingUniverseOrigin TrackingOrigin { get; }
 
+        /// <summary>
+        /// Gets the left controller.
+        /// </summary>
         public Controller Left { get; private set; }
+
+        /// <summary>
+        /// Gets the right controller.
+        /// </summary>
         public Controller Right { get; private set; }
+
+        /// <summary>
+        /// Gets the left hand.
+        /// </summary>
+        public HandAttachments LeftHand { get; private set; }
+
+        /// <summary>
+        /// Gets the right hand.
+        /// </summary>
+        public HandAttachments RightHand { get; private set; }
+
+        public LeapServiceProvider LeapMotion { get; private set; }
 
         protected IEnumerable<IShortcut> Shortcuts { get; private set; }
 
@@ -64,6 +85,7 @@ namespace VRGIN.Modes
             SteamVR_Utils.Event.Listen("device_connected", OnDeviceConnected);
         }
 
+        static int cnter = 0;
         /// <summary>
         /// Creates both controllers by using <see cref="CreateRightController"/> and <see cref="CreateLeftController"/>.
         /// Override those methods to change the controller implementation to be used.
@@ -76,6 +98,14 @@ namespace VRGIN.Modes
             {
                 ControllerManager = steamCam.origin.gameObject.AddComponent<SteamVR_ControllerManager>();
 
+                if (VR.Settings.Leap)
+                {
+                    LeapMotion = CreateLeapHandController();
+                    LeapMotion.transform.name = "Leap Motion Controller (" + (++cnter) + ")";
+                    LeapMotion.transform.SetParent(steamCam.head.transform, false);
+                    LeapMotion.transform.localRotation = Quaternion.Euler(-90f, 180f, 0);
+                }
+                
                 Left = CreateLeftController();
                 Left.transform.SetParent(steamCam.origin);
 
@@ -89,7 +119,7 @@ namespace VRGIN.Modes
                 ControllerManager.right = Right.gameObject;
             }
             steamCam.origin.gameObject.SetActive(true);
-
+            
             VRLog.Info("---- Initialize left tools");
             InitializeTools(Left, true);
 
@@ -99,11 +129,102 @@ namespace VRGIN.Modes
             ControllersCreated(this, new EventArgs());
         }
 
+        private LeapServiceProvider CreateLeapHandController()
+        {
+            var serviceProvider =  new GameObject("LeapHandController").AddComponent<LeapServiceProvider>();
+            var handController = serviceProvider.gameObject.AddComponent<LeapHandController>();
+            var handPool = handController.gameObject.AddComponent<HandPool>();
+            handController.gameObject.AddComponent<PinchController>();
+            serviceProvider._isHeadMounted = true;
+
+            var leftGraphicalHand = BuildGraphicalHand(Chirality.Left);
+            var rightGraphicalHand = BuildGraphicalHand(Chirality.Right);
+            LeftHand = BuildAttachmentHand(Chirality.Left);
+            RightHand = BuildAttachmentHand(Chirality.Right);
+            
+            handPool.ModelPool = new List<HandPool.ModelGroup>();
+            handPool.ModelPool.Add(new HandPool.ModelGroup()
+            {
+                GroupName = "Graphics_Hands",
+                CanDuplicate = false,
+                IsEnabled = true,
+                LeftModel = leftGraphicalHand,
+                RightModel = rightGraphicalHand,
+                modelList = new List<IHandModel>(),
+                modelsCheckedOut = new List<IHandModel>()
+            });
+
+            handPool.ModelPool.Add(new HandPool.ModelGroup()
+            {
+                GroupName = "Attachments",
+                CanDuplicate = false,
+                IsEnabled = true,
+                LeftModel = LeftHand,
+                RightModel = RightHand,
+                modelList = new List<IHandModel>(),
+                modelsCheckedOut = new List<IHandModel>()
+            });
+
+            LeftHand.transform.SetParent(handPool.transform, false);
+            RightHand.transform.SetParent(handPool.transform, false);
+            leftGraphicalHand.transform.SetParent(handPool.transform, false);
+            rightGraphicalHand.transform.SetParent(handPool.transform, false);
+
+            return serviceProvider;
+        }
+
+        protected virtual IHandModel BuildGraphicalHand(Chirality handedness)
+        {
+            var primitive = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            
+            var hand = new GameObject("GHand_" + handedness).AddComponent<CapsuleHand>();
+            hand.handedness = handedness;
+            hand._material = new Material(VR.Context.Materials.StandardShader);
+            hand._sphereMesh = primitive.GetComponent<MeshFilter>().sharedMesh;
+            
+            hand.gameObject.AddComponent<HandEnableDisable>();
+
+            Destroy(primitive);
+
+            return hand;
+        }
+
+        protected virtual HandAttachments BuildAttachmentHand(Chirality handedness)
+        {
+            var hand = new GameObject("AHand_" + handedness).AddComponent<HandAttachments>();
+            hand._handedness = handedness;
+            hand.gameObject.AddComponent<HandEnableDisable>();
+            hand.gameObject.AddComponent<LeapMenuHandler>();
+            hand.gameObject.AddComponent<WarpHandler>();
+
+            // Create transforms
+            hand.GrabPoint = UnityHelper.CreateGameObjectAsChild("GrabPoint", hand.transform, true);
+            hand.Arm = UnityHelper.CreateGameObjectAsChild("Arm", hand.transform, true);
+            hand.Thumb = UnityHelper.CreateGameObjectAsChild("Thumb", hand.transform, true);
+            hand.Index = UnityHelper.CreateGameObjectAsChild("Index", hand.transform, true);
+            hand.Middle = UnityHelper.CreateGameObjectAsChild("Middle", hand.transform, true);
+            hand.Ring = UnityHelper.CreateGameObjectAsChild("Ring", hand.transform, true);
+            hand.Pinky = UnityHelper.CreateGameObjectAsChild("Pinky", hand.transform, true);
+            hand.PinchPoint = UnityHelper.CreateGameObjectAsChild("PinchPoint", hand.transform, true);
+            hand.Palm = UnityHelper.CreateGameObjectAsChild("Palm", hand.transform, true);
+            hand.OnBegin += delegate
+            {
+                if (!_ControllerFound)
+                {
+                    _ControllerFound = true;
+                    ChangeModeOnControllersDetected();
+                }
+            };
+            return hand;
+        }
+        
         public virtual void OnDestroy()
         {
             Destroy(ControllerManager);
             Destroy(Left);
             Destroy(Right);
+            DestroyImmediate(LeapMotion.gameObject);
+
 
             if (Shortcuts != null)
             {

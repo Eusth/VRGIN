@@ -32,6 +32,22 @@ namespace VRGIN.Core
         public Camera Blueprint { get; private set; }
         private RenderTexture _MiniTexture;
         public bool HasValidBlueprint { get; private set; }
+
+        public Transform Origin
+        {
+            get
+            {
+                return SteamCam.origin;
+            }
+        }
+
+        public Transform Head
+        {
+            get
+            {
+                return SteamCam.head;
+            }
+        }
         /// <summary>
         /// Called when a camera is being initialized.
         /// </summary>

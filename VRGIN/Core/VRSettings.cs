@@ -97,6 +97,12 @@ namespace VRGIN.Core
         public string Locale { get { return _Locale; } set { _Locale = value; TriggerPropertyChanged("Locale"); } }
         private string _Locale = "en-US";
 
+        /// <summary>
+        /// Gets or sets whether or not Leap Motion support is activated.
+        /// </summary>
+        public bool Leap { get { return _Leap; } set { _Leap = value; TriggerPropertyChanged("Leap"); } }
+        private bool _Leap = false;
+
         public event EventHandler<PropertyChangedEventArgs> PropertyChanged = delegate { };
 
         public VRSettings()

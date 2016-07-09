@@ -7,6 +7,7 @@ using Valve.VR;
 using VRGIN.Core;
 using VRGIN.Helpers;
 using VRGIN.Modes;
+using VRGIN.U46.Visuals;
 using VRGIN.Visuals;
 
 namespace VRGIN.Controls.Tools
@@ -22,69 +23,14 @@ namespace VRGIN.Controls.Tools
             Grabbing
         }
 
-        private class HMDLoader : ProtectedBehaviour
-        {
-            public Transform NewParent;
-            private SteamVR_RenderModel _Model;
-
-            protected override void OnStart()
-            {
-                DontDestroyOnLoad(this);
-
-                transform.localScale = Vector3.zero;
-
-                _Model = gameObject.AddComponent<SteamVR_RenderModel>();
-                //model.transform.SetParent(VR.Camera.SteamCam.head, false);
-                _Model.shader = VR.Context.Materials.StandardShader;
-                gameObject.AddComponent<SteamVR_TrackedObject>();
-
-                _Model.SetDeviceIndex((int)OpenVR.k_unTrackedDeviceIndex_Hmd);
-            }
-
-            protected override void OnUpdate()
-            {
-                base.OnUpdate();
-
-                if (!NewParent && !this.enabled)
-                {
-                    DestroyImmediate(gameObject);
-                }
-
-                if (GetComponent<Renderer>())
-                {
-                    if (NewParent)
-                    {
-                        // Done loading!
-                        transform.SetParent(NewParent, false);
-                        transform.localScale = Vector3.one;
-                        GetComponent<Renderer>().material.color = VR.Context.PrimaryColor;
-
-                        this.enabled = false;
-                    }
-                    else
-                    {
-                        // Seems like we're too late...
-                        VRLog.Info("We're too late!");
-                        Destroy(gameObject);
-                    }
-
-                }
-            }
-        }
-
+       
         ArcRenderer ArcRenderer;
-        SteamVR_PlayArea PlayArea;
-        Transform PlayAreaRotation;
-        Transform Indicator;
-        Transform DirectionIndicator;
-        Transform HeightIndicator;
+        PlayAreaVisualization _Visualization;
         private PlayArea _CurrentPlayArea = new PlayArea();
         private PlayArea _ProspectedPlayArea = new PlayArea();
         private const float SCALE_THRESHOLD = 0.05f;
         private const float TRANSLATE_THRESHOLD = 0.05f;
-
-
-
+        
         /// <summary>
         /// Gets or sets what the user can do by touching the thumbpad
         /// </summary>
@@ -92,7 +38,6 @@ namespace VRGIN.Controls.Tools
 
         private TravelDistanceRumble _TravelRumble;
 
-        private bool _CanImpersonate = false;
         private Vector3 _PrevPoint;
         private bool _Scaling = false;
         private bool _Translating = false;
@@ -115,68 +60,21 @@ namespace VRGIN.Controls.Tools
             }
         }
 
-        protected virtual void CreateArea()
-        {
-            PlayAreaRotation = new GameObject("PlayArea Y").transform;
-
-            PlayArea = new GameObject("PlayArea").AddComponent<SteamVR_PlayArea>();
-            PlayArea.drawInGame = true;
-            PlayArea.size = SteamVR_PlayArea.Size.Calibrated;
-
-            PlayArea.transform.SetParent(PlayAreaRotation, false);
-
-            DirectionIndicator = CreateClone();
-            DontDestroyOnLoad(PlayAreaRotation.gameObject);
-
-            //DontDestroyOnLoad(PlayAreaRotation.gameObject);
-        }
-
-        protected virtual Transform CreateClone()
-        {
-            var model = new GameObject("Model").AddComponent<HMDLoader>();
-            model.NewParent = PlayArea.transform;
-
-            // Prepare rumble definitions
-            _TravelRumble = new TravelDistanceRumble(500, 0.1f, transform);
-            _TravelRumble.UseLocalPosition = true;
-
-            return model.transform;
-        }
-
+     
         protected override void OnAwake()
         {
             VRLog.Info("Awake!");
             ArcRenderer = new GameObject("Arc Renderer").AddComponent<ArcRenderer>();
             ArcRenderer.transform.SetParent(transform, false);
             ArcRenderer.gameObject.SetActive(false);
-
-            CreateArea();
-
+            
             // -- Create indicator
+            // Prepare rumble definitions
+            _TravelRumble = new TravelDistanceRumble(500, 0.1f, transform);
+            _TravelRumble.UseLocalPosition = true;
 
-            Indicator = GameObject.CreatePrimitive(PrimitiveType.Sphere).transform;
-            Indicator.SetParent(PlayAreaRotation, false);
-
-            HeightIndicator = GameObject.CreatePrimitive(PrimitiveType.Cylinder).transform;
-            HeightIndicator.SetParent(PlayAreaRotation, false);
-
-
-            foreach (var indicator in new Transform[] { Indicator, HeightIndicator })
-            {
-                var renderer = indicator.GetComponent<Renderer>();
-                renderer.material = Resources.GetBuiltinResource<Material>("Sprites-Default.mat");
-                //renderer.reflectionProbeUsage = UnityEngine.Rendering.ReflectionProbeUsage.Off;
-                //renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-#if UNITY_4_5
-                renderer.castShadows = false;
-#else
-                renderer.reflectionProbeUsage = UnityEngine.Rendering.ReflectionProbeUsage.Off;
-                renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-#endif
-                renderer.receiveShadows = false;
-                renderer.useLightProbes = false;
-                renderer.material.color = VR.Context.PrimaryColor;
-            }
+            _Visualization = PlayAreaVisualization.Create(_ProspectedPlayArea);
+            DontDestroyOnLoad(_Visualization.gameObject);
 
             SetVisibility(false);
         }
@@ -185,7 +83,7 @@ namespace VRGIN.Controls.Tools
         {
             VRLog.Info("Destroy!");
 
-            DestroyImmediate(PlayAreaRotation.gameObject);
+            DestroyImmediate(_Visualization.gameObject);
         }
 
         protected override void OnStart()
@@ -194,8 +92,8 @@ namespace VRGIN.Controls.Tools
 
             base.OnStart();
 
-            ResetPlayArea(ref _CurrentPlayArea);
-            ResetPlayArea(ref _ProspectedPlayArea);
+            ResetPlayArea( _CurrentPlayArea);
+            ResetPlayArea( _ProspectedPlayArea);
         }
 
         protected override void OnEnable()
@@ -203,17 +101,16 @@ namespace VRGIN.Controls.Tools
             base.OnEnable();
 
             SetVisibility(false);
-            PlayArea.BuildMesh();
         }
 
         void SetVisibility(bool visible)
         {
             Showing = visible;
             ArcRenderer.gameObject.SetActive(visible);
-            PlayAreaRotation.gameObject.SetActive(visible);
+            _Visualization.gameObject.SetActive(visible);
         }
 
-        private void ResetPlayArea(ref PlayArea area)
+        private void ResetPlayArea(PlayArea area)
         {
             area.Position = VR.Camera.SteamCam.origin.position;
             area.Scale = VR.Settings.IPDScale;
@@ -235,24 +132,9 @@ namespace VRGIN.Controls.Tools
         {
             if (Showing)
             {
-                var steamCam = VRCamera.Instance.SteamCam;
-                float cylinderHeight = 2;
-                float playerHeight = steamCam.head.localPosition.y;
-                float pivot = 1f;
-
-                PlayAreaRotation.position = new Vector3(ArcRenderer.target.x, _ProspectedPlayArea.Height, ArcRenderer.target.z);
-                PlayAreaRotation.localScale = Vector3.one * _ProspectedPlayArea.Scale;
-                PlayArea.transform.localPosition = -new Vector3(steamCam.head.transform.localPosition.x, 0, steamCam.head.transform.localPosition.z);
-                PlayAreaRotation.rotation = Quaternion.Euler(0, _ProspectedPlayArea.Rotation, 0);
-
                 ArcRenderer.Offset = _ProspectedPlayArea.Height;
                 ArcRenderer.Scale = VR.Settings.IPDScale;
-
-                Indicator.localScale = Vector3.one * 0.1f + Vector3.one * Mathf.Sin(Time.time * 5) * 0.05f;
-                HeightIndicator.localScale = new Vector3(0.01f, playerHeight / cylinderHeight, 0.01f);
-                HeightIndicator.localPosition = new Vector3(0, playerHeight - pivot * (playerHeight / cylinderHeight), 0);
-                //DirectionIndicator.localRotation = Quaternion.Euler(0, SteamCam.head.localEulerAngles.y, 0);
-                //DirectionIndicator.localPosition = (DirectionIndicator.localRotation) * new Vector3(0, 0.02f, 0.1f);
+                _ProspectedPlayArea.Position = new Vector3(ArcRenderer.target.x, _ProspectedPlayArea.Position.y, ArcRenderer.target.z);
             }
         }
 
@@ -321,7 +203,7 @@ namespace VRGIN.Controls.Tools
                     var steamCam = VRCamera.Instance.SteamCam;
 
                     // Warp!
-                    ApplyPlayArea(_ProspectedPlayArea);
+                    _ProspectedPlayArea.Apply();
                     EnterState(WarpState.Rotating);
                 }
             }
@@ -486,19 +368,6 @@ namespace VRGIN.Controls.Tools
 
             //ResetPlayArea(_CurrentPlayArea);
             //ResetPlayArea(_ProspectedPlayArea);
-        }
-
-        private void ApplyPlayArea(PlayArea area)
-        {
-            var rotOffset = Quaternion.Euler(0, _ProspectedPlayArea.Rotation, 0);
-            var steamCam = VR.Camera.SteamCam;
-
-            steamCam.origin.position = ArcRenderer.target
-                + Vector3.up * _ProspectedPlayArea.Height
-                - rotOffset * new Vector3(steamCam.head.transform.localPosition.x, 0, steamCam.head.transform.localPosition.z) * _ProspectedPlayArea.Scale;
-            steamCam.origin.rotation = rotOffset;
-
-            VR.Settings.IPDScale = _ProspectedPlayArea.Scale;
         }
 
         public override List<HelpText> GetHelpTexts()

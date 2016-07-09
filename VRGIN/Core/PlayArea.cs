@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace VRGIN.Core
 {
-    public struct PlayArea
+    public class PlayArea
     {
         public float Scale { get; set; }
         public Vector3 Position { get; set; }
@@ -21,6 +21,23 @@ namespace VRGIN.Core
             {
                 Position = new Vector3(Position.x, value, Position.z);
             }
+        }
+
+        public PlayArea()
+        {
+            Scale = 1;
+        }
+
+        public void Apply()
+        {
+            var rotOffset = Quaternion.Euler(0, Rotation, 0);
+            var steamCam = VR.Camera.SteamCam;
+
+            steamCam.origin.position = Position
+                - rotOffset * new Vector3(steamCam.head.transform.localPosition.x, 0, steamCam.head.transform.localPosition.z) * Scale;
+            steamCam.origin.rotation = rotOffset;
+
+            VR.Settings.IPDScale = Scale;
         }
     }
 }

@@ -43,6 +43,33 @@ namespace VRGIN.Helpers
 #endif
         }
 
+        private static Dictionary<string, Transform> _DebugBalls = new Dictionary<string, Transform>();
+        public static Transform GetDebugBall(string name)
+        {
+            Transform debugBall;
+            if(!_DebugBalls.TryGetValue(name, out debugBall) || !debugBall)
+            {
+                debugBall = GameObject.CreatePrimitive(PrimitiveType.Sphere).transform;
+                debugBall.transform.localScale *= 0.03f;
+                _DebugBalls[name] = debugBall;
+            }
+
+            return debugBall;
+        }
+
+        public static Transform CreateGameObjectAsChild(string name, Transform parent, bool dontDestroy = false)
+        {
+            var go = new GameObject(name);
+            go.transform.SetParent(parent, false);
+
+            if(dontDestroy)
+            {
+                GameObject.DontDestroyOnLoad(go);
+            }
+
+            return go.transform;
+        }
+
         /// <summary>
         /// Loads an image from the images folder.
         /// </summary>

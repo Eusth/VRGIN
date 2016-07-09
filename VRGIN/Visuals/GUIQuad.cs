@@ -42,7 +42,6 @@ namespace VRGIN.Visuals
             VRLog.Info("Create GUI");
             var gui = GameObject.CreatePrimitive(PrimitiveType.Quad).AddComponent<GUIQuad>();
             gui.name = "GUIQuad";
-
             gui.UpdateGUI();
 
             return gui;

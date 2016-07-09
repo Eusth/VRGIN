@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using Leap;
 using UnityEngine;
 using Valve.VR;
 using VRGIN.Controls;
@@ -42,14 +43,30 @@ namespace VRGIN.Modes
 
             Monitor = GUIMonitor.Create();
             Monitor.transform.SetParent(VR.Camera.SteamCam.origin, false);
-
+            
             OpenVR.ChaperoneSetup.SetWorkingPlayAreaSize(1000, 1000); // Make it really big
+            //OpenVR.Chaperone.ForceBoundsVisible(false);
+        }
+
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+        }
+
+        protected override void OnDisable()
+        {
+            base.OnDisable();
         }
 
         //protected virtual void OnLevel()
         //{
         //    _Master = Camera.main.transform;
         //}
+
+        private void OnLeapConnect(object sender, ConnectionEventArgs e)
+        {
+            ChangeModeOnControllersDetected();
+        }
 
         protected override void OnUpdate()
         {

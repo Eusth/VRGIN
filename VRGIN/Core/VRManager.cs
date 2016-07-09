@@ -103,7 +103,7 @@ namespace VRGIN.Core
                 {
                     // Get on clean grounds
                     Mode.ControllersCreated -= OnControllersCreated;
-                    GameObject.DestroyImmediate(Mode);
+                    DestroyImmediate(Mode);
                 }
 
                 if (_CameraLoaded)

@@ -202,7 +202,6 @@ namespace VRGIN.Controls.Handlers
             var heightOverMenu = -quad.transform.InverseTransformPoint(myPos).z * quad.transform.localScale.magnitude;
             return heightOverMenu > 0 && heightOverMenu < GetRange(quad)
                 && Vector3.Dot(normal, laser) < 0; // They have to point the other way
-
         }
 
         bool Raycast(GUIQuad quad, out RaycastHit hit)
@@ -351,7 +350,6 @@ namespace VRGIN.Controls.Handlers
 
                     _Gui.transform.localScale = (distance / originalDistance) * _StartScale.Value;
                     _Gui.transform.localRotation = rotation * _StartRotation.Value;
-
                     _Gui.transform.position = newCenter + (avgRot * Quaternion.Inverse(_StartRotationController)) * _OffsetFromCenter.Value;
 
                 }
@@ -359,7 +357,6 @@ namespace VRGIN.Controls.Handlers
                 {
                     _StartScale = null;
                 }
-
             }
 
             private Quaternion GetAverageRotation()
@@ -381,13 +378,11 @@ namespace VRGIN.Controls.Handlers
                 _StartRotation = _Gui.transform.localRotation;
                 _StartPosition = _Gui.transform.position;
                 _StartRotationController = GetAverageRotation();
-
-
+                
                 var originalDistance = Vector3.Distance(_StartLeft.Value, _StartRight.Value);
                 var originalDirection = _StartRight.Value - _StartLeft.Value;
                 var originalCenter = _StartLeft.Value + originalDirection * 0.5f;
                 _OffsetFromCenter = transform.position - originalCenter;
-
             }
 
 

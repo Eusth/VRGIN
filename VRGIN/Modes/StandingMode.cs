@@ -19,6 +19,7 @@ namespace VRGIN.Modes
             MoveToPosition(actor.Eyes.position, actor.Eyes.rotation.eulerAngles.y, mode == ImpersonationMode.Approximately);
 
             OpenVR.ChaperoneSetup.ReloadFromDisk(EChaperoneConfigFile.Live);
+            //OpenVR.Chaperone.ForceBoundsVisible(true);
         }
 
         protected void MoveToPosition(Vector3 targetPosition, bool ignoreHeight = true)
@@ -41,7 +42,7 @@ namespace VRGIN.Modes
 
         public override void OnDestroy()
         {
-
+            base.OnDestroy();
         }
 
         protected override void OnStart()
