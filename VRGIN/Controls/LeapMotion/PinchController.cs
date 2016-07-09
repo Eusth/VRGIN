@@ -69,6 +69,7 @@ namespace VRGIN.U46.Controls.Leap
                 DestroyImmediate(_Current.gameObject);
             }
             _Current = GUIQuad.Create();
+            _Current.transform.SetParent(VR.Camera.Origin, false);
             DontDestroyOnLoad(_Current);
             _Current.transform.position = Vector3.Lerp(VR.Mode.LeftHand.PinchPoint.position, VR.Mode.RightHand.PinchPoint.position, 0.5f);
             _Current.transform.rotation = Quaternion.Slerp(VR.Mode.LeftHand.PinchPoint.rotation, VR.Mode.RightHand.PinchPoint.rotation, 0.5f) * Quaternion.Euler(0, 0, 90);
