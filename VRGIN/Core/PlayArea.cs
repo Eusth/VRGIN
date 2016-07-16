@@ -39,5 +39,12 @@ namespace VRGIN.Core
 
             VR.Settings.IPDScale = Scale;
         }
+
+        public void Reset()
+        {
+            Position = new Vector3(VR.Camera.Head.position.x, VR.Camera.Origin.position.y, VR.Camera.Head.position.z);
+            Scale = VR.Settings.IPDScale;
+            Rotation = VR.Camera.Origin.rotation.eulerAngles.y;
+        }
     }
 }

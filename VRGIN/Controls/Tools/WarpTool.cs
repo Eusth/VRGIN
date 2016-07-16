@@ -23,14 +23,14 @@ namespace VRGIN.Controls.Tools
             Grabbing
         }
 
-       
+
         ArcRenderer ArcRenderer;
         PlayAreaVisualization _Visualization;
         private PlayArea _CurrentPlayArea = new PlayArea();
         private PlayArea _ProspectedPlayArea = new PlayArea();
         private const float SCALE_THRESHOLD = 0.05f;
         private const float TRANSLATE_THRESHOLD = 0.05f;
-        
+
         /// <summary>
         /// Gets or sets what the user can do by touching the thumbpad
         /// </summary>
@@ -60,14 +60,14 @@ namespace VRGIN.Controls.Tools
             }
         }
 
-     
+
         protected override void OnAwake()
         {
             VRLog.Info("Awake!");
             ArcRenderer = new GameObject("Arc Renderer").AddComponent<ArcRenderer>();
             ArcRenderer.transform.SetParent(transform, false);
             ArcRenderer.gameObject.SetActive(false);
-            
+
             // -- Create indicator
             // Prepare rumble definitions
             _TravelRumble = new TravelDistanceRumble(500, 0.1f, transform);
@@ -92,8 +92,8 @@ namespace VRGIN.Controls.Tools
 
             base.OnStart();
 
-            ResetPlayArea( _CurrentPlayArea);
-            ResetPlayArea( _ProspectedPlayArea);
+            ResetPlayArea(_CurrentPlayArea);
+            ResetPlayArea(_ProspectedPlayArea);
         }
 
         protected override void OnEnable()
@@ -138,16 +138,43 @@ namespace VRGIN.Controls.Tools
             }
         }
 
+
+        private void CheckRotationalPress()
+        {
+            if (Controller.GetPressDown(EVRButtonId.k_EButton_SteamVR_Touchpad))
+            {
+                var v = Controller.GetAxis(EVRButtonId.k_EButton_SteamVR_Touchpad);
+                _ProspectedPlayArea.Reset();
+                if (v.x < -0.2f)
+                {
+                    _ProspectedPlayArea.Rotation -= 20f;
+                }
+                else if (v.x > 0.2f)
+                {
+                    _ProspectedPlayArea.Rotation += 20f;
+                }
+                _ProspectedPlayArea.Apply();
+            }
+        }
         protected override void OnFixedUpdate()
         {
 
             if (State == WarpState.None)
             {
-                if (Controller.GetTouchDown(EVRButtonId.k_EButton_Axis0))
+                var v = Controller.GetAxis(EVRButtonId.k_EButton_SteamVR_Touchpad);
+                if (v.magnitude < 0.5f)
                 {
-                    EnterState(WarpState.Rotating);
+                    if (Controller.GetTouchDown(EVRButtonId.k_EButton_SteamVR_Touchpad) /*||Controller.GetTouch(EVRButtonId.k_EButton_SteamVR_Touchpad)*/)
+                    {
+                        EnterState(WarpState.Rotating);
+                    }
                 }
-                else if (Controller.GetPressDown(EVRButtonId.k_EButton_Grip))
+                else
+                {
+                    CheckRotationalPress();
+                }
+
+                if (Controller.GetPressDown(EVRButtonId.k_EButton_Grip))
                 {
                     EnterState(WarpState.Grabbing);
                 }
@@ -175,6 +202,8 @@ namespace VRGIN.Controls.Tools
                         _ProspectedPlayArea.Scale = 1.0f;
                     }
                 }
+
+                CheckRotationalPress();
             }
 
 
