@@ -122,6 +122,60 @@ namespace VRGIN.Helpers
         }
     }
 
+
+    public class VelocityRumble : IRumbleSession
+    {
+        public bool IsOver
+        {
+            get; set;
+        }
+
+        public ushort MicroDuration
+        {
+            get
+            {
+                return (ushort)(_MicroDuration + (Device.velocity.magnitude / _MaxVelocity) * (_MaxMicroDuration - _MicroDuration));
+            }
+        }
+
+        public float MilliInterval
+        {
+            get
+            {
+                return Mathf.Lerp(_MilliInterval, _MaxMilliInterval, Device.velocity.magnitude / _MaxVelocity);
+            }
+        }
+
+        readonly ushort _MicroDuration;
+        readonly float _MilliInterval;
+        readonly float _MaxVelocity;
+        readonly ushort _MaxMicroDuration;
+        readonly float _MaxMilliInterval;
+
+        public SteamVR_Controller.Device Device { get; set; }
+
+        public VelocityRumble(SteamVR_Controller.Device device, ushort microDuration, float milliInterval, float maxVelocity, ushort maxMicroDuration, float maxMilliInterval)
+        {
+            Device = device;
+            this._MaxMilliInterval = maxMilliInterval;
+            this._MaxMicroDuration = maxMicroDuration;
+            this._MaxVelocity = maxVelocity;
+            this._MilliInterval = milliInterval;
+            this._MicroDuration = microDuration;
+        }
+
+        public int CompareTo(IRumbleSession other)
+        {
+            return MicroDuration.CompareTo(other.MicroDuration);
+        }
+
+        public void Consume()
+        {
+
+        }
+    }
+
+
     public class TravelDistanceRumble : IRumbleSession
     {
         private Transform _Transform;

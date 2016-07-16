@@ -12,13 +12,16 @@ namespace VRGIN.Controls.Handlers
     {
         private Controller _Controller;
         private int _TouchCounter = 0;
-        private RumbleSession _Rumble;
+        private VelocityRumble _Rumble;
 
         protected override void OnStart()
         {
             base.OnStart();
 
             _Controller = GetComponent<Controller>();
+            _Rumble = new VelocityRumble(
+                SteamVR_Controller.Input((int)_Controller.Tracking.index),
+                            30, 10, 3f, 1500, 10);
         }
 
         protected override void OnLevel(int level)
@@ -34,25 +37,23 @@ namespace VRGIN.Controls.Handlers
 
         }
 
+        protected override void OnUpdate()
+        {
+            base.OnUpdate();
+            _Rumble.Device = SteamVR_Controller.Input((int)_Controller.Tracking.index);
+        }
+
         protected void OnTriggerEnter(Collider collider)
         {
             if (VR.Interpreter.IsBody(collider))
             {
                 _TouchCounter++;
 
-                if (_Rumble == null)
+                _Controller.StartRumble(_Rumble);
+                if (_TouchCounter == 1)
                 {
-                    _Rumble = new RumbleSession(50, 10, 1f);
-                    _Controller.StartRumble(_Rumble);
+                    _Controller.StartRumble(new RumbleImpulse(1000));
                 }
-            }
-        }
-
-        protected void OnTriggerStay(Collider collider)
-        {
-            if (VR.Interpreter.IsBody(collider))
-            {
-                _Rumble.Restart();
             }
         }
 
@@ -64,7 +65,7 @@ namespace VRGIN.Controls.Handlers
 
                 if (_TouchCounter == 0)
                 {
-                    OnStop();
+                    _Controller.StopRumble(_Rumble);
                 }
             }
         }
@@ -72,11 +73,7 @@ namespace VRGIN.Controls.Handlers
         protected void OnStop()
         {
             _TouchCounter = 0;
-            if (_Rumble != null)
-            {
-                _Rumble.Close();
-                _Rumble = null;
-            }
+            _Controller.StopRumble(_Rumble);
         }
     }
 }
