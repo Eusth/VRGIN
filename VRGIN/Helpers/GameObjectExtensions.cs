@@ -13,7 +13,7 @@ namespace VRGIN.Helpers
         {
             return go.GetComponents<MonoBehaviour>().Where(IsCameraEffect);
         }
-        
+
         private static bool IsCameraEffect(MonoBehaviour component)
         {
             return IsImageEffect(component.GetType());
@@ -29,12 +29,12 @@ namespace VRGIN.Helpers
             Type type = original.GetType();
             T copy = destination.AddComponent(type) as T;
             // Copied fields can be restricted with BindingFlags
-            FieldInfo[] fields = type.GetFields( BindingFlags.Instance | BindingFlags.Public);
+            FieldInfo[] fields = type.GetFields(BindingFlags.Instance | BindingFlags.Public);
             foreach (FieldInfo field in fields)
             {
                 field.SetValue(copy, field.GetValue(original));
             }
-       
+
             return copy;
         }
 
@@ -55,11 +55,11 @@ namespace VRGIN.Helpers
             {
                 var obj = queue.Dequeue();
 
-                yield return obj;
 
                 // Enqueue children
-                foreach(var child in obj.Children())
+                foreach (var child in obj.Children())
                 {
+                    yield return child;
                     queue.Enqueue(child);
                 }
             }
@@ -76,7 +76,7 @@ namespace VRGIN.Helpers
             return gameObject.Children().Where(child => child.CompareTag(tag));
         }
 
-        public static GameObject FIndGameObjectByTag(this GameObject gameObject, string tag)
+        public static GameObject FindGameObjectByTag(this GameObject gameObject, string tag)
         {
             return gameObject.FindGameObjectsByTag(tag).FirstOrDefault();
         }
