@@ -21,7 +21,7 @@ namespace VRGIN.Helpers
         internal static Shader GetShader(string name)
         {
 #if UNITY_4_5
-            var assetBundle = AssetBundle.CreateFromMemoryImmediate(VRGIN.U46.Resource.steamvr);
+            var assetBundle = AssetBundle.CreateFromMemoryImmediate(VRGIN.U46.U46.Resource.steamvr);
             var shader = Shader.Instantiate(assetBundle.Load(name)) as Shader;
             assetBundle.Unload(false);
             return shader;
@@ -43,11 +43,42 @@ namespace VRGIN.Helpers
 #endif
         }
 
+
+        public static T LoadFromAssetBundle<T>(byte[] assetBundleBytes, string name) where T : UnityEngine.Object
+        {
+#if UNITY_4_5
+            var assetBundle = AssetBundle.CreateFromMemoryImmediate(assetBundleBytes);
+            //foreach(var asset in assetBundle.LoadAll())
+            //{
+            //    VRLog.Info(asset.name);
+            //}
+            VRLog.Info("Getting {0} from {1}", name, assetBundle.name);
+            var obj = GameObject.Instantiate(assetBundle.Load(name)) as T;
+            assetBundle.Unload(false);
+            return obj;
+#else
+            if(!_SteamVR)
+            {
+                _SteamVR = AssetBundle.LoadFromMemory(Resource.steamvr);
+            } 
+
+            try
+            {
+                name = name.Replace("Custom/", "");
+                return _SteamVR.LoadAsset<T>(name);
+            } catch(Exception e)
+            {
+                VRLog.Error(e);
+                return null;
+            }
+#endif
+        }
+
         private static Dictionary<string, Transform> _DebugBalls = new Dictionary<string, Transform>();
         public static Transform GetDebugBall(string name)
         {
             Transform debugBall;
-            if(!_DebugBalls.TryGetValue(name, out debugBall) || !debugBall)
+            if (!_DebugBalls.TryGetValue(name, out debugBall) || !debugBall)
             {
                 debugBall = GameObject.CreatePrimitive(PrimitiveType.Sphere).transform;
                 debugBall.transform.localScale *= 0.03f;
@@ -62,7 +93,7 @@ namespace VRGIN.Helpers
             var go = new GameObject(name);
             go.transform.SetParent(parent, false);
 
-            if(dontDestroy)
+            if (dontDestroy)
             {
                 GameObject.DontDestroyOnLoad(go);
             }
@@ -122,7 +153,7 @@ namespace VRGIN.Helpers
         public static void DumpScene(string path)
         {
             VRLog.Info("Dumping scene...");
-            
+
             var rootArray = new JSONArray();
             foreach (var gameObject in UnityEngine.Object.FindObjectsOfType<GameObject>().Where(go => go.transform.parent == null))
             {
@@ -131,32 +162,47 @@ namespace VRGIN.Helpers
 
             File.WriteAllText(path, rootArray.ToJSON(0));
             VRLog.Info("Done!");
+        }
 
+        public static void DumpObject(GameObject obj, string path)
+        {
+            VRLog.Info("Dumping object...");
+
+            File.WriteAllText(path, AnalyzeNode(obj).ToJSON(0));
+
+            VRLog.Info("Done!");
         }
 
         private static JSONClass AnalyzeNode(GameObject go)
         {
-
             var obj = new JSONClass();
+
             obj["name"] = (go.name);
             obj["active"] = go.activeSelf.ToString();
             obj["tag"] = (go.tag);
             obj["layer"] = (LayerMask.LayerToName(go.gameObject.layer));
 
             var components = new JSONClass();
-            foreach(var c in go.GetComponents<Component>())
+            foreach (var c in go.GetComponents<Component>())
             {
+                if (c == null)
+                {
+                    VRLog.Warn("NULL component: " + c);
+                    continue;
+                }
                 var comp = new JSONClass();
 
-                foreach(var field in c.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public))
+                foreach (var field in c.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public))
                 {
-                    try {
+                    try
+                    {
                         var val = FieldToString(field.Name, field.GetValue(c));
                         if (val != null)
                         {
                             comp[field.Name] = val;
                         }
-                    } catch (Exception e)
+                    }
+                    catch (Exception e)
                     {
                         VRLog.Warn("Failed to get field {0}", field.Name);
                     }
@@ -176,7 +222,7 @@ namespace VRGIN.Helpers
                 //        Logger.Warn("Failed to get prop {0}", prop.Name);
                 //    }
                 //}
-                
+
                 components[c.GetType().Name] = comp;
             }
 
@@ -197,14 +243,14 @@ namespace VRGIN.Helpers
         {
             if (value == null) return null;
 
-            switch(memberName)
+            switch (memberName)
             {
                 case "cullingMask":
                     return string.Join(", ", GetLayerNames((int)value));
                 case "renderer":
                     return ((Renderer)value).material.shader.name;
                 default:
-                    if(value is Vector3)
+                    if (value is Vector3)
                     {
                         var v = (Vector3)value;
                         return String.Format("({0:0.000}, {1:0.000}, {2:0.000})", v.x, v.y, v.z);
@@ -218,20 +264,22 @@ namespace VRGIN.Helpers
 
             }
         }
-     
+
         // -- COMPATIBILITY --
         public static void SetPropertyOrField<T>(T obj, string name, object value)
         {
             var prop = typeof(T).GetProperty(name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
             var field = typeof(T).GetField(name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
-            
-            if(prop != null)
+
+            if (prop != null)
             {
                 prop.SetValue(obj, value, null);
-            } else if(field != null)
+            }
+            else if (field != null)
             {
                 field.SetValue(obj, value);
-            } else
+            }
+            else
             {
                 VRLog.Warn("Prop/Field not found!");
             }

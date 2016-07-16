@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace VRGIN.U46 {
+namespace VRGIN.U46.U46 {
     using System;
     
     
@@ -57,6 +57,16 @@ namespace VRGIN.U46 {
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] hands {
+            get {
+                object obj = ResourceManager.GetObject("hands", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         

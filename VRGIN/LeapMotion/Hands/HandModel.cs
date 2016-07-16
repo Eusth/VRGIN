@@ -23,7 +23,7 @@ namespace Leap.Unity{
   public abstract class HandModel : IHandModel {
 
     [SerializeField]
-    private Chirality handedness;
+    public Chirality handedness;
     public override Chirality Handedness {
       get { return handedness; }
     }

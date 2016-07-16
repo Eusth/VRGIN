@@ -36,7 +36,6 @@ namespace VRGIN.Visuals
                                 }
                                 Category {
                                    Lighting Off
-                                   ZWrite Off
                                    Cull Back
                                    Blend SrcAlpha OneMinusSrcAlpha
                                    

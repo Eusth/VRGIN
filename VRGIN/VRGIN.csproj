@@ -116,6 +116,11 @@
     <Compile Include="LeapMotion\Hands\HandModel.cs" />
     <Compile Include="LeapMotion\Hands\HandTransitionBehavior.cs" />
     <Compile Include="LeapMotion\Hands\IHandModel.cs" />
+    <Compile Include="LeapMotion\Hands\MinimalHand.cs" />
+    <Compile Include="LeapMotion\Hands\PolyFinger.cs" />
+    <Compile Include="LeapMotion\Hands\PolyHand.cs" />
+    <Compile Include="LeapMotion\Hands\RiggedFinger.cs" />
+    <Compile Include="LeapMotion\Hands\RiggedHand.cs" />
     <Compile Include="LeapMotion\Hands\RigidFinger.cs" />
     <Compile Include="LeapMotion\Hands\RigidHand.cs" />
     <Compile Include="LeapMotion\Hands\SkeletalFinger.cs" />
@@ -229,6 +234,7 @@
     <Content Include="SteamVR\Textures\workshop.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\hands" />
     <None Include="Resources\steamvr" />
     <None Include="SteamVR\Prefabs\[CameraRig].prefab" />
     <None Include="SteamVR\Prefabs\[Status].prefab" />

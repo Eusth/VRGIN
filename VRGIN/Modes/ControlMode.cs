@@ -56,9 +56,18 @@ namespace VRGIN.Modes
         public HandAttachments LeftHand { get; private set; }
 
         /// <summary>
+        /// Gets the left hand.
+        /// </summary>
+        public HandModel LeftGraphicalHand { get; private set; }
+
+
+        /// <summary>
         /// Gets the right hand.
         /// </summary>
         public HandAttachments RightHand { get; private set; }
+
+        public HandModel RightGraphicalHand { get; private set; }
+
 
         public LeapServiceProvider LeapMotion { get; private set; }
 
@@ -104,6 +113,7 @@ namespace VRGIN.Modes
                     LeapMotion.transform.name = "Leap Motion Controller (" + (++cnter) + ")";
                     LeapMotion.transform.SetParent(steamCam.head.transform, false);
                     LeapMotion.transform.localRotation = Quaternion.Euler(-90f, 180f, 0);
+                    LeapMotion.transform.localPosition += Vector3.forward * 0.08f;
                 }
                 
                 Left = CreateLeftController();
@@ -137,8 +147,8 @@ namespace VRGIN.Modes
             handController.gameObject.AddComponent<PinchController>();
             serviceProvider._isHeadMounted = true;
 
-            var leftGraphicalHand = BuildGraphicalHand(Chirality.Left);
-            var rightGraphicalHand = BuildGraphicalHand(Chirality.Right);
+            LeftGraphicalHand = BuildGraphicalHand(Chirality.Left);
+            RightGraphicalHand = BuildGraphicalHand(Chirality.Right);
             LeftHand = BuildAttachmentHand(Chirality.Left);
             RightHand = BuildAttachmentHand(Chirality.Right);
             
@@ -148,8 +158,8 @@ namespace VRGIN.Modes
                 GroupName = "Graphics_Hands",
                 CanDuplicate = false,
                 IsEnabled = true,
-                LeftModel = leftGraphicalHand,
-                RightModel = rightGraphicalHand,
+                LeftModel = LeftGraphicalHand,
+                RightModel = RightGraphicalHand,
                 modelList = new List<IHandModel>(),
                 modelsCheckedOut = new List<IHandModel>()
             });
@@ -167,34 +177,117 @@ namespace VRGIN.Modes
 
             LeftHand.transform.SetParent(handPool.transform, false);
             RightHand.transform.SetParent(handPool.transform, false);
-            leftGraphicalHand.transform.SetParent(handPool.transform, false);
-            rightGraphicalHand.transform.SetParent(handPool.transform, false);
+            LeftGraphicalHand.transform.SetParent(handPool.transform, false);
+            RightGraphicalHand.transform.SetParent(handPool.transform, false);
+
 
             return serviceProvider;
         }
 
-        protected virtual IHandModel BuildGraphicalHand(Chirality handedness)
+        protected virtual HandModel BuildGraphicalHand(Chirality handedness)
         {
-            var primitive = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            
-            var hand = new GameObject("GHand_" + handedness).AddComponent<CapsuleHand>();
-            hand.handedness = handedness;
-            hand._material = new Material(VR.Context.Materials.StandardShader);
-            hand._sphereMesh = primitive.GetComponent<MeshFilter>().sharedMesh;
-            
+            //var primitive = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+
+
+            var handObj = UnityHelper.LoadFromAssetBundle<GameObject>(
+#if UNITY_4_5
+                VRGIN.U46.U46.Resource.hands,
+#else
+                VRGIN.Resource.hands,
+#endif
+                "LoPoly_Rigged_Hand_" + handedness
+            );
+
+            var hand = SetUpRiggedHand(handObj, handedness);
+            //hand._material = new Material(VR.Context.Materials.StandardShader);
+            //hand._sphereMesh = primitive.GetComponent<MeshFilter>().sharedMesh;
             hand.gameObject.AddComponent<HandEnableDisable>();
 
-            Destroy(primitive);
+            //Destroy(primitive);
 
             return hand;
         }
+
+        /// <summary>
+        /// Needed because of Unity's horrendous AssetBundle structure. Scripts are only expected in the main assembly, and since we're not there...
+        /// </summary>
+        /// <param name="hand"></param>
+        private RiggedHand SetUpRiggedHand(GameObject handObj, Chirality handedness)
+        {
+            var hand = handObj.GetComponent<RiggedHand>();
+
+            handObj.transform.localScale *= 0.01f;
+            //handObj.transform.localScale *= 0.085f;
+            if (hand)
+            {
+                hand.gameObject.AddComponent<LeapMenuHandler>();
+
+                return hand;
+            }
+
+            hand = handObj.AddComponent<RiggedHand>();
+            hand.gameObject.AddComponent<LeapMenuHandler>();
+
+            handObj.AddComponent<HandEnableDisable>();
+            hand.handedness = handedness;
+
+            // Get references
+            var thumb_meta = hand.gameObject.Descendants().First(d => d.name.EndsWith("thumb_meta", StringComparison.InvariantCultureIgnoreCase)).AddComponent<RiggedFinger>();
+            var index_meta = hand.gameObject.Descendants().First(d => d.name.EndsWith("index_meta", StringComparison.InvariantCultureIgnoreCase)).AddComponent<RiggedFinger>();
+            var ring_meta = hand.gameObject.Descendants().First(d => d.name.EndsWith("ring_meta")).AddComponent<RiggedFinger>();
+            var middle_meta = hand.gameObject.Descendants().First(d => d.name.EndsWith("middle_meta")).AddComponent<RiggedFinger>();
+            var pinky_meta = hand.gameObject.Descendants().First(d => d.name.EndsWith("pinky_meta")).AddComponent<RiggedFinger>();
+            var wrist = hand.gameObject.Descendants().First(d => d.name.EndsWith("Wrist")).transform;
+            var palm = hand.gameObject.Descendants().First(d => d.name.EndsWith("Palm")).transform;
+
+            // Set up hand
+            hand.fingers = new RiggedFinger[]
+            {
+                thumb_meta, index_meta, middle_meta, ring_meta, pinky_meta
+            };
+
+            hand.wristJoint = wrist;
+            hand.palm = palm;
+            hand.ModelPalmAtLeapWrist = true;
+            hand.handModelPalmWidth = 0.085f;
+            hand.UseMetaCarpals = true;
+            var pointDir = Vector3.left * (hand.handedness == Chirality.Left ? 1 : -1);
+            var palmDir = Vector3.up * (hand.handedness == Chirality.Left ? 1 : -1);
+            hand.modelFingerPointing = pointDir;
+            hand.modelPalmFacing = palmDir;
+
+            // Set up fingers
+            thumb_meta.fingerType = Leap.Finger.FingerType.TYPE_THUMB;
+            index_meta.fingerType = Leap.Finger.FingerType.TYPE_INDEX;
+            ring_meta.fingerType = Leap.Finger.FingerType.TYPE_RING;
+            middle_meta.fingerType = Leap.Finger.FingerType.TYPE_MIDDLE;
+            pinky_meta.fingerType = Leap.Finger.FingerType.TYPE_PINKY;
+
+            thumb_meta.bones = new Transform[] { null, thumb_meta.transform }.Concat(thumb_meta.gameObject.Descendants().Select(d => d.transform).Take(2)).ToArray();
+            index_meta.bones = new Transform[] { index_meta.transform }.Concat(index_meta.gameObject.Descendants().Select(d => d.transform).Take(3)).ToArray();
+            ring_meta.bones = new Transform[] { ring_meta.transform }.Concat(ring_meta.gameObject.Descendants().Select(d => d.transform).Take(3)).ToArray();
+            middle_meta.bones = new Transform[] { middle_meta.transform }.Concat(middle_meta.gameObject.Descendants().Select(d => d.transform).Take(3)).ToArray();
+            pinky_meta.bones = new Transform[] { pinky_meta.transform }.Concat(pinky_meta.gameObject.Descendants().Select(d => d.transform).Take(3)).ToArray();
+            
+            foreach(var finger in new RiggedFinger[] { thumb_meta, index_meta, ring_meta, middle_meta, pinky_meta }) {
+                finger.modelFingerPointing = pointDir;
+                finger.modelPalmFacing = palmDir;
+                finger.joints = new Transform[] { null, null, null };
+            }
+            
+            foreach(var obj in handObj.Descendants())
+            {
+                VRLog.Info("{0}: {1}", obj.transform.name, obj.transform.localScale);
+            }
+            return hand;
+        }
+
 
         protected virtual HandAttachments BuildAttachmentHand(Chirality handedness)
         {
             var hand = new GameObject("AHand_" + handedness).AddComponent<HandAttachments>();
             hand._handedness = handedness;
             hand.gameObject.AddComponent<HandEnableDisable>();
-            hand.gameObject.AddComponent<LeapMenuHandler>();
             hand.gameObject.AddComponent<WarpHandler>();
 
             // Create transforms

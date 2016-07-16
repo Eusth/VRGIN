@@ -12,7 +12,7 @@ namespace VRGIN.Controls.LeapMotion
 {
     public class LeapMenuHandler : ProtectedBehaviour
     {
-        IHandModel _Hand;
+        HandModel _Hand;
         private const int MOUSE_STABILIZER_THRESHOLD = 30; // pixels
 
         enum RelativePosition
@@ -50,7 +50,7 @@ namespace VRGIN.Controls.LeapMotion
 
         protected override void OnStart()
         {
-            _Hand = GetComponent<IHandModel>();
+            _Hand = GetComponent<HandModel>();
 
             if (!_Hand)
             {
@@ -198,7 +198,7 @@ namespace VRGIN.Controls.LeapMotion
         {
             get
             {
-                return _Hand.GetLeapHand().Fingers[FINGER_INDEX].Bone(Leap.Bone.BoneType.TYPE_DISTAL).NextJoint.ToVector3();
+                return _Hand.fingers[1].GetTipPosition();
             }
         }
 
