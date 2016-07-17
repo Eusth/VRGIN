@@ -72,6 +72,7 @@ namespace VRGIN.Core
                 _Instance = new GameObject("VR Manager").AddComponent<VRManager>();
                 _Instance.Context = context;
                 _Instance.Interpreter = _Instance.gameObject.AddComponent<T>();
+                // Makes sure that the GUI is instanciated
                 _Instance._Gui = VRGUI.Instance;
                 _Instance.Input = new InputSimulator();
                 
@@ -80,7 +81,9 @@ namespace VRGIN.Core
                     _Instance.Speech = _Instance.gameObject.AddComponent<SpeechManager>();
                 }
 
-                // Makes sure that the GUI is instanciated
+                // Save settings so the XML is up-to-date
+                VR.Settings.Save();
+
             }
             return _Instance;
         }

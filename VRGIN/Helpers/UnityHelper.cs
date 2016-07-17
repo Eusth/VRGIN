@@ -16,31 +16,18 @@ namespace VRGIN.Helpers
     {
 #if !UNITY_4_5
         private static AssetBundle _SteamVR;
+        private static IDictionary<string, AssetBundle> _AssetBundles = new Dictionary<string, AssetBundle>();
 #endif
 
         internal static Shader GetShader(string name)
         {
+            return LoadFromAssetBundle<Shader>(
 #if UNITY_4_5
-            var assetBundle = AssetBundle.CreateFromMemoryImmediate(VRGIN.U46.U46.Resource.steamvr);
-            var shader = Shader.Instantiate(assetBundle.Load(name)) as Shader;
-            assetBundle.Unload(false);
-            return shader;
+                U46.U46.Resource.steamvr,
 #else
-            if(!_SteamVR)
-            {
-                _SteamVR = AssetBundle.LoadFromMemory(Resource.steamvr);
-            } 
-
-            try
-            {
-                name = name.Replace("Custom/", "");
-                return _SteamVR.LoadAsset<Shader>(name);
-            } catch(Exception e)
-            {
-                VRLog.Error(e);
-                return null;
-            }
+                Resource.steamvr,
 #endif
+                name);
         }
 
 
@@ -57,21 +44,44 @@ namespace VRGIN.Helpers
             assetBundle.Unload(false);
             return obj;
 #else
-            if(!_SteamVR)
+            var key = GetKey(assetBundleBytes);
+            if (!_AssetBundles.ContainsKey(key))
             {
-                _SteamVR = AssetBundle.LoadFromMemory(Resource.steamvr);
+                _AssetBundles[key] = AssetBundle.LoadFromMemory(assetBundleBytes);
             } 
 
             try
             {
+                VRLog.Info("Loading: {0} ({1})", name, key);
+                foreach (var asset in _AssetBundles[key].LoadAllAssets())
+                {
+                    VRLog.Info(asset.name);
+                }
+
                 name = name.Replace("Custom/", "");
-                return _SteamVR.LoadAsset<T>(name);
+                var loadedAsset = _AssetBundles[key].LoadAsset<T>(name);
+                return !typeof(Shader).IsAssignableFrom(typeof(T)) ? UnityEngine.Object.Instantiate<T>(loadedAsset) : loadedAsset;
             } catch(Exception e)
             {
                 VRLog.Error(e);
                 return null;
             }
 #endif
+        }
+        private static string CalculateChecksum(byte[] byteToCalculate)
+        {
+            int checksum = 0;
+            foreach (byte chData in byteToCalculate)
+            {
+                checksum += chData;
+            }
+            checksum &= 0xff;
+            return checksum.ToString("X2");
+        }
+
+        private static string GetKey(byte[] assetBundleBytes)
+        {
+            return CalculateChecksum(assetBundleBytes);
         }
 
         private static Dictionary<string, Transform> _DebugBalls = new Dictionary<string, Transform>();

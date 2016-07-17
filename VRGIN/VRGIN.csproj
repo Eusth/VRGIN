@@ -214,11 +214,15 @@
     <Content Include="Images\icon_warp.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Libs\Data\Plugins\x86\LeapC.dll" />
+    <Content Include="Libs\Data\Plugins\x86\LeapC.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Libs\Data\Plugins\x86\openvr_api.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Libs\Data\Plugins\x86_64\LeapC.dll" />
+    <Content Include="Libs\Data\Plugins\x86_64\LeapC.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Libs\Data\Plugins\x86_64\openvr_api.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

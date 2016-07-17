@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Leap;
+using VRGIN.Core;
 
 namespace Leap.Unity {
 
@@ -131,12 +132,12 @@ namespace Leap.Unity {
     private Vector3 selectedDirection (Vector3 tipPosition) {
       switch (PointingType) {
         case PointingType.RelativeToHorizon:
-          Quaternion cameraRot = Camera.main.transform.rotation;
+          Quaternion cameraRot = VR.Camera.Head.transform.rotation;
           float cameraYaw = cameraRot.eulerAngles.y;
           Quaternion rotator = Quaternion.AngleAxis(cameraYaw, Vector3.up);
           return rotator * PointingDirection;
         case PointingType.RelativeToCamera:
-          return Camera.main.transform.TransformDirection(PointingDirection);
+          return VR.Camera.Head.TransformDirection(PointingDirection);
         case PointingType.RelativeToWorld:
           return PointingDirection;
         case PointingType.AtTarget:

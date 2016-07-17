@@ -53,7 +53,6 @@ namespace VRGIN.Controls.LeapMotion
         protected override void OnUpdate()
         {
             base.OnUpdate();
-            
             if (_Showing)
             {
                 // Update play area position
@@ -87,6 +86,9 @@ namespace VRGIN.Controls.LeapMotion
         void SetUpDetectors()
         {
             var detectorHolder = UnityHelper.CreateGameObjectAsChild("Warp Detector Holder", transform).gameObject;
+
+            _OpenPalmDownwardsDetector = detectorHolder.AddComponent<DetectorLogicGate>();
+            
             _PalmDownwardsDetector = detectorHolder.AddComponent<PalmDirectionDetector>();
             _PalmDownwardsDetector.HandModel = _Hand;
             _PalmDownwardsDetector.PointingDirection = new Vector3(0,-1,0.5f).normalized;
@@ -110,12 +112,12 @@ namespace VRGIN.Controls.LeapMotion
             _Fistdetector.Ring = PointingState.NotExtended;
             _Fistdetector.Pinky = PointingState.NotExtended;
 
-            _OpenPalmDownwardsDetector = detectorHolder.AddComponent<DetectorLogicGate>();
 
             _OpenPalmDownwardsDetector.AddDetector(_PalmDownwardsDetector);
             _OpenPalmDownwardsDetector.AddDetector(_ExtendedFingerDetector);
             _OpenPalmDownwardsDetector.OnActivate.AddListener(OnOpenPalmDownwardStart);
             _OpenPalmDownwardsDetector.OnDeactivate.AddListener(OnOpenPalmDownwardEnd);
+            
             _Fistdetector.OnActivate.AddListener(OnFist);
         }
 
@@ -147,6 +149,8 @@ namespace VRGIN.Controls.LeapMotion
 
         private void OnOpenPalmDownwardStart()
         {
+            VRLog.Info("Palm");
+
             if (_Showing) return;
 
             if (Time.time - _LastFist < TIME_THRESHOLD)

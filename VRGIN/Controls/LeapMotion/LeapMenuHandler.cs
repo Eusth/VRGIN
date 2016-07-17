@@ -13,7 +13,7 @@ namespace VRGIN.Controls.LeapMotion
     public class LeapMenuHandler : ProtectedBehaviour
     {
         HandModel _Hand;
-        private const int MOUSE_STABILIZER_THRESHOLD = 30; // pixels
+        private const int MOUSE_STABILIZER_THRESHOLD = 50; // pixels
 
         enum RelativePosition
         {
@@ -47,11 +47,12 @@ namespace VRGIN.Controls.LeapMotion
         GUIQuad _Current;
         State _CurrentState = State.None;
         Vector2? mouseDownPosition;
+        private Vector3 _ScaleVector;
 
         protected override void OnStart()
         {
             _Hand = GetComponent<HandModel>();
-
+            _ScaleVector = new Vector2((float)VRGUI.Width / Screen.width, (float)VRGUI.Height / Screen.height);
             if (!_Hand)
             {
                 VRLog.Error("Hand not found! Disabling...");
@@ -132,7 +133,7 @@ namespace VRGIN.Controls.LeapMotion
             switch(_CurrentState)
             {
                 case State.Press:
-                    mouseDownPosition = new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y);
+                    mouseDownPosition = Vector3.Scale(new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y), _ScaleVector);
                     VR.Input.Mouse.LeftButtonDown();
                     break;
                 case State.None:

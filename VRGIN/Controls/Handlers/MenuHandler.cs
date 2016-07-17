@@ -27,11 +27,13 @@ namespace VRGIN.Controls.Handlers
         private GUIQuad _Target;
         MenuHandler _Other;
         ResizeHandler _ResizeHandler;
+        private Vector3 _ScaleVector;
 
         protected override void OnStart()
         {
             base.OnStart();
             _Controller = GetComponent<Controller>();
+            _ScaleVector = new Vector2((float)VRGUI.Width / Screen.width, (float)VRGUI.Height / Screen.height);
             _Other = _Controller.Other.GetComponent<MenuHandler>();
             InitLaser();
         }
@@ -138,7 +140,7 @@ namespace VRGIN.Controls.Handlers
                     {
                         IsPressing = true;
                         VR.Input.Mouse.LeftButtonDown();
-                        mouseDownPosition = new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y);
+                        mouseDownPosition = Vector2.Scale(new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y), _ScaleVector);
                     }
                     if (Device.GetPress(EVRButtonId.k_EButton_SteamVR_Trigger))
                     {

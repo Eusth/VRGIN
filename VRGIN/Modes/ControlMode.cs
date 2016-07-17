@@ -216,8 +216,9 @@ namespace VRGIN.Modes
         {
             var hand = handObj.GetComponent<RiggedHand>();
 
+#if UNITY_4_5
             handObj.transform.localScale *= 0.01f;
-            //handObj.transform.localScale *= 0.085f;
+#endif
             if (hand)
             {
                 hand.gameObject.AddComponent<LeapMenuHandler>();
