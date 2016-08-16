@@ -317,7 +317,11 @@ namespace VRGIN.Modes
             Destroy(ControllerManager);
             Destroy(Left);
             Destroy(Right);
-            DestroyImmediate(LeapMotion.gameObject);
+
+            if (LeapMotion)
+            {
+                DestroyImmediate(LeapMotion.gameObject);
+            }
 
 
             if (Shortcuts != null)
