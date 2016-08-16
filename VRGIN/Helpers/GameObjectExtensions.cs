@@ -46,6 +46,14 @@ namespace VRGIN.Helpers
             }
         }
 
+        public static IEnumerable<Transform> Children(this Transform transform)
+        {
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                yield return transform.GetChild(i);
+            }
+        }
+
         public static IEnumerable<GameObject> Descendants(this GameObject gameObject)
         {
             Queue<GameObject> queue = new Queue<GameObject>();
@@ -65,6 +73,17 @@ namespace VRGIN.Helpers
             }
         }
 
+        public static IEnumerable<Transform> Descendants(this Transform transform)
+        {
+            return transform.gameObject.Descendants().Select(d => d.transform);
+        }
+
+
+        public static Transform FindDescendant(this Transform transform, string name)
+        {
+            return transform.Descendants().FirstOrDefault(d => d.name == name);
+        }
+
         /// <summary>
         /// Makes a breadth-first search for a gameObject with a tag.
         /// </summary>
@@ -73,13 +92,15 @@ namespace VRGIN.Helpers
         /// <returns></returns>
         public static IEnumerable<GameObject> FindGameObjectsByTag(this GameObject gameObject, string tag)
         {
-            return gameObject.Children().Where(child => child.CompareTag(tag));
+            return gameObject.Descendants().Where(child => child.CompareTag(tag));
         }
 
         public static GameObject FindGameObjectByTag(this GameObject gameObject, string tag)
         {
             return gameObject.FindGameObjectsByTag(tag).FirstOrDefault();
         }
+
+
 
     }
 }

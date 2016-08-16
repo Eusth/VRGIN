@@ -190,10 +190,7 @@ namespace VRGIN.Controls
                 Tools.Add(newTool);
                 CreateToolCanvas(newTool);
 
-                if (_Started)
-                {
-                    newTool.enabled = false;
-                }
+                newTool.enabled = false;
             }
         }
 
