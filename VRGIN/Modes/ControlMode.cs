@@ -115,7 +115,7 @@ namespace VRGIN.Modes
                     LeapMotion.transform.localRotation = Quaternion.Euler(-90f, 180f, 0);
                     LeapMotion.transform.localPosition += Vector3.forward * 0.08f;
                 }
-                
+
                 Left = CreateLeftController();
                 Left.transform.SetParent(steamCam.origin);
 
@@ -129,7 +129,7 @@ namespace VRGIN.Modes
                 ControllerManager.right = Right.gameObject;
             }
             steamCam.origin.gameObject.SetActive(true);
-            
+
             VRLog.Info("---- Initialize left tools");
             InitializeTools(Left, true);
 
@@ -141,7 +141,7 @@ namespace VRGIN.Modes
 
         private LeapServiceProvider CreateLeapHandController()
         {
-            var serviceProvider =  new GameObject("LeapHandController").AddComponent<LeapServiceProvider>();
+            var serviceProvider = new GameObject("LeapHandController").AddComponent<LeapServiceProvider>();
             var handController = serviceProvider.gameObject.AddComponent<LeapHandController>();
             var handPool = handController.gameObject.AddComponent<HandPool>();
             handController.gameObject.AddComponent<PinchController>();
@@ -151,7 +151,7 @@ namespace VRGIN.Modes
             RightGraphicalHand = BuildGraphicalHand(Chirality.Right);
             LeftHand = BuildAttachmentHand(Chirality.Left);
             RightHand = BuildAttachmentHand(Chirality.Right);
-            
+
             handPool.ModelPool = new List<HandPool.ModelGroup>();
             handPool.ModelPool.Add(new HandPool.ModelGroup()
             {
@@ -269,14 +269,15 @@ namespace VRGIN.Modes
             ring_meta.bones = new Transform[] { ring_meta.transform }.Concat(ring_meta.gameObject.Descendants().Select(d => d.transform).Take(3)).ToArray();
             middle_meta.bones = new Transform[] { middle_meta.transform }.Concat(middle_meta.gameObject.Descendants().Select(d => d.transform).Take(3)).ToArray();
             pinky_meta.bones = new Transform[] { pinky_meta.transform }.Concat(pinky_meta.gameObject.Descendants().Select(d => d.transform).Take(3)).ToArray();
-            
-            foreach(var finger in new RiggedFinger[] { thumb_meta, index_meta, ring_meta, middle_meta, pinky_meta }) {
+
+            foreach (var finger in new RiggedFinger[] { thumb_meta, index_meta, ring_meta, middle_meta, pinky_meta })
+            {
                 finger.modelFingerPointing = pointDir;
                 finger.modelPalmFacing = palmDir;
                 finger.joints = new Transform[] { null, null, null };
             }
-            
-            foreach(var obj in handObj.Descendants())
+
+            foreach (var obj in handObj.Descendants())
             {
                 VRLog.Info("{0}: {1}", obj.transform.name, obj.transform.localScale);
             }
@@ -311,7 +312,7 @@ namespace VRGIN.Modes
             };
             return hand;
         }
-        
+
         public virtual void OnDestroy()
         {
             Destroy(ControllerManager);
@@ -380,6 +381,9 @@ namespace VRGIN.Modes
                 new VoiceShortcut(VoiceCommand.DecreaseScale, delegate { VR.Settings.IPDScale *= 1.2f; }), // Decrease / Increase scale of the *world* (inverse of camera scale!)
                 new VoiceShortcut(VoiceCommand.IncreaseScale, delegate { VR.Settings.IPDScale *= 0.8f; }),
                 new MultiKeyboardShortcut(new KeyStroke("Ctrl + C"), new KeyStroke("Ctrl + D"), delegate { UnityHelper.DumpScene("dump.json"); } ),
+                new MultiKeyboardShortcut(new KeyStroke("Ctrl + C"), new KeyStroke("Ctrl + I"), delegate {
+                    VRGIN.Helpers.Profiler.FindHotPaths(delegate {});
+                } ),
                 new MultiKeyboardShortcut(new KeyStroke("Ctrl + C"), new KeyStroke("Ctrl + V"), ToggleUserCamera),
                 new KeyboardShortcut(new KeyStroke("Alt + S"), delegate { VR.Settings.Save(); }),
                 new VoiceShortcut(VoiceCommand.SaveSettings, delegate { VR.Settings.Save(); }),

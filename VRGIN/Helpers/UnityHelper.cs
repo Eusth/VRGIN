@@ -183,6 +183,11 @@ namespace VRGIN.Helpers
             VRLog.Info("Done!");
         }
 
+        public static IEnumerable<GameObject> GetRootNodes()
+        {
+            return UnityEngine.Object.FindObjectsOfType<GameObject>().Where(go => go.transform.parent == null);
+        }
+
         private static JSONClass AnalyzeNode(GameObject go)
         {
             var obj = new JSONClass();

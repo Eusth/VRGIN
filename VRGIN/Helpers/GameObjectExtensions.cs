@@ -54,6 +54,22 @@ namespace VRGIN.Helpers
             }
         }
 
+        public static IEnumerable<Transform> Ancestors(this Transform transform)
+        {
+            var t = transform;
+
+            while (t.parent)
+            {
+                t = t.parent;
+                yield return t;
+            }
+        }
+
+        public static int Depth(this Transform transform)
+        {
+            return transform.Ancestors().Count();
+        }
+
         public static IEnumerable<GameObject> Descendants(this GameObject gameObject)
         {
             Queue<GameObject> queue = new Queue<GameObject>();

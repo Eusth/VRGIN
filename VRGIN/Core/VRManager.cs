@@ -31,7 +31,8 @@ namespace VRGIN.Core
     {
         public ControlMode Mode { get; private set; }
 
-        public ModeInitializedEventArgs(ControlMode mode) {
+        public ModeInitializedEventArgs(ControlMode mode)
+        {
             Mode = mode;
         }
     }
@@ -67,16 +68,16 @@ namespace VRGIN.Core
         /// <returns></returns>
         public static VRManager Create<T>(IVRManagerContext context) where T : GameInterpreter
         {
-            if(_Instance == null)
+            if (_Instance == null)
             {
-                _Instance = new GameObject("VR Manager").AddComponent<VRManager>();
+                _Instance = new GameObject("VRGIN_Manager").AddComponent<VRManager>();
                 _Instance.Context = context;
                 _Instance.Interpreter = _Instance.gameObject.AddComponent<T>();
                 // Makes sure that the GUI is instanciated
                 _Instance._Gui = VRGUI.Instance;
                 _Instance.Input = new InputSimulator();
-                
-                if(VR.Settings.SpeechRecognition)
+
+                if (VR.Settings.SpeechRecognition)
                 {
                     _Instance.Speech = _Instance.gameObject.AddComponent<SpeechManager>();
                 }
@@ -97,7 +98,7 @@ namespace VRGIN.Core
         /// <typeparam name="T"></typeparam>
         public void SetMode<T>() where T : ControlMode
         {
-            if(Mode == null || !(Mode is T))
+            if (Mode == null || !(Mode is T))
             {
                 ModeType = typeof(T);
 
