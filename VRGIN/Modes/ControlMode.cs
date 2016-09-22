@@ -117,10 +117,10 @@ namespace VRGIN.Modes
                 }
 
                 Left = CreateLeftController();
-                Left.transform.SetParent(steamCam.origin);
+                Left.transform.SetParent(steamCam.origin, false);
 
                 Right = CreateRightController();
-                Right.transform.SetParent(steamCam.origin);
+                Right.transform.SetParent(steamCam.origin, false);
 
                 Left.Other = Right;
                 Right.Other = Left;
