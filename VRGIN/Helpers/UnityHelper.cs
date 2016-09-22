@@ -196,6 +196,9 @@ namespace VRGIN.Helpers
             obj["active"] = go.activeSelf.ToString();
             obj["tag"] = (go.tag);
             obj["layer"] = (LayerMask.LayerToName(go.gameObject.layer));
+            obj["pos"] = go.transform.localPosition.ToString();
+            obj["rot"] = go.transform.localEulerAngles.ToString();
+            obj["scale"] = go.transform.localScale.ToString();
 
             var components = new JSONClass();
             foreach (var c in go.GetComponents<Component>())
