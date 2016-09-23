@@ -84,6 +84,7 @@
     <Compile Include="Helpers\KeyStroke.cs" />
     <Compile Include="Helpers\Profiler.cs" />
     <Compile Include="Helpers\QuaternionExtensions.cs" />
+    <Compile Include="Helpers\RenderTextureExtensions.cs" />
     <Compile Include="Helpers\RumbleSession.cs" />
     <Compile Include="Helpers\SimpleJSON.cs" />
     <Compile Include="Helpers\UnityHelper.cs" />
