@@ -49,8 +49,9 @@ public class SteamVR_Render : MonoBehaviour
 	static private bool isQuitting;
 	void OnApplicationQuit()
 	{
-		isQuitting = true;
-		SteamVR.SafeDispose();
+        // Can cause issues with Honey Select
+		//isQuitting = true;
+		//SteamVR.SafeDispose();
 	}
 
 	static public void Add(SteamVR_Camera vrcam)
