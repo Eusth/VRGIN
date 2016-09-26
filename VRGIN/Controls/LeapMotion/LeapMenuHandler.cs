@@ -61,9 +61,9 @@ namespace VRGIN.Controls.LeapMotion
             }
         }
 
-        protected override void OnFixedUpdate()
+        protected override void OnUpdate()
         {
-            base.OnFixedUpdate();
+            base.OnUpdate();
 
 
             if (!_Current)

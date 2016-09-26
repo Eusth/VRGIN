@@ -32,12 +32,13 @@ namespace VRGIN.Controls
         }
 
 
-        protected override void OnFixedUpdate()
+        protected override void OnUpdate()
         {
+            base.OnUpdate();
             if (_RumbleSessions.Count > 0)
             {
                 var session = _RumbleSessions.Max();
-                float timeSinceLastImpulse = Time.time - _LastImpulse;
+                float timeSinceLastImpulse = Time.unscaledTime - _LastImpulse;
 
                 if (_Controller.Tracking.isValid && timeSinceLastImpulse >= session.MilliInterval * MILLI_TO_SECONDS && timeSinceLastImpulse > MIN_INTERVAL)
                 {
@@ -52,7 +53,7 @@ namespace VRGIN.Controls
                         {
                             SteamVR_Controller.Input((int)_Controller.Tracking.index).TriggerHapticPulse(session.MicroDuration);
                         }
-                        _LastImpulse = Time.time;
+                        _LastImpulse = Time.unscaledTime;
                         session.Consume();
                     }
                 }

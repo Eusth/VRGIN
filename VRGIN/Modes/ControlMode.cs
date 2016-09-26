@@ -456,12 +456,12 @@ namespace VRGIN.Modes
                 }
                 i++;
             }
+
+            CheckInput();
         }
 
-        protected override void OnFixedUpdate()
+        protected void CheckInput()
         {
-            base.OnFixedUpdate();
-
             foreach (var shortcut in Shortcuts)
             {
                 shortcut.Evaluate();

@@ -156,8 +156,9 @@ namespace VRGIN.Controls.Tools
                 _ProspectedPlayArea.Apply();
             }
         }
-        protected override void OnFixedUpdate()
+        protected override void OnUpdate()
         {
+            base.OnUpdate();
 
             if (State == WarpState.None)
             {
@@ -184,7 +185,7 @@ namespace VRGIN.Controls.Tools
                 if (Controller.GetPress(EVRButtonId.k_EButton_Grip))
                 {
                     var diff = transform.position - _PrevControllerPos;
-                    if (Time.time - _GripStartTime > GRIP_TIME_THRESHOLD || diff.magnitude > GRIP_DIFF_THRESHOLD)
+                    if (Time.unscaledTime - _GripStartTime > GRIP_TIME_THRESHOLD || diff.magnitude > GRIP_DIFF_THRESHOLD)
                     {
                         VR.Camera.SteamCam.origin.transform.position -= diff;
                         _ProspectedPlayArea.Height -= diff.y;
@@ -195,7 +196,7 @@ namespace VRGIN.Controls.Tools
                 if (Controller.GetPressUp(EVRButtonId.k_EButton_Grip))
                 {
                     EnterState(WarpState.None);
-                    if (Time.time - _GripStartTime < GRIP_TIME_THRESHOLD)
+                    if (Time.unscaledTime - _GripStartTime < GRIP_TIME_THRESHOLD)
                     {
                         Owner.StartRumble(new RumbleImpulse(800));
                         _ProspectedPlayArea.Height = 0;
@@ -251,19 +252,19 @@ namespace VRGIN.Controls.Tools
             {
                 if (Controller.GetHairTriggerDown())
                 {
-                    _TriggerDownTime = Time.time;
+                    _TriggerDownTime = Time.unscaledTime;
                 }
                 if (_TriggerDownTime != null)
                 {
-                    if (Controller.GetHairTrigger() && (Time.time - _TriggerDownTime) > EXACT_IMPERSONATION_TIME)
+                    if (Controller.GetHairTrigger() && (Time.unscaledTime - _TriggerDownTime) > EXACT_IMPERSONATION_TIME)
                     {
-                        VRManager.Instance.Mode.Impersonate(VRManager.Instance.Interpreter.Actors.First(),
+                        VRManager.Instance.Mode.Impersonate(VRManager.Instance.Interpreter.Actors.FirstOrDefault(),
                             ImpersonationMode.Exactly);
                         _TriggerDownTime = null;
                     }
                     if (VRManager.Instance.Interpreter.Actors.Any() && Controller.GetHairTriggerUp())
                     {
-                        VRManager.Instance.Mode.Impersonate(VRManager.Instance.Interpreter.Actors.First(),
+                        VRManager.Instance.Mode.Impersonate(VRManager.Instance.Interpreter.Actors.FirstOrDefault(),
                             ImpersonationMode.Approximately);
                     }
                 }
@@ -380,7 +381,7 @@ namespace VRGIN.Controls.Tools
                     break;
                 case WarpState.Grabbing:
                     _PrevControllerPos = transform.position;
-                    _GripStartTime = Time.time;
+                    _GripStartTime = Time.unscaledTime;
                     _TravelRumble.Reset();
                     Owner.StartRumble(_TravelRumble);
                     break;

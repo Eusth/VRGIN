@@ -85,6 +85,8 @@ namespace VRGIN.Controls.Handlers
             {
                 CheckForNearMenu();
             }
+
+            CheckInput();
         }
 
         private void OnDisable()
@@ -117,9 +119,8 @@ namespace VRGIN.Controls.Handlers
             _ResizeHandler = null;
         }
 
-        protected override void OnFixedUpdate()
+        protected void CheckInput()
         {
-            base.OnFixedUpdate();
             IsPressing = false;
 
             if (LaserVisible && _Target)
@@ -325,9 +326,9 @@ namespace VRGIN.Controls.Handlers
                 _Gui = GetComponent<GUIQuad>();
             }
 
-            protected override void OnFixedUpdate()
+            protected override void OnUpdate()
             {
-                base.OnFixedUpdate();
+                base.OnUpdate();
                 IsDragging = GetDevice(VR.Mode.Left).GetPress(EVRButtonId.k_EButton_SteamVR_Trigger) &&
                        GetDevice(VR.Mode.Right).GetPress(EVRButtonId.k_EButton_SteamVR_Trigger);
 

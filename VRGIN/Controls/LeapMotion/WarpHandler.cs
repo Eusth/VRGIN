@@ -124,14 +124,14 @@ namespace VRGIN.Controls.LeapMotion
         private void OnFist()
         {
             VRLog.Info("Fist");
-            if (Time.time - _LastShow < TIME_THRESHOLD)
+            if (Time.unscaledTime - _LastShow < TIME_THRESHOLD)
             {
                 // Warp!
                 _Visualization.Area.Apply();
             }
             else
             {
-                _LastFist = Time.time;
+                _LastFist = Time.unscaledTime;
             }
         }
 
@@ -141,7 +141,7 @@ namespace VRGIN.Controls.LeapMotion
             if (_Showing)
             {
                 VRLog.Info("Stop!");
-                _LastShow = Time.time;
+                _LastShow = Time.unscaledTime;
                 _Visualization.Disable();
                 _Showing = false;
             }
@@ -153,7 +153,7 @@ namespace VRGIN.Controls.LeapMotion
 
             if (_Showing) return;
 
-            if (Time.time - _LastFist < TIME_THRESHOLD)
+            if (Time.unscaledTime - _LastFist < TIME_THRESHOLD)
             {
                 VRLog.Info("Visualize!");
                 var hand = _Hand.GetLeapHand();

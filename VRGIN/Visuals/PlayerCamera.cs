@@ -85,9 +85,11 @@ namespace VRGIN.Visuals
         {
             S_Position = transform.position;
             S_Rotation = transform.rotation;
+
+            CheckInput();
         }
 
-        protected override void OnFixedUpdate()
+        protected void CheckInput()
         {
             if (controller)
             {

@@ -236,16 +236,16 @@ namespace VRGIN.Controls
             _Started = true;
         }
 
-        protected override void OnUpdate()
-        {
-            //if(ActiveTool.enabled != Tracking.isValid)
-            //{
-            //    ActiveTool.enabled = Tracking.isValid && !LaserVisible;
-            //}
+        //protected override void OnUpdate()
+        //{
+        //    //if(ActiveTool.enabled != Tracking.isValid)
+        //    //{
+        //    //    ActiveTool.enabled = Tracking.isValid && !LaserVisible;
+        //    //}
 
-            //Logger.Info(transform.position);
+        //    //Logger.Info(transform.position);
 
-        }
+        //}
 
         public bool ToolEnabled
         {
@@ -267,17 +267,18 @@ namespace VRGIN.Controls
 
         }
 
-        protected override void OnFixedUpdate()
+        protected override void OnUpdate()
         {
+            base.OnUpdate();
             var device = SteamVR_Controller.Input((int)Tracking.index);
 
             if (_Lock == null || !_Lock.IsValid)
             {
                 if (device.GetPressDown(EVRButtonId.k_EButton_ApplicationMenu))
                 {
-                    appButtonPressTime = Time.time;
+                    appButtonPressTime = Time.unscaledTime;
                 }
-                if (device.GetPress(EVRButtonId.k_EButton_ApplicationMenu) && (Time.time - appButtonPressTime) > APP_BUTTON_TIME_THRESHOLD)
+                if (device.GetPress(EVRButtonId.k_EButton_ApplicationMenu) && (Time.unscaledTime - appButtonPressTime) > APP_BUTTON_TIME_THRESHOLD)
                 {
                     ShowHelp();
                     appButtonPressTime = null;
