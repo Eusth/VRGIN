@@ -45,7 +45,7 @@ namespace VRGIN.Controls.Tools
         {
             if (Gui)
             {
-                timeAbandoned = Time.time;
+                timeAbandoned = Time.unscaledTime;
                 Gui.IsOwned = false;
                 Gui.transform.SetParent(VR.Camera.SteamCam.origin, true);
                 Gui = null;
@@ -105,16 +105,16 @@ namespace VRGIN.Controls.Tools
             }
         }
 
-        protected override void OnFixedUpdate()
+        protected override void OnUpdate()
         {
-            base.OnFixedUpdate();
+            base.OnUpdate();
 
             var device = this.Controller;
 
             if (device.GetPressDown(EVRButtonId.k_EButton_Axis0))
             {
                 VR.Input.Mouse.LeftButtonDown();
-                pressDownTime = Time.time;
+                pressDownTime = Time.unscaledTime;
             }
 
             if (device.GetPressUp(EVRButtonId.k_EButton_Grip))
@@ -134,7 +134,7 @@ namespace VRGIN.Controls.Tools
                 touchDownPosition = device.GetAxis();
                 touchDownMousePosition = MouseOperations.GetClientCursorPosition();
             }
-            if (device.GetTouch(EVRButtonId.k_EButton_Axis0) && (Time.time - pressDownTime) > 0.3f)
+            if (device.GetTouch(EVRButtonId.k_EButton_Axis0) && (Time.unscaledTime - pressDownTime) > 0.3f)
             {
                 var pos = device.GetAxis();
                 var diff = pos - touchDownPosition;

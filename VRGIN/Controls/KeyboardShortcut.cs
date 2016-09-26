@@ -77,7 +77,7 @@ namespace VRGIN.Controls
                 } else
                 {
                     _Index++;
-                    _Time = Time.time;
+                    _Time = Time.unscaledTime;
                 }
             }
         }
