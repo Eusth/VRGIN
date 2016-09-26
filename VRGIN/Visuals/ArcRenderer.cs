@@ -41,7 +41,7 @@ namespace VRGIN.Visuals
 
 
         // Update is called once per frame
-        void Update()
+        public void Update()
         {
             var direction = transform.forward;
             var vertices = new List<Vector3>();

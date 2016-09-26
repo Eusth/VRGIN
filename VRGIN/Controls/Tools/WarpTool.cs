@@ -234,6 +234,10 @@ namespace VRGIN.Controls.Tools
 
                     // Warp!
                     _ProspectedPlayArea.Apply();
+
+                    // The preview head has to move away
+                    ArcRenderer.Update();
+
                     EnterState(WarpState.Rotating);
                 }
             }
