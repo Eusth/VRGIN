@@ -50,5 +50,10 @@ namespace VRGIN.Core
         {
             Actor.gameObject.AddComponent<Marker>();
         }
+
+        public static bool IsAlreadyMapped(T nativeActor)
+        {
+            return nativeActor.GetComponent<Marker>();
+        }
     }
 }

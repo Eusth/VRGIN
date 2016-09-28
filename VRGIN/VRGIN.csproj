@@ -73,6 +73,7 @@
     <Compile Include="Controls\Tools\Tool.cs" />
     <Compile Include="Controls\Tools\WarpTool.cs" />
     <Compile Include="Core\DefaultActor.cs" />
+    <Compile Include="Core\DefaultActorBehaviour.cs" />
     <Compile Include="Core\GameInterpreter.cs" />
     <Compile Include="Core\IActor.cs" />
     <Compile Include="Core\IVRManagerContext.cs" />

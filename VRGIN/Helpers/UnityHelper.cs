@@ -98,6 +98,11 @@ namespace VRGIN.Helpers
             return debugBall;
         }
 
+        public static void DrawDebugBall(Transform transform)
+        {
+            GetDebugBall(transform.GetInstanceID().ToString()).position = transform.position;
+        }
+
         public static Transform CreateGameObjectAsChild(string name, Transform parent, bool dontDestroy = false)
         {
             var go = new GameObject(name);

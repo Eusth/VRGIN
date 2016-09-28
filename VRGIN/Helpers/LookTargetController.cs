@@ -24,23 +24,24 @@ namespace VRGIN.Helpers
         /// </summary>
         public float Offset = 0.5f;
 
-        public static LookTargetController Attach<T>(DefaultActor<T> actor) where T : MonoBehaviour
+        public static LookTargetController AttachTo(IActor actor, GameObject gameObject)
         {
-            var controller = actor.Actor.gameObject.AddComponent<LookTargetController>();
+            var controller = gameObject.AddComponent<LookTargetController>();
             controller._RootNode = actor.Eyes;
 
             return controller;
         }
-    
-        protected override void OnStart()
+
+        protected override void OnAwake()
         {
-            base.OnStart();
+            base.OnAwake();
             CreateTarget();
         }
 
         private void CreateTarget()
         {
             Target = new GameObject("VRGIN_LookTarget").transform;
+            DontDestroyOnLoad(Target.gameObject);
         }
 
         protected override void OnUpdate()
@@ -48,10 +49,6 @@ namespace VRGIN.Helpers
             base.OnUpdate();
             if (_RootNode && VR.Camera.SteamCam.head.transform)
             {
-                if(!Target)
-                {
-                    CreateTarget();
-                }
                 var camera = VR.Camera.SteamCam.head.transform;
                 var dir = (camera.position - _RootNode.position).normalized;
 
