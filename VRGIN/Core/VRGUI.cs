@@ -137,8 +137,8 @@ namespace VRGIN.Core
 
             _VRGUICamera.cullingMask = VR.Context.UILayerMask;
             _VRGUICamera.depth = 1;
-            _VRGUICamera.nearClipPlane = 0f;
-            _VRGUICamera.farClipPlane = 10000;
+            _VRGUICamera.nearClipPlane = VR.Context.GuiNearClipPlane;
+            _VRGUICamera.farClipPlane = VR.Context.GuiFarClipPlane;
             _VRGUICamera.targetTexture = uGuiTexture;
             _VRGUICamera.backgroundColor = Color.clear;
             _VRGUICamera.clearFlags = CameraClearFlags.SolidColor;
