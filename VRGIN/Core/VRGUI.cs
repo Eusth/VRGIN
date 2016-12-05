@@ -100,6 +100,7 @@ namespace VRGIN.Core
         private Camera _VRGUICamera;
         private int _Listeners;
 
+        private Camera _NGUICamera;
         public void Listen()
         {
             _Listeners++;
@@ -203,6 +204,11 @@ namespace VRGIN.Core
                 //Logger.Info(Time.time);
                 //var watch = System.Diagnostics.Stopwatch.StartNew();
                 CatchCanvas();
+
+                if(_NGUICamera && _NGUICamera.targetTexture != uGuiTexture)
+                {
+                    _NGUICamera.targetTexture = uGuiTexture;
+                }
                 //Logger.Info(watch.ElapsedTicks);
             }
             if (_Listeners < 0)
@@ -210,7 +216,22 @@ namespace VRGIN.Core
                 Logger.Warn("Numbers don't add up!");
             }
         }
+        
+        protected override void OnLevel(int level)
+        {
+            base.OnLevel(level);
+            var layer = LayerMask.NameToLayer("NGUI_UI");
+            var cam = GameObject.FindObjectsOfType<Camera>().FirstOrDefault(c => c.gameObject.layer == layer);
+            if(cam)
+            {
+                _NGUICamera = cam;
+                VRLog.Info("Set NGUI!");
+            } else
+            {
+                VRLog.Info("No NGUI found");
+            }
 
+        }
 
         internal void OnAfterGUI()
         {
