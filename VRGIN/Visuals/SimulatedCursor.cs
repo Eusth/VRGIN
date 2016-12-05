@@ -18,6 +18,8 @@ namespace VRGIN.Visuals
         private Canvas _Canvas;
         private CanvasScaler _Scaler;
         private Image _Cursor;
+        private Texture2D _Sprite;
+        private Vector2 _Scale;
 
         /// <summary>
         /// Creates a new SimulatedCursor. Use this to make one.
@@ -34,25 +36,28 @@ namespace VRGIN.Visuals
         protected override void OnAwake()
         {
             base.OnAwake();
-            _Canvas = gameObject.AddComponent<Canvas>();
-            _Canvas.sortingOrder = 100;
-            _Canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            _Scaler = gameObject.AddComponent<CanvasScaler>();
-            _Scaler.dynamicPixelsPerUnit = 100;
+            _Sprite = UnityHelper.LoadImage("cursor.png");
+            _Scale = new Vector2(_Sprite.width, _Sprite.height) * 0.5f;
 
-            _Cursor = new GameObject().AddComponent<Image>();
-            _Cursor.transform.SetParent(_Canvas.transform, false);
+            //_Canvas = gameObject.AddComponent<Canvas>();
+            //_Canvas.sortingOrder = 100;
+            //_Canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            //_Scaler = gameObject.AddComponent<CanvasScaler>();
+            //_Scaler.dynamicPixelsPerUnit = 100;
 
-            var texture = UnityHelper.LoadImage("cursor.png");
-            _Cursor.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero, 100);
+            //_Cursor = new GameObject().AddComponent<Image>();
+            //_Cursor.transform.SetParent(_Canvas.transform, false);
 
-            var rectTransform = _Cursor.GetComponent<RectTransform>();
-            rectTransform.anchorMin = Vector2.zero;
-            rectTransform.anchorMax = Vector2.zero;
-            rectTransform.pivot = new Vector2(0, 1);
-            rectTransform.sizeDelta = new Vector2(texture.width / 2, texture.height / 2);
+            //var texture = UnityHelper.LoadImage("cursor.png");
+            //_Cursor.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero, 100);
 
-            gameObject.layer = LayerMask.NameToLayer(VR.Context.UILayer);
+            //var rectTransform = _Cursor.GetComponent<RectTransform>();
+            //rectTransform.anchorMin = Vector2.zero;
+            //rectTransform.anchorMax = Vector2.zero;
+            //rectTransform.pivot = new Vector2(0, 1);
+            //rectTransform.sizeDelta = new Vector2(texture.width / 2, texture.height / 2);
+
+            //gameObject.layer = LayerMask.NameToLayer(VR.Context.UILayer);
         }
 
         protected override void OnStart()
@@ -60,27 +65,44 @@ namespace VRGIN.Visuals
             base.OnStart();
         }
 
-        protected override void OnUpdate()
-        {
-            base.OnUpdate();
+//        protected override void OnUpdate()
+//        {
+//            base.OnUpdate();
 
+//#if UNITY_4_5
+//            if (Screen.showCursor)
+//#else
+//            if (Cursor.visible)
+//#endif
+//            {
+//                if (!_Canvas.enabled)
+//                {
+//                    _Canvas.enabled = true;
+//                }
+
+//                _Cursor.GetComponent<RectTransform>().anchoredPosition = Input.mousePosition;
+//            }
+//            else
+//            {
+//                _Canvas.enabled = false;
+//            }
+//        }
+
+        void OnGUI()
+        {
 #if UNITY_4_5
             if (Screen.showCursor)
 #else
             if (Cursor.visible)
 #endif
             {
-                if (!_Canvas.enabled)
-                {
-                    _Canvas.enabled = true;
-                }
+                var pos = new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y);
+                
+                GUI.DrawTexture(new Rect(pos, _Scale), _Sprite);
 
-                _Cursor.GetComponent<RectTransform>().anchoredPosition = Input.mousePosition;
+                //_Cursor.GetComponent<RectTransform>().anchoredPosition = Input.mousePosition;
             }
-            else
-            {
-                _Canvas.enabled = false;
-            }
+
         }
     }
 }
