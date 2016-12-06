@@ -56,6 +56,7 @@ namespace VRGIN.Core
         /// </summary>
         public static int Height { get; private set; }
 
+        public SimulatedCursor SoftCursor { get; private set; }
 
         /// <summary>
         /// Gets an instance of VRGUI.
@@ -73,8 +74,8 @@ namespace VRGIN.Core
 #endif
                     if (VR.Context.SimulateCursor)
                     {
-                        var cursor = SimulatedCursor.Create();
-                        cursor.transform.SetParent(_Instance.transform, false);
+                        _Instance.SoftCursor = SimulatedCursor.Create();
+                        _Instance.SoftCursor.transform.SetParent(_Instance.transform, false);
 
                         VRLog.Info("Cursor is simulated");
                     }
@@ -100,7 +101,7 @@ namespace VRGIN.Core
         private Camera _VRGUICamera;
         private int _Listeners;
 
-        private Camera _NGUICamera;
+        private Camera[] _NGUICameras = new Camera[0];
         public void Listen()
         {
             _Listeners++;
@@ -205,9 +206,12 @@ namespace VRGIN.Core
                 //var watch = System.Diagnostics.Stopwatch.StartNew();
                 CatchCanvas();
 
-                if(_NGUICamera && _NGUICamera.targetTexture != uGuiTexture)
+                foreach(var cam in _NGUICameras)
                 {
-                    _NGUICamera.targetTexture = uGuiTexture;
+                    if (cam.targetTexture != IMGuiTexture)
+                    {
+                        cam.targetTexture = uGuiTexture;
+                    }
                 }
                 //Logger.Info(watch.ElapsedTicks);
             }
@@ -220,17 +224,17 @@ namespace VRGIN.Core
         protected override void OnLevel(int level)
         {
             base.OnLevel(level);
-            var layer = LayerMask.NameToLayer("NGUI_UI");
-            var cam = GameObject.FindObjectsOfType<Camera>().FirstOrDefault(c => c.gameObject.layer == layer);
-            if(cam)
-            {
-                _NGUICamera = cam;
-                VRLog.Info("Set NGUI!");
-            } else
-            {
-                VRLog.Info("No NGUI found");
-            }
-
+            _NGUICameras = GameObject.FindObjectsOfType<Camera>().Where(c => c.GetComponent("UICamera") && c.gameObject.layer == LayerMask.NameToLayer("NGUI_UI")).ToArray();
+            //foreach(var cam in _NGUICameras)
+            //{
+            //    VRLog.Info("Cam: {0}, {1}, {2}", cam.name, cam.depth, cam.clearFlags);
+            //}
+            //var firstCam = _NGUICameras.OrderBy(c => c.depth).FirstOrDefault();
+            //if(firstCam)
+            //{
+            //    firstCam.clearFlags = CameraClearFlags.SolidColor;
+            //    firstCam.backgroundColor = Color.clear;
+            //}
         }
 
         internal void OnAfterGUI()

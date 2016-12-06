@@ -19,6 +19,7 @@ namespace VRGIN.Visuals
         private CanvasScaler _Scaler;
         private Image _Cursor;
         private Texture2D _Sprite;
+        private Texture2D _DefaultSprite;
         private Vector2 _Scale;
 
         /// <summary>
@@ -36,8 +37,8 @@ namespace VRGIN.Visuals
         protected override void OnAwake()
         {
             base.OnAwake();
-            _Sprite = UnityHelper.LoadImage("cursor.png");
-            _Scale = new Vector2(_Sprite.width, _Sprite.height) * 0.5f;
+            _DefaultSprite = UnityHelper.LoadImage("cursor.png");
+            _Scale = new Vector2(_DefaultSprite.width, _DefaultSprite.height) * 0.5f;
 
             //_Canvas = gameObject.AddComponent<Canvas>();
             //_Canvas.sortingOrder = 100;
@@ -98,11 +99,16 @@ namespace VRGIN.Visuals
             {
                 var pos = new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y);
                 
-                GUI.DrawTexture(new Rect(pos, _Scale), _Sprite);
+                GUI.DrawTexture(new Rect(pos, _Scale), _Sprite ?? _DefaultSprite);
 
                 //_Cursor.GetComponent<RectTransform>().anchoredPosition = Input.mousePosition;
             }
 
+        }
+
+        public void SetCursor(Texture2D texture)
+        {
+            _Sprite = texture;
         }
     }
 }
