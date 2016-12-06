@@ -190,7 +190,7 @@ namespace VRGIN.Controls.Handlers
 
         float GetRange(GUIQuad quad)
         {
-            return Mathf.Clamp(quad.transform.localScale.magnitude * RANGE, RANGE, RANGE * 5);
+            return Mathf.Clamp(quad.transform.localScale.magnitude * RANGE, RANGE, RANGE * 5) * VR.Settings.IPDScale;
         }
         bool IsWithinRange(GUIQuad quad)
         {
