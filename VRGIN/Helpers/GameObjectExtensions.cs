@@ -19,15 +19,20 @@ namespace VRGIN.Helpers
             return IsImageEffect(component.GetType());
         }
 
+        public static int Level(this GameObject go)
+        {
+            return go.transform.parent ? go.transform.parent.gameObject.Level() + 1 : 0;
+        }
+
         private static bool IsImageEffect(Type type)
         {
             return type != null && (type.Name.Contains("Effect") || IsImageEffect(type.BaseType));
         }
 
-        public static T CopyComponentFrom<T>(this GameObject destination, T original) where T : Component
+        public static U CopyComponentFrom<T, U>(this GameObject destination, T original) where T : Component where U : T
         {
             Type type = original.GetType();
-            T copy = destination.AddComponent(type) as T;
+            U copy = destination.AddComponent<U>() as U;
             // Copied fields can be restricted with BindingFlags
             FieldInfo[] fields = type.GetFields(BindingFlags.Instance | BindingFlags.Public);
             foreach (FieldInfo field in fields)
@@ -36,6 +41,11 @@ namespace VRGIN.Helpers
             }
 
             return copy;
+        }
+
+        public static T CopyComponentFrom<T>(this GameObject destination, T original) where T : Component
+        {
+            return destination.CopyComponentFrom<T, T>(original);
         }
 
         public static IEnumerable<GameObject> Children(this GameObject gameObject)
