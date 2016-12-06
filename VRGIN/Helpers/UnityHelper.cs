@@ -19,6 +19,8 @@ namespace VRGIN.Helpers
         private static IDictionary<string, AssetBundle> _AssetBundles = new Dictionary<string, AssetBundle>();
 #endif
 
+        private static Dictionary<Color, RayDrawer> _Rays = new Dictionary<Color, RayDrawer>();
+
         internal static Shader GetShader(string name)
         {
             return LoadFromAssetBundle<Shader>(
@@ -101,6 +103,23 @@ namespace VRGIN.Helpers
         public static void DrawDebugBall(Transform transform)
         {
             GetDebugBall(transform.GetInstanceID().ToString()).position = transform.position;
+        }
+
+        public static void DrawRay(Color color, Vector3 origin, Vector3 direction)
+        {
+            DrawRay(color, new Ray(origin, direction.normalized));
+        }
+
+        public static void DrawRay(Color color, Ray ray)
+        {
+            RayDrawer drawer;
+            if(!_Rays.TryGetValue(color, out drawer) || !drawer)
+            {
+                drawer = RayDrawer.Create(color, ray);
+                _Rays[color] = drawer;
+            }
+
+            drawer.Touch(ray);
         }
 
         public static Transform CreateGameObjectAsChild(string name, Transform parent, bool dontDestroy = false)
@@ -325,6 +344,59 @@ namespace VRGIN.Helpers
             {
                 VRLog.Warn("Prop/Field not found!");
                 return null;
+            }
+        }
+        
+        private class RayDrawer : ProtectedBehaviour
+        {
+
+            public static RayDrawer Create(Color color, Ray ray)
+            {
+                var go = new GameObject("Ray Drawer (" + color + ")").AddComponent<RayDrawer>();
+                go.gameObject.AddComponent<LineRenderer>();
+                go._Ray = ray;
+                go._Color = color;
+
+                return go;
+            }
+
+            private Ray _Ray;
+            private Color _Color;
+            private float _LastTouch;
+            private LineRenderer Renderer;
+
+            public void Touch(Ray ray)
+            {
+                _LastTouch = Time.time;
+                _Ray = ray;
+                gameObject.SetActive(true);
+            }
+            protected override void OnStart()
+            {
+                base.OnStart();
+                Renderer = GetComponent<LineRenderer>();
+                Renderer.SetColors(_Color, _Color);
+                Renderer.SetVertexCount(2);
+                Renderer.useWorldSpace = true;
+                Renderer.material = VR.Context.Materials.Unlit;
+                Renderer.SetWidth(0.01f, 0.01f);
+            }
+
+            protected override void OnUpdate()
+            {
+                base.OnUpdate();
+
+                Renderer.SetPosition(0, Vector3.Distance(_Ray.origin, VR.Camera.transform.position) < 0.3f ? _Ray.origin + _Ray.direction * .3f : _Ray.origin);
+                Renderer.SetPosition(1, _Ray.origin + _Ray.direction * 100f);
+                CheckAge();
+            }
+
+            private void CheckAge()
+            {
+                if(Time.time - _LastTouch > 1f)
+                {
+                    gameObject.SetActive(false);
+                }
             }
         }
     }
