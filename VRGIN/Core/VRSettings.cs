@@ -143,6 +143,8 @@ namespace VRGIN.Core
                     stream.SetLength(0);
                     serializer.Serialize(stream, this);
                 }
+
+                Path = path;
             }
 
             _OldSettings = this.MemberwiseClone() as VRSettings;
