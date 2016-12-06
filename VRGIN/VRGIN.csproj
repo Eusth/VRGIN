@@ -89,6 +89,7 @@
     <Compile Include="Helpers\GuiScaler.cs" />
     <Compile Include="Helpers\KeyStroke.cs" />
     <Compile Include="Helpers\LookTargetController.cs" />
+    <Compile Include="Helpers\MeshExtension.cs" />
     <Compile Include="Helpers\Profiler.cs" />
     <Compile Include="Helpers\RenderTextureExtensions.cs" />
     <Compile Include="Helpers\RumbleSession.cs" />
