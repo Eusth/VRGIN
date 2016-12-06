@@ -26,6 +26,11 @@ namespace VRGIN.Core
         int UILayerMask { get; }
 
         /// <summary>
+        /// Gets a mask of layers to ignore in the VR camera.
+        /// </summary>
+        int IgnoreMask { get; }
+
+        /// <summary>
         /// Gets the color used for the tools and effects. (e.g. teleport)
         /// </summary>
         Color PrimaryColor { get; }
