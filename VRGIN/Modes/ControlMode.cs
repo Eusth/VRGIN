@@ -87,10 +87,13 @@ namespace VRGIN.Modes
         protected virtual void OnEnable()
         {
             SteamVR_Utils.Event.Listen("device_connected", OnDeviceConnected);
+            VRLog.Info("Enabled {0}", GetType().Name);
         }
 
         protected virtual void OnDisable()
         {
+            VRLog.Info("Disabled {0}", GetType().Name);
+
             SteamVR_Utils.Event.Listen("device_connected", OnDeviceConnected);
         }
 
@@ -441,7 +444,7 @@ namespace VRGIN.Modes
                         var myForward = steamCam.head.forward;
 
                         VRLog.Debug("Actor #{0} -- He: {1} -> {2} | Me: {3} -> {4}", i, hisPos, hisForward, myPos, myForward);
-                        if (Vector3.Distance(hisPos, myPos) < 0.15f && Vector3.Dot(hisForward, myForward) > 0.6f)
+                        if (Vector3.Distance(hisPos, myPos) * VR.Context.UnitToMeter <  0.15f && Vector3.Dot(hisForward, myForward) > 0.6f)
                         {
                             actor.HasHead = false;
                         }
@@ -449,7 +452,7 @@ namespace VRGIN.Modes
                 }
                 else
                 {
-                    if (Vector3.Distance(actor.Eyes.position, steamCam.head.position) > 0.3f)
+                    if (Vector3.Distance(actor.Eyes.position, steamCam.head.position) * VR.Context.UnitToMeter > 0.3f)
                     {
                         actor.HasHead = true;
                     }

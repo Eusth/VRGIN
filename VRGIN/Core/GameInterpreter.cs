@@ -29,10 +29,29 @@ namespace VRGIN.Core
         /// Finds the first actor who has no head (= is impersonated) or NULL.
         /// </summary>
         /// <returns></returns>
-        public IActor FindImpersonatedActor()
+        public virtual IActor FindImpersonatedActor()
         {
             return Actors.FirstOrDefault(a => !a.HasHead);
         }
+
+        public virtual IActor FindNextActorToImpersonate()
+        {
+            var actors = Actors.ToList();
+            var currentlyImpersonated = FindImpersonatedActor();
+            
+            if(currentlyImpersonated != null)
+            {
+                actors.Remove(currentlyImpersonated);
+            }
+
+            return actors.OrderByDescending(actor => Vector3.Dot((actor.Eyes.position - VR.Camera.transform.position).normalized, VR.Camera.SteamCam.head.forward)).FirstOrDefault();
+
+            //return currentlyImpersonated != null
+            //    ? actors[(actors.IndexOf(currentlyImpersonated) + 1) % actors.Count]
+            //    : actors.FirstOrDefault();
+        }
+
+
 
         /// <summary>
         /// Finds the main camera object.

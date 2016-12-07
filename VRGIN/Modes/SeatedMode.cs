@@ -160,8 +160,8 @@ namespace VRGIN.Modes
                 new KeyboardShortcut(new KeyStroke("Ctrl + Shift + KeypadPlus"), delegate { VR.Settings.Rotation -= Time.deltaTime * 50f; }, KeyMode.Press),
                 new KeyboardShortcut(new KeyStroke("F4"), ChangeProjection),
                 new KeyboardShortcut(new KeyStroke("F5"), ToggleRotationLock),
-                new KeyboardShortcut(new KeyStroke("Ctrl + X"), delegate { if(LockTarget == null || !LockTarget.IsValid) { Impersonate(VR.Interpreter.Actors.FirstOrDefault(), ImpersonationMode.Approximately); } else { Impersonate(null); } }),
-                new KeyboardShortcut(new KeyStroke("Ctrl + Shift + X"), delegate { if(LockTarget == null || !LockTarget.IsValid) { Impersonate(VR.Interpreter.Actors.FirstOrDefault(), ImpersonationMode.Exactly); } else { Impersonate(null); } }),
+                new KeyboardShortcut(new KeyStroke("Ctrl + X"), delegate { if(LockTarget == null || !LockTarget.IsValid) { Impersonate(VR.Interpreter.FindNextActorToImpersonate(), ImpersonationMode.Approximately); } else { Impersonate(null); } }),
+                new KeyboardShortcut(new KeyStroke("Ctrl + Shift + X"), delegate { if(LockTarget == null || !LockTarget.IsValid) { Impersonate(VR.Interpreter.FindNextActorToImpersonate(), ImpersonationMode.Exactly); } else { Impersonate(null); } }),
                 new KeyboardShortcut(new KeyStroke("F12"), Recenter)
             }.Concat(base.CreateShortcuts());
         }

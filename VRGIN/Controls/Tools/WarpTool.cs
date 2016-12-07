@@ -262,13 +262,13 @@ namespace VRGIN.Controls.Tools
                 {
                     if (Controller.GetHairTrigger() && (Time.unscaledTime - _TriggerDownTime) > EXACT_IMPERSONATION_TIME)
                     {
-                        VRManager.Instance.Mode.Impersonate(VRManager.Instance.Interpreter.Actors.FirstOrDefault(),
+                        VRManager.Instance.Mode.Impersonate(VR.Interpreter.FindNextActorToImpersonate(),
                             ImpersonationMode.Exactly);
                         _TriggerDownTime = null;
                     }
                     if (VRManager.Instance.Interpreter.Actors.Any() && Controller.GetHairTriggerUp())
                     {
-                        VRManager.Instance.Mode.Impersonate(VRManager.Instance.Interpreter.Actors.FirstOrDefault(),
+                        VRManager.Instance.Mode.Impersonate(VR.Interpreter.FindNextActorToImpersonate(),
                             ImpersonationMode.Approximately);
                     }
                 }

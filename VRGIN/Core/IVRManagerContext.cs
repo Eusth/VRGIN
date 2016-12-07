@@ -75,5 +75,10 @@ namespace VRGIN.Core
         /// Gets the far clip plane for the GUI camera. [e.g. 10000]
         /// </summary>
         float GuiFarClipPlane { get; }
+
+        /// <summary>
+        /// Gets an additional multiplier to calculate an in-game unit to a meter.
+        /// </summary>
+        float UnitToMeter { get; }
     }
 }

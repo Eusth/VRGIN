@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 namespace VRGIN.Helpers
@@ -108,6 +109,11 @@ namespace VRGIN.Helpers
         public static Transform FindDescendant(this Transform transform, string name)
         {
             return transform.Descendants().FirstOrDefault(d => d.name == name);
+        }
+
+        public static Transform FindDescendant(this Transform transform, Regex name)
+        {
+            return transform.Descendants().FirstOrDefault(d => name.IsMatch(d.name));
         }
 
         /// <summary>
