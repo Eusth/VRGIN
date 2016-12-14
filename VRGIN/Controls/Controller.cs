@@ -267,6 +267,28 @@ namespace VRGIN.Controls
 
         }
 
+        /// <summary>
+        /// Gets whether or not the attached controlller is tracking.
+        /// </summary>
+        public bool IsTracking
+        {
+            get
+            {
+                return Tracking && Tracking.isValid;
+            }
+        }
+
+        /// <summary>
+        /// Gets the attached controller input object.
+        /// </summary>
+        public SteamVR_Controller.Device Input
+        {
+            get
+            {
+                return SteamVR_Controller.Input((int)Tracking.index);
+            }
+        }
+
         protected override void OnUpdate()
         {
             base.OnUpdate();

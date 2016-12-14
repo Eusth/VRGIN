@@ -27,7 +27,7 @@ namespace VRGIN.Core
         {
             Scale = 1;
         }
-
+        
         public void Apply()
         {
             var rotOffset = Quaternion.Euler(0, Rotation, 0);

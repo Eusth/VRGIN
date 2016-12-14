@@ -104,9 +104,7 @@ namespace VRGIN.U46.Visuals
             gameObject.SetActive(false);
         }
 
-
-
-        protected override void OnLateUpdate()
+        public void UpdatePosition()
         {
             var steamCam = VRCamera.Instance.SteamCam;
             float cylinderHeight = 2;
@@ -121,6 +119,11 @@ namespace VRGIN.U46.Visuals
             Indicator.localScale = Vector3.one * 0.1f + Vector3.one * Mathf.Sin(Time.time * 5) * 0.05f;
             HeightIndicator.localScale = new Vector3(0.01f, playerHeight / cylinderHeight, 0.01f);
             HeightIndicator.localPosition = new Vector3(0, playerHeight - pivot * (playerHeight / cylinderHeight), 0);
+        }
+
+        protected override void OnLateUpdate()
+        {
+            UpdatePosition();
         }
 
 

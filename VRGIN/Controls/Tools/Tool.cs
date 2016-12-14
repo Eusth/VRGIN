@@ -17,6 +17,8 @@ namespace VRGIN.Controls.Tools
 
         protected SteamVR_TrackedObject Tracking;
         protected Controller Owner;
+        protected Controller Neighbor;
+
 
         public abstract Texture2D Image
         {
@@ -34,6 +36,8 @@ namespace VRGIN.Controls.Tools
 
             Tracking = GetComponent<SteamVR_TrackedObject>();
             Owner = GetComponent<Controller>();
+            Neighbor = VR.Mode.Left == Owner ? VR.Mode.Right : VR.Mode.Left;
+            VRLog.Info(Neighbor ? "Got my neighbor!" : "No neighbor");
         }
 
         protected abstract void OnDestroy();
@@ -58,6 +62,17 @@ namespace VRGIN.Controls.Tools
             get
             {
                 return SteamVR_Controller.Input((int)Tracking.index);
+            }
+        }
+
+        /// <summary>
+        /// Gets the attached controller input object.
+        /// </summary>
+        protected Controller OtherController
+        {
+            get
+            {
+                return Neighbor;
             }
         }
 
