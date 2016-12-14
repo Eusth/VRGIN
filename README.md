@@ -7,5 +7,9 @@ VR injection framework for Unity -- helps you integrate VR into games that don't
 - It comes with presets for standing and seated mode, plus a set of tools for your controllers
 - There is a bunch of helper classes, e.g. for shortcuts and for rumble
 
-## What it does not
+## What it doesn't do
 - It does not take care of the injection into the DLL itself -- use either the Illusion Plugin Architecture or Rei Patcher for this.
+
+## How to use it
+
+See [Hacking VR into a Unity game](https://github.com/Eusth/VRGIN/wiki)
