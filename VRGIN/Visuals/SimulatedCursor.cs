@@ -99,7 +99,7 @@ namespace VRGIN.Visuals
             {
                 var pos = new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y);
                 
-                GUI.DrawTexture(new Rect(pos, _Scale), _Sprite ?? _DefaultSprite);
+                GUI.DrawTexture(new Rect(pos.x, pos.y, _Scale.x, _Scale.y), _Sprite ?? _DefaultSprite);
 
                 //_Cursor.GetComponent<RectTransform>().anchoredPosition = Input.mousePosition;
             }

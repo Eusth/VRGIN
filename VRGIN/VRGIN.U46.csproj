@@ -76,6 +76,7 @@
     <Compile Include="Controls\Tools\Tool.cs" />
     <Compile Include="Controls\Tools\WarpTool.cs" />
     <Compile Include="Core\DefaultActor.cs" />
+    <Compile Include="Core\DefaultActorBehaviour.cs" />
     <Compile Include="Core\GameInterpreter.cs" />
     <Compile Include="Core\IVRManagerContext.cs" />
     <Compile Include="Core\PlayArea.cs" />
@@ -83,6 +84,7 @@
     <Compile Include="Helpers\GuiScaler.cs" />
     <Compile Include="Helpers\KeyStroke.cs" />
     <Compile Include="Helpers\LookTargetController.cs" />
+    <Compile Include="Helpers\MeshExtension.cs" />
     <Compile Include="Helpers\Profiler.cs" />
     <Compile Include="Helpers\QuaternionExtensions.cs" />
     <Compile Include="Helpers\RenderTextureExtensions.cs" />
