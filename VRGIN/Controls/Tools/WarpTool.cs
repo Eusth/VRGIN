@@ -56,6 +56,8 @@ namespace VRGIN.Controls.Tools
         private const EVRButtonId SECONDARY_SCALE_BUTTON = EVRButtonId.k_EButton_SteamVR_Trigger;
         private const EVRButtonId SECONDARY_ROTATE_BUTTON = EVRButtonId.k_EButton_Grip;
         private float _IPDOnStart;
+        private bool _ScaleInitialized;
+        private bool _RotationInitialized;
 
         public override Texture2D Image
         {
@@ -269,16 +271,24 @@ namespace VRGIN.Controls.Tools
             }
         }
 
-        private void InitializeScale()
+        private void InitializeScaleIfNeeded()
         {
-            _InitialControllerDistance = Vector3.Distance(OtherController.transform.position, transform.position);
-            _InitialIPD = VR.Settings.IPDScale;
-            _PrevFromTo = (OtherController.transform.position - transform.position).normalized;
+            if (!_ScaleInitialized)
+            {
+                _InitialControllerDistance = Vector3.Distance(OtherController.transform.position, transform.position);
+                _InitialIPD = VR.Settings.IPDScale;
+                _PrevFromTo = (OtherController.transform.position - transform.position).normalized;
+                _ScaleInitialized = true;
+            }
         }
 
-        private void InitializeRotation()
+        private void InitializeRotationIfNeeded()
         {
-            _PrevFromTo = (OtherController.transform.position - transform.position).normalized;
+            if (!_ScaleInitialized && !_RotationInitialized)
+            {
+                _PrevFromTo = (OtherController.transform.position - transform.position).normalized;
+                _RotationInitialized = true;
+            }
         }
 
 
@@ -286,28 +296,19 @@ namespace VRGIN.Controls.Tools
         {
             if (OtherController.IsTracking && !HasLock())
             {
-                if(OtherController.TryAcquireFocus(out _OtherLock))
-                {
-                    if(OtherController.Input.GetPress(SECONDARY_SCALE_BUTTON))
-                    {
-                        InitializeScale();
-                    }
-                    if(OtherController.Input.GetPress(SECONDARY_ROTATE_BUTTON))
-                    {
-                        InitializeRotation();
-                    }
-                }
+                OtherController.TryAcquireFocus(out _OtherLock);
             }
 
             if (HasLock() && OtherController.Input.GetPressDown(SECONDARY_SCALE_BUTTON))
             {
-                InitializeScale();
+                _ScaleInitialized = false;
             }
 
             if (HasLock() && OtherController.Input.GetPressDown(SECONDARY_ROTATE_BUTTON))
             {
-                InitializeRotation();
+                _RotationInitialized = false;
             }
+
 
             if (Controller.GetPress(EVRButtonId.k_EButton_Grip))
             {
@@ -317,6 +318,7 @@ namespace VRGIN.Controls.Tools
 
                     if (OtherController.Input.GetPress(SECONDARY_SCALE_BUTTON))
                     {
+                        InitializeScaleIfNeeded();
                         var controllerDistance = Vector3.Distance(OtherController.transform.position, transform.position) * (_InitialIPD / VR.Settings.IPDScale);
                         float ratio = controllerDistance / _InitialControllerDistance;
                         VR.Settings.IPDScale = ratio * _InitialIPD;
@@ -325,6 +327,7 @@ namespace VRGIN.Controls.Tools
 
                     if (OtherController.Input.GetPress(SECONDARY_ROTATE_BUTTON))
                     {
+                        InitializeRotationIfNeeded();
                         var angleA = Mathf.Atan2(_PrevFromTo.x, _PrevFromTo.z) * Mathf.Rad2Deg;
                         var angleB = Mathf.Atan2(newFromTo.x, newFromTo.z) * Mathf.Rad2Deg;
                         var angleDiff = Mathf.DeltaAngle(angleA, angleB);
@@ -432,6 +435,7 @@ namespace VRGIN.Controls.Tools
 
                 case WarpState.Grabbing:
                     Owner.StopRumble(_TravelRumble);
+                    _ScaleInitialized = _RotationInitialized = false;
                     if (HasLock())
                     {
                         VRLog.Info("Releasing lock on other controller!");
