@@ -43,8 +43,8 @@ namespace VRGIN.Controls.Tools
         bool Showing = false;
 
         private List<Vector2> _Points = new List<Vector2>();
-        private const float GRIP_TIME_THRESHOLD = 0.5f;
-        private const float GRIP_DIFF_THRESHOLD = 0.03f;
+        private const float GRIP_TIME_THRESHOLD = 0.1f;
+        private const float GRIP_DIFF_THRESHOLD = 0.01f;
 
         private const float EXACT_IMPERSONATION_TIME = 1;
         private Vector3 _PrevControllerPos;
@@ -267,27 +267,46 @@ namespace VRGIN.Controls.Tools
             {
                 EnterState(WarpState.None);
             }
-
-            
         }
+
+        private void InitializeScale()
+        {
+            _InitialControllerDistance = Vector3.Distance(OtherController.transform.position, transform.position);
+            _InitialIPD = VR.Settings.IPDScale;
+            _PrevFromTo = (OtherController.transform.position - transform.position).normalized;
+        }
+
+        private void InitializeRotation()
+        {
+            _PrevFromTo = (OtherController.transform.position - transform.position).normalized;
+        }
+
 
         private void HandleGrabbing()
         {
             if (OtherController.IsTracking && !HasLock())
             {
-                OtherController.TryAcquireFocus(out _OtherLock);
+                if(OtherController.TryAcquireFocus(out _OtherLock))
+                {
+                    if(OtherController.Input.GetPress(SECONDARY_SCALE_BUTTON))
+                    {
+                        InitializeScale();
+                    }
+                    if(OtherController.Input.GetPress(SECONDARY_ROTATE_BUTTON))
+                    {
+                        InitializeRotation();
+                    }
+                }
             }
 
             if (HasLock() && OtherController.Input.GetPressDown(SECONDARY_SCALE_BUTTON))
             {
-                _InitialControllerDistance = Vector3.Distance(OtherController.transform.position, transform.position);
-                _InitialIPD = VR.Settings.IPDScale;
-                _PrevFromTo = (OtherController.transform.position - transform.position).normalized;
+                InitializeScale();
             }
 
             if (HasLock() && OtherController.Input.GetPressDown(SECONDARY_ROTATE_BUTTON))
             {
-                _PrevFromTo = (OtherController.transform.position - transform.position).normalized;
+                InitializeRotation();
             }
 
             if (Controller.GetPress(EVRButtonId.k_EButton_Grip))
@@ -301,6 +320,7 @@ namespace VRGIN.Controls.Tools
                         var controllerDistance = Vector3.Distance(OtherController.transform.position, transform.position) * (_InitialIPD / VR.Settings.IPDScale);
                         float ratio = controllerDistance / _InitialControllerDistance;
                         VR.Settings.IPDScale = ratio * _InitialIPD;
+                        _ProspectedPlayArea.Scale = VR.Settings.IPDScale;
                     }
 
                     if (OtherController.Input.GetPress(SECONDARY_ROTATE_BUTTON))
@@ -319,7 +339,7 @@ namespace VRGIN.Controls.Tools
                 {
                     var diffPos = transform.position - _PrevControllerPos;
                     var diffRot = Quaternion.Inverse(_PrevControllerRot * Quaternion.Inverse(transform.rotation)) * (transform.rotation * Quaternion.Inverse(transform.rotation));
-                    if (Time.unscaledTime - _GripStartTime > GRIP_TIME_THRESHOLD || diffPos.magnitude > GRIP_DIFF_THRESHOLD)
+                    if (Time.unscaledTime - _GripStartTime > GRIP_TIME_THRESHOLD || Calculator.Distance(diffPos.magnitude) > GRIP_DIFF_THRESHOLD)
                     {
                         var forwardA = Vector3.forward;
                         var forwardB = diffRot * Vector3.forward;
@@ -415,7 +435,7 @@ namespace VRGIN.Controls.Tools
                     if (HasLock())
                     {
                         VRLog.Info("Releasing lock on other controller!");
-                        _OtherLock.Release();
+                        _OtherLock.SafeRelease();
                     }
                     break;
             }

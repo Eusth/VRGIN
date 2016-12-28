@@ -85,6 +85,7 @@
     <Compile Include="Core\VRGUI.cs" />
     <Compile Include="Core\VRManager.cs" />
     <Compile Include="Core\VRSettings.cs" />
+    <Compile Include="Helpers\Calculator.cs" />
     <Compile Include="Helpers\GameObjectExtensions.cs" />
     <Compile Include="Helpers\GuiScaler.cs" />
     <Compile Include="Helpers\KeyStroke.cs" />

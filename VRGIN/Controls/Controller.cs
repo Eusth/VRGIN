@@ -19,6 +19,7 @@ namespace VRGIN.Controls
     {
         public class Lock
         {
+            public bool IsInvalidating { get; private set; }
             public bool IsValid { get; private set; }
             private Controller _Controller;
 
@@ -44,6 +45,18 @@ namespace VRGIN.Controls
                     _Controller._Lock = null;
                     _Controller.OnUnlock();
                     IsValid = false;
+                }
+                else
+                {
+                    VRLog.Warn("Tried to release an invalid lock!");
+                }
+            }
+
+            public void SafeRelease()
+            {
+                if (IsValid)
+                {
+                    IsInvalidating = true;
                 }
                 else
                 {
@@ -294,6 +307,11 @@ namespace VRGIN.Controls
             base.OnUpdate();
             var device = SteamVR_Controller.Input((int)Tracking.index);
 
+            if (_Lock != null && _Lock.IsInvalidating)
+            {
+                TryReleaseLock();
+            }
+
             if (_Lock == null || !_Lock.IsValid)
             {
                 if (device.GetPressDown(EVRButtonId.k_EButton_ApplicationMenu))
@@ -329,7 +347,19 @@ namespace VRGIN.Controls
 
                 }
             }
+        }
 
+        private void TryReleaseLock()
+        {
+            var input = Input;
+            foreach(var value in Enum.GetValues(typeof(EVRButtonId)).OfType<EVRButtonId>())
+            {
+                if (input.GetPress(value))
+                    return;
+            }
+
+            // Release
+            _Lock.Release();
         }
 
         public void StartRumble(IRumbleSession session)
