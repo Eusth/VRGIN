@@ -202,7 +202,6 @@ namespace VRGIN.Core
             // Rebuild
             foreach (var fx in blueprint.gameObject.GetCameraEffects())
             {
-                //if (fx.GetType().Name.Contains("ColorCurves")) continue;
                 Logger.Info("Copy FX: {0} (enabled={1})", fx.GetType().Name, fx.enabled);
                 var attachedFx = gameObject.CopyComponentFrom(fx);
                 if (attachedFx)
@@ -214,6 +213,10 @@ namespace VRGIN.Core
 
             Logger.Info("That's all.");
 
+            if(!SteamCam)
+            {
+                SteamCam = GetComponent<SteamVR_Camera>();
+            }
             SteamCam.ForceLast();
             SteamCam = GetComponent<SteamVR_Camera>();
             Logger.Info("{0} components before the additions, {1} after", comps, gameObject.GetComponents<Component>().Length);

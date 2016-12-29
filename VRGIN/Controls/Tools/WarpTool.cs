@@ -213,8 +213,6 @@ namespace VRGIN.Controls.Tools
             {
                 if (Controller.GetPressUp(EVRButtonId.k_EButton_Axis0))
                 {
-                    var steamCam = VRCamera.Instance.SteamCam;
-
                     // Warp!
                     _ProspectedPlayArea.Apply();
 

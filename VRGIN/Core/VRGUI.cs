@@ -208,7 +208,7 @@ namespace VRGIN.Core
 
                 foreach(var cam in _NGUICameras)
                 {
-                    if (cam.targetTexture != IMGuiTexture)
+                    if (cam.targetTexture != uGuiTexture)
                     {
                         cam.targetTexture = uGuiTexture;
                     }
