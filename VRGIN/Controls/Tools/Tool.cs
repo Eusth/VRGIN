@@ -109,9 +109,11 @@ namespace VRGIN.Controls.Tools
             return new List<HelpText>();
         }
 
-        protected Transform FindAttachPosition(String name)
+        protected Transform FindAttachPosition(params String[] names)
         {
-            return transform.GetComponentsInChildren<Transform>().Where(t => t.name == name).First().Find("attach");
+            var node = transform.GetComponentsInChildren<Transform>().Where(t => names.Contains(t.name)).FirstOrDefault();
+            if (node == null) return null;
+            return node.Find("attach");
         }
 
     }
