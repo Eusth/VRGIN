@@ -9,6 +9,7 @@ using VRGIN.Helpers;
 using VRGIN.Modes;
 using VRGIN.U46.Visuals;
 using VRGIN.Visuals;
+using static SteamVR_Controller;
 
 namespace VRGIN.Controls.Tools
 {
@@ -326,10 +327,8 @@ namespace VRGIN.Controls.Tools
                     if (OtherController.Input.GetPress(SECONDARY_ROTATE_BUTTON))
                     {
                         InitializeRotationIfNeeded();
-                        var angleA = Mathf.Atan2(_PrevFromTo.x, _PrevFromTo.z) * Mathf.Rad2Deg;
-                        var angleB = Mathf.Atan2(newFromTo.x, newFromTo.z) * Mathf.Rad2Deg;
-                        var angleDiff = Mathf.DeltaAngle(angleA, angleB);
-                        VR.Camera.SteamCam.origin.transform.RotateAround(transform.position + newFromTo * 0.5f, Vector3.up, angleDiff);// Mathf.Max(1, Controller.velocity.sqrMagnitude) );
+                        var angleDiff = Calculator.Angle(_PrevFromTo, newFromTo);
+                        VR.Camera.SteamCam.origin.transform.Rotate(Vector3.up, angleDiff);// Mathf.Max(1, Controller.velocity.sqrMagnitude) );
 
                         _ProspectedPlayArea.Rotation += angleDiff;
                     }
@@ -344,9 +343,7 @@ namespace VRGIN.Controls.Tools
                     {
                         var forwardA = Vector3.forward;
                         var forwardB = diffRot * Vector3.forward;
-                        var angleA = Mathf.Atan2(forwardA.x, forwardA.z)*  Mathf.Rad2Deg;
-                        var angleB = Mathf.Atan2(forwardB.x, forwardB.z)*  Mathf.Rad2Deg;
-                        var angleDiff = Mathf.DeltaAngle(angleA, angleB);
+                        var angleDiff = Calculator.Angle(forwardA, forwardB);
 
                         VR.Camera.SteamCam.origin.transform.position -= diffPos;
                         _ProspectedPlayArea.Height -= diffPos.y;
@@ -372,6 +369,22 @@ namespace VRGIN.Controls.Tools
                     _ProspectedPlayArea.Scale = _IPDOnStart;
                 }
             }
+            
+            if(Controller.GetPressUp(ButtonMask.Trigger))
+            {
+                // Rotate
+                var originalLookDirection = Vector3.ProjectOnPlane(transform.position - VR.Camera.Head.position, Vector3.up).normalized;
+                if (OtherController.IsTracking) {
+                    var otherLookDirection = Vector3.ProjectOnPlane(OtherController.transform.position - VR.Camera.Head.position, Vector3.up).normalized;
+                    originalLookDirection = Vector3.Lerp(originalLookDirection, otherLookDirection, 0.5f).normalized;
+                }
+                var currentLookDirection = Vector3.ProjectOnPlane(VR.Camera.Head.forward, Vector3.up);
+                var angleDeg = Calculator.Angle(originalLookDirection, currentLookDirection);
+
+                VR.Camera.SteamCam.origin.transform.Rotate(Vector3.up, angleDeg, Space.World);
+                _ProspectedPlayArea.Rotation += angleDeg;
+            }
+
             _PrevControllerPos = transform.position;
             _PrevControllerRot = transform.rotation;
 

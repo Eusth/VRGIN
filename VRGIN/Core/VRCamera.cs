@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 using VRGIN.Helpers;
 
@@ -100,7 +97,7 @@ namespace VRGIN.Core
         /// <param name="blueprint">The camera to copy.</param>
         public void Copy(Camera blueprint)
         {
-            Logger.Info("Copying camera: {0}", blueprint ? blueprint.name : "NULL");
+            VRLog.Info("Copying camera: {0}", blueprint ? blueprint.name : "NULL");
             Blueprint = blueprint ?? GetComponent<Camera>();
 
             int cullingMask = Blueprint.cullingMask;
@@ -126,7 +123,7 @@ namespace VRGIN.Core
             cullingMask &= ~(LayerMask.GetMask(VR.Context.UILayer, VR.Context.InvisibleLayer));
             cullingMask &= ~(VR.Context.IgnoreMask);
             cullingMask |= LayerMask.GetMask("Default");
-            Logger.Info("The camera sees {0}", string.Join(", ", UnityHelper.GetLayerNames(cullingMask)));
+            VRLog.Info("The camera sees {0}", string.Join(", ", UnityHelper.GetLayerNames(cullingMask)));
 
             // Apply to both the head camera and the VR camera
             ApplyToCameras(targetCamera =>
@@ -180,7 +177,7 @@ namespace VRGIN.Core
             }
             catch (Exception e)
             {
-                Logger.Error(e);
+                VRLog.Error(e);
             }
         }
 
@@ -198,20 +195,20 @@ namespace VRGIN.Core
             }
             int comps = gameObject.GetComponents<Component>().Length;
 
-            Logger.Info("Copying FX to {0}...", gameObject.name);
+            VRLog.Info("Copying FX to {0}...", gameObject.name);
             // Rebuild
             foreach (var fx in blueprint.gameObject.GetCameraEffects())
             {
-                Logger.Info("Copy FX: {0} (enabled={1})", fx.GetType().Name, fx.enabled);
+                VRLog.Info("Copy FX: {0} (enabled={1})", fx.GetType().Name, fx.enabled);
                 var attachedFx = gameObject.CopyComponentFrom(fx);
                 if (attachedFx)
                 {
-                    Logger.Info("Attached!");
+                    VRLog.Info("Attached!");
                 }
                 attachedFx.enabled = fx.enabled;
             }
 
-            Logger.Info("That's all.");
+            VRLog.Info("That's all.");
 
             if(!SteamCam)
             {
@@ -219,7 +216,7 @@ namespace VRGIN.Core
             }
             SteamCam.ForceLast();
             SteamCam = GetComponent<SteamVR_Camera>();
-            Logger.Info("{0} components before the additions, {1} after", comps, gameObject.GetComponents<Component>().Length);
+            VRLog.Info("{0} components before the additions, {1} after", comps, gameObject.GetComponents<Component>().Length);
         }
 
         private void ApplyToCameras(CameraOperation operation)
