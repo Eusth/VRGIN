@@ -91,6 +91,8 @@ namespace VRGIN.Visuals
 
         void OnGUI()
         {
+            // Just before the VRGUI hook kicks in
+            GUI.depth = int.MinValue + 1;
 #if UNITY_4_5
             if (Screen.showCursor)
 #else
