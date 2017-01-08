@@ -156,10 +156,14 @@ namespace VRGIN.Controls
         protected virtual void OnDestroy()
         {
             GameObject.Destroy(gameObject);
+
+            SteamVR_Utils.Event.Remove("render_model_loaded", _OnRenderModelLoaded);
         }
 
         protected void SetUp()
         {
+            SteamVR_Utils.Event.Listen("render_model_loaded", _OnRenderModelLoaded);
+
             Tracking = gameObject.AddComponent<SteamVR_TrackedObject>();
             Rumble = gameObject.AddComponent<RumbleManager>();
             gameObject.AddComponent<BodyRumbleHandler>();
@@ -187,7 +191,30 @@ namespace VRGIN.Controls
             gameObject.AddComponent<Rigidbody>().isKinematic = true;
         }
 
+        private void _OnRenderModelLoaded(object[] args)
+        {
+            try
+            {
+                if (args.Length > 0)
+                {
+                    var renderModel = args[0] as SteamVR_RenderModel;
+                    if (renderModel && renderModel.transform.IsChildOf(transform))
+                    {
+                        VRLog.Info("Render model loaded!");
+                        gameObject.SendMessageToAll("OnRenderModelLoaded");
+                        OnRenderModelLoaded();
+                    }
+                }
+            } catch(Exception e)
+            {
+                VRLog.Error(e);
+            }
+        }
 
+        private void OnRenderModelLoaded()
+        {
+            //PlaceCanvas();
+        }
 
         protected override void OnAwake()
         {
@@ -400,7 +427,7 @@ namespace VRGIN.Controls
             // Copied straight out of Unity
             canvas.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 950);
             canvas.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 950);
-
+            
             canvas.transform.localPosition = new Vector3(0, -0.02725995f, 0.0279f);
             canvas.transform.localRotation = Quaternion.Euler(30, 180, 180);
             canvas.transform.localScale = new Vector3(4.930151e-05f, 4.930148e-05f, 0);
@@ -415,6 +442,24 @@ namespace VRGIN.Controls
             _AlphaConcealer.transform.localRotation = Quaternion.Euler(60, 0, 0);
             _AlphaConcealer.GetComponent<Collider>().enabled = false;
         }
+
+        //private void PlaceCanvas()
+        //{
+        //    if (Model.renderModelName.Contains("cv1"))
+        //    {
+        //        var attachPosition = FindAttachPosition("y_button");
+        //        _Canvas.transform.SetParent(attachPosition, false);
+        //        _Canvas.transform.localPosition = new Vector3(0, 0, Model.renderModelName.Contains("left") ? 0.0007f : -0.0007f);
+        //        _Canvas.transform.localRotation = Quaternion.identity;
+        //        _Canvas.transform.localScale = new Vector3(4.930151e-05f, 4.930148e-05f, 0);
+        //    }
+        //    else
+        //    {
+        //        _Canvas.transform.localPosition = new Vector3(0, -0.02725995f, 0.0279f);
+        //        _Canvas.transform.localRotation = Quaternion.Euler(30, 180, 180);
+        //        _Canvas.transform.localScale = new Vector3(4.930151e-05f, 4.930148e-05f, 0);
+        //    }
+        //}
 
         private void CreateToolCanvas(Tool tool)
         {
@@ -436,6 +481,11 @@ namespace VRGIN.Controls
             tool.Icon.layer = 0;
         }
 
-
+        public Transform FindAttachPosition(params string[] names)
+        {
+            var node = transform.GetComponentsInChildren<Transform>().Where(t => names.Contains(t.name)).FirstOrDefault();
+            if (node == null) return null;
+            return node.Find("attach");
+        }
     }
 }

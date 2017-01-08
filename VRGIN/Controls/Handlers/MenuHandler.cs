@@ -32,10 +32,43 @@ namespace VRGIN.Controls.Handlers
         protected override void OnStart()
         {
             base.OnStart();
+            VRLog.Info("Menu Handler started");
             _Controller = GetComponent<Controller>();
             _ScaleVector = new Vector2((float)VRGUI.Width / Screen.width, (float)VRGUI.Height / Screen.height);
             _Other = _Controller.Other.GetComponent<MenuHandler>();
-            InitLaser();
+        }
+
+        private void OnRenderModelLoaded()
+        {
+            try
+            {
+                if(!_Controller) _Controller = GetComponent<Controller>();
+                var attachPosition = _Controller.FindAttachPosition("tip");
+
+                if (!attachPosition)
+                {
+                    VRLog.Error("Attach position not found for laser!");
+                    attachPosition = transform;
+                }
+                Laser = new GameObject().AddComponent<LineRenderer>();
+                Laser.transform.SetParent(attachPosition, false);
+                Laser.material = Resources.GetBuiltinResource<Material>("Sprites-Default.mat");
+                Laser.material.renderQueue += 5000;
+                Laser.SetColors(Color.cyan, Color.cyan);
+
+                if (SteamVR.instance.hmd_TrackingSystemName == "lighthouse")
+                {
+                    Laser.transform.localRotation = Quaternion.Euler(60, 0, 0);
+                    Laser.transform.position += Laser.transform.forward * 0.06f;
+                }
+                Laser.SetVertexCount(2);
+                Laser.useWorldSpace = true;
+                Laser.SetWidth(0.002f, 0.002f);
+            }
+            catch (Exception e)
+            {
+                VRLog.Error(e);
+            }
         }
 
         /// <summary>
@@ -48,21 +81,6 @@ namespace VRGIN.Controls.Handlers
                 return SteamVR_Controller.Input((int)_Controller.Tracking.index);
             }
         }
-
-        void InitLaser()
-        {
-            Laser = new GameObject().AddComponent<LineRenderer>();
-            Laser.transform.SetParent(transform, false);
-            Laser.material = Resources.GetBuiltinResource<Material>("Sprites-Default.mat");
-            Laser.material.renderQueue += 5000;
-            Laser.SetColors(Color.cyan, Color.cyan);
-            Laser.transform.localRotation = Quaternion.Euler(60, 0, 0);
-            Laser.transform.position += Laser.transform.forward * 0.07f;
-            Laser.SetVertexCount(2);
-            Laser.useWorldSpace = true;
-            Laser.SetWidth(0.002f, 0.002f);
-        }
-
 
         protected override void OnUpdate()
         {
@@ -194,6 +212,7 @@ namespace VRGIN.Controls.Handlers
         }
         bool IsWithinRange(GUIQuad quad)
         {
+            if (!Laser) return false;
             // Needs to be in another hierarchy
             if (quad.transform.parent == transform) return false;
 
@@ -274,6 +293,8 @@ namespace VRGIN.Controls.Handlers
             }
             set
             {
+                if (!Laser) return;
+
                 if (value && !_LaserLock.IsValid)
                 {
                     // Need to acquire focus!

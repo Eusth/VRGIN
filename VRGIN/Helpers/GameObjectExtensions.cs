@@ -58,6 +58,13 @@ namespace VRGIN.Helpers
             return copy;
         }
 
+        public static string GetPath(this Component component)
+        {
+            return component.transform.parent
+                ? component.transform.parent.GetPath() + "/" + component.name
+                : component.name;
+        }
+
         public static IEnumerable<GameObject> Children(this GameObject gameObject)
         {
             for (int i = 0; i < gameObject.transform.childCount; i++)
