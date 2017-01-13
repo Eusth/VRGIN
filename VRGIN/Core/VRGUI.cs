@@ -224,11 +224,17 @@ namespace VRGIN.Core
         protected override void OnLevel(int level)
         {
             base.OnLevel(level);
-            _NGUICameras = GameObject.FindObjectsOfType<Camera>().Where(c => c.GetComponent("UICamera") && c.gameObject.layer == LayerMask.NameToLayer("NGUI_UI")).ToArray();
-            //foreach(var cam in _NGUICameras)
-            //{
-            //    VRLog.Info("Cam: {0}, {1}, {2}", cam.name, cam.depth, cam.clearFlags);
-            //}
+            _NGUICameras = GameObject.FindObjectsOfType<Camera>().Where(c => c.GetComponent("UICamera")).ToArray();
+
+            // Hack, until I can work out something better
+            float minDepth = _NGUICameras.Min(c => c.depth);
+            _VRGUICamera.depth = Mathf.Min(_VRGUICamera.depth, minDepth - 1);
+
+            foreach (var cam in _NGUICameras)
+            {
+                VRLog.Info("Found NGUI Cam: {0}, {1}, {2}", cam.name, cam.depth, cam.clearFlags);
+                
+            }
             //var firstCam = _NGUICameras.OrderBy(c => c.depth).FirstOrDefault();
             //if(firstCam)
             //{
