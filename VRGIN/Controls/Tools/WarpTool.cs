@@ -108,6 +108,12 @@ namespace VRGIN.Controls.Tools
             base.OnEnable();
 
             SetVisibility(false);
+            ResetPlayArea(_ProspectedPlayArea);
+        }
+
+        public void OnPlayAreaUpdated()
+        {
+            ResetPlayArea(_ProspectedPlayArea);
         }
 
         void SetVisibility(bool visible)

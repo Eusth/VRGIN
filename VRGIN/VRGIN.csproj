@@ -80,6 +80,7 @@
     <Compile Include="Core\Logger.cs" />
     <Compile Include="Core\PlayArea.cs" />
     <Compile Include="Core\ProtectedBehaviour.cs" />
+    <Compile Include="Core\ScreenGrabber.cs" />
     <Compile Include="Core\Throttler.cs" />
     <Compile Include="Core\VRCamera.cs" />
     <Compile Include="Core\VRGUI.cs" />

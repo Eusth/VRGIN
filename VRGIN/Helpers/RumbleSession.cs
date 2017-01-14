@@ -208,7 +208,6 @@ namespace VRGIN.Helpers
                 var distance = DistanceTraveled;
                 if (distance > _Distance)
                 {
-                    VRLog.Info(distance);
                     PrevPosition = CurrentPosition;
 
                     return 0;

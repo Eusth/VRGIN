@@ -20,7 +20,7 @@ namespace VRGIN.Core
     ///   - the new UI is caught by redirecting all canvas to be renderer by the VRGUI camera into <see cref="uGuiTexture"/>
     ///   - the old UI is caught by setting the global render texture to <see cref="IMGuiTexture"/> while the system is rendering
     /// </summary>
-    public class VRGUI : ProtectedBehaviour
+    public class VRGUI : ProtectedBehaviour, IScreenGrabber
     {
 
 #if UNITY_4_5
@@ -57,6 +57,9 @@ namespace VRGIN.Core
         public static int Height { get; private set; }
 
         public SimulatedCursor SoftCursor { get; private set; }
+
+        private List<ScreenGrabber> _ScreenGrabbers = new List<ScreenGrabber>();
+
 
         /// <summary>
         /// Gets an instance of VRGUI.
@@ -101,7 +104,9 @@ namespace VRGIN.Core
         private Camera _VRGUICamera;
         private int _Listeners;
 
-        private Camera[] _NGUICameras = new Camera[0];
+        private IDictionary<Camera, IScreenGrabber> _CameraMappings = new Dictionary<Camera, IScreenGrabber>();
+        private HashSet<Camera> _CheckedCameras = new HashSet<Camera>();
+
         public void Listen()
         {
             _Listeners++;
@@ -111,6 +116,7 @@ namespace VRGIN.Core
         {
             _Listeners--;
         }
+
         protected override void OnAwake()
         {
             var window = WindowManager.GetClientRect();
@@ -200,19 +206,14 @@ namespace VRGIN.Core
 #if !UNITY_4_5
             Cursor.lockState = CursorLockMode.Confined;
 #endif
+            UpdateCameras();
+            EnsureCameraTargets();
+
             if (_Listeners > 0)
             {
                 //Logger.Info(Time.time);
                 //var watch = System.Diagnostics.Stopwatch.StartNew();
                 CatchCanvas();
-
-                foreach(var cam in _NGUICameras)
-                {
-                    if (cam.targetTexture != uGuiTexture)
-                    {
-                        cam.targetTexture = uGuiTexture;
-                    }
-                }
                 //Logger.Info(watch.ElapsedTicks);
             }
             if (_Listeners < 0)
@@ -220,21 +221,14 @@ namespace VRGIN.Core
                 Logger.Warn("Numbers don't add up!");
             }
         }
-        
+
         protected override void OnLevel(int level)
         {
             base.OnLevel(level);
-            _NGUICameras = GameObject.FindObjectsOfType<Camera>().Where(c => c.GetComponent("UICamera")).ToArray();
+            
+            _CheckedCameras.Clear();
+            _CameraMappings.Clear();
 
-            // Hack, until I can work out something better
-            float minDepth = _NGUICameras.Min(c => c.depth);
-            _VRGUICamera.depth = Mathf.Min(_VRGUICamera.depth, minDepth - 1);
-
-            foreach (var cam in _NGUICameras)
-            {
-                VRLog.Info("Found NGUI Cam: {0}, {1}, {2}", cam.name, cam.depth, cam.clearFlags);
-                
-            }
             //var firstCam = _NGUICameras.OrderBy(c => c.depth).FirstOrDefault();
             //if(firstCam)
             //{
@@ -260,6 +254,92 @@ namespace VRGIN.Core
                 GL.Clear(true, true, Color.clear);
             }
         }
+
+        #region ScreenGrabber implementation
+
+        public void AddGrabber(ScreenGrabber grabber)
+        {
+            if (!_ScreenGrabbers.Contains(grabber))
+            {
+                _ScreenGrabbers.Insert(0, grabber);
+                _CheckedCameras.Clear();
+            }
+        }
+
+        public void RemoveGrabber(ScreenGrabber grabber)
+        {
+            _ScreenGrabbers.Remove(grabber);
+            _CheckedCameras.Clear();
+        }
+
+        public IEnumerable<ScreenGrabber> ScreenGrabbers
+        {
+            get
+            {
+                return _ScreenGrabbers;
+            }
+        }
+
+        private void UpdateCameras()
+        {
+            foreach(var camera in Camera.allCameras.Except(_CheckedCameras).ToList())
+            {
+                VRLog.Info("Judging camera {0}", camera.name);
+                var grabber = FindCameraMapping(camera);
+                if(grabber != null)
+                {
+                    _CameraMappings[camera] = grabber;
+                    grabber.OnAssign(camera);
+
+                    VRLog.Info("Assigned camera {0} to {1}", camera.name, grabber);
+                }
+                _CheckedCameras.Add(camera);
+            }
+        }
+
+        private void EnsureCameraTargets()
+        {
+            foreach(var entry in _CameraMappings)
+            {
+                if(entry.Key.targetTexture != entry.Value.GetTextures().First())
+                {
+                    entry.Key.targetTexture = entry.Value.GetTextures().First();
+                }
+            }
+        }
+
+        private IScreenGrabber FindCameraMapping(Camera camera)
+        {
+            foreach(var grabber in _ScreenGrabbers)
+            {
+                if(grabber.Check(camera))
+                {
+                    return grabber;
+                }
+            }
+
+            if (Check(camera)) return this;
+            return null;
+        }
+
+        public bool Check(Camera camera)
+        {
+            // We're only interested in these
+            return camera.GetComponent("UICamera");
+        }
+
+        public IEnumerable<RenderTexture> GetTextures()
+        {
+            yield return uGuiTexture;
+            yield return IMGuiTexture;
+        }
+
+        public void OnAssign(Camera camera)
+        {
+            _VRGUICamera.depth = Mathf.Min(_VRGUICamera.depth, camera.depth - 1);
+        }
+
+        #endregion
 
         /// <summary>
         /// Notifies VRGUI when the legacy GUI starts rendering.
