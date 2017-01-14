@@ -103,6 +103,9 @@ namespace VRGIN.Core
         public bool Leap { get { return _Leap; } set { _Leap = value; TriggerPropertyChanged("Leap"); } }
         private bool _Leap = false;
 
+        public bool GrabRotationImmediateMode { get { return _GrabRotationImmediateMode; } set { _GrabRotationImmediateMode = value; TriggerPropertyChanged("GrabRotationImmediateMode"); } }
+        private bool _GrabRotationImmediateMode = true;
+
         public event EventHandler<PropertyChangedEventArgs> PropertyChanged = delegate { };
 
         public VRSettings()

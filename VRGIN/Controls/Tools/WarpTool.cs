@@ -354,7 +354,12 @@ namespace VRGIN.Controls.Tools
                         VR.Camera.SteamCam.origin.transform.position -= diffPos;
                         _ProspectedPlayArea.Height -= diffPos.y;
                         //VRLog.Info("Rotate: {0}", NormalizeAngle(diffRot.eulerAngles.y));
-                        //VR.Camera.SteamCam.origin.transform.RotateAround(transform.position, Vector3.up, angleDiff * 0.3f);// Mathf.Max(1, Controller.velocity.sqrMagnitude) );
+                        if (!VR.Settings.GrabRotationImmediateMode && Controller.GetPress(ButtonMask.Trigger))
+                        {
+                            VR.Camera.SteamCam.origin.transform.RotateAround(VR.Camera.Head.position, Vector3.up, angleDiff * 1f);// Mathf.Max(1, Controller.velocity.sqrMagnitude) );
+                            _ProspectedPlayArea.Rotation += angleDiff;
+                        }
+
                         // Handle rotation
                         //_ProspectedPlayArea.Reset();
                         //_ProspectedPlayArea.Rotation += diffRot.eulerAngles.y;
@@ -376,7 +381,7 @@ namespace VRGIN.Controls.Tools
                 }
             }
             
-            if(Controller.GetPressUp(ButtonMask.Trigger))
+            if(VR.Settings.GrabRotationImmediateMode && Controller.GetPressUp(ButtonMask.Trigger))
             {
                 // Rotate
                 var originalLookDirection = Vector3.ProjectOnPlane(transform.position - VR.Camera.Head.position, Vector3.up).normalized;
