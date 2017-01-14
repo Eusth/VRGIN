@@ -299,12 +299,22 @@ namespace VRGIN.Core
 
         private void EnsureCameraTargets()
         {
+            var removalList = new List<Camera>();
+
             foreach(var entry in _CameraMappings)
             {
-                if(entry.Key.targetTexture != entry.Value.GetTextures().First())
+                if(!entry.Key)
+                {
+                    removalList.Add(entry.Key);
+                } else if(entry.Key.targetTexture != entry.Value.GetTextures().First())
                 {
                     entry.Key.targetTexture = entry.Value.GetTextures().First();
                 }
+            }
+
+            foreach(var cam in removalList)
+            {
+                _CameraMappings.Remove(cam);
             }
         }
 

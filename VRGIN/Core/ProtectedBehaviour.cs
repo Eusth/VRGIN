@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -94,6 +95,23 @@ namespace VRGIN.Core
             }
 
             File.WriteAllText("performance.txt", builder.ToString());
+        }
+
+        protected void Invoke(Action action, float delayInSeconds)
+        {
+            StartCoroutine(_Invoke(action, delayInSeconds));
+        }
+
+        private IEnumerator _Invoke(Action action, float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            try
+            {
+                action();
+            } catch(Exception e)
+            {
+                VRLog.Error(e);
+            }
         }
     }
 }
