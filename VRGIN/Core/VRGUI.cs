@@ -58,7 +58,7 @@ namespace VRGIN.Core
 
         public SimulatedCursor SoftCursor { get; private set; }
 
-        private List<ScreenGrabber> _ScreenGrabbers = new List<ScreenGrabber>();
+        private List<IScreenGrabber> _ScreenGrabbers = new List<IScreenGrabber>();
 
 
         /// <summary>
@@ -257,7 +257,7 @@ namespace VRGIN.Core
 
         #region ScreenGrabber implementation
 
-        public void AddGrabber(ScreenGrabber grabber)
+        public void AddGrabber(IScreenGrabber grabber)
         {
             if (!_ScreenGrabbers.Contains(grabber))
             {
@@ -266,13 +266,13 @@ namespace VRGIN.Core
             }
         }
 
-        public void RemoveGrabber(ScreenGrabber grabber)
+        public void RemoveGrabber(IScreenGrabber grabber)
         {
             _ScreenGrabbers.Remove(grabber);
             _CheckedCameras.Clear();
         }
 
-        public IEnumerable<ScreenGrabber> ScreenGrabbers
+        public IEnumerable<IScreenGrabber> ScreenGrabbers
         {
             get
             {
