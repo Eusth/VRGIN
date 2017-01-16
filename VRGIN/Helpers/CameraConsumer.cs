@@ -13,7 +13,7 @@ namespace VRGIN.Helpers
 
         public bool Check(Camera camera)
         {
-            return !camera.GetComponent("UICamera") && !camera.name.Contains("VR");
+            return !camera.GetComponent("UICamera") && !camera.name.Contains("VR") && camera.targetTexture == null;
         }
 
         public IEnumerable<RenderTexture> GetTextures()
