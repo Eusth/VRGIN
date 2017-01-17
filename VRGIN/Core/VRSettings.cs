@@ -106,6 +106,9 @@ namespace VRGIN.Core
         public bool GrabRotationImmediateMode { get { return _GrabRotationImmediateMode; } set { _GrabRotationImmediateMode = value; TriggerPropertyChanged("GrabRotationImmediateMode"); } }
         private bool _GrabRotationImmediateMode = true;
 
+        public float RotationMultiplier { get { return _RotationMultiplier; } set { _RotationMultiplier = value; TriggerPropertyChanged("RotationMultiplier"); } }
+        private float _RotationMultiplier = -1f;
+
         public event EventHandler<PropertyChangedEventArgs> PropertyChanged = delegate { };
 
         public VRSettings()

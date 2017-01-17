@@ -333,7 +333,7 @@ namespace VRGIN.Controls.Tools
                     if (OtherController.Input.GetPress(SECONDARY_ROTATE_BUTTON))
                     {
                         InitializeRotationIfNeeded();
-                        var angleDiff = Calculator.Angle(_PrevFromTo, newFromTo);
+                        var angleDiff = Calculator.Angle(_PrevFromTo, newFromTo) * VR.Settings.RotationMultiplier;
                         VR.Camera.SteamCam.origin.transform.RotateAround(VR.Camera.Head.position, Vector3.up, angleDiff);// Mathf.Max(1, Controller.velocity.sqrMagnitude) );
 
                         _ProspectedPlayArea.Rotation += angleDiff;
@@ -349,14 +349,14 @@ namespace VRGIN.Controls.Tools
                     {
                         var forwardA = Vector3.forward;
                         var forwardB = diffRot * Vector3.forward;
-                        var angleDiff = Calculator.Angle(forwardA, forwardB);
+                        var angleDiff = Calculator.Angle(forwardA, forwardB) * VR.Settings.RotationMultiplier;
 
                         VR.Camera.SteamCam.origin.transform.position -= diffPos;
                         _ProspectedPlayArea.Height -= diffPos.y;
                         //VRLog.Info("Rotate: {0}", NormalizeAngle(diffRot.eulerAngles.y));
                         if (!VR.Settings.GrabRotationImmediateMode && Controller.GetPress(ButtonMask.Trigger))
                         {
-                            VR.Camera.SteamCam.origin.transform.RotateAround(VR.Camera.Head.position, Vector3.up, angleDiff * 1f);// Mathf.Max(1, Controller.velocity.sqrMagnitude) );
+                            VR.Camera.SteamCam.origin.transform.RotateAround(VR.Camera.Head.position, Vector3.up, angleDiff);// Mathf.Max(1, Controller.velocity.sqrMagnitude) );
                             _ProspectedPlayArea.Rotation += angleDiff;
                         }
 
@@ -389,7 +389,7 @@ namespace VRGIN.Controls.Tools
                 var angleDeg = Calculator.Angle(originalLookDirection, currentLookDirection);
 
                 VR.Camera.SteamCam.origin.transform.RotateAround(VR.Camera.Head.position, Vector3.up, angleDeg);
-                _ProspectedPlayArea.Rotation += angleDeg;
+                _ProspectedPlayArea.Rotation = angleDeg;
             }
 
             _PrevControllerPos = transform.position;
