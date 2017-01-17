@@ -107,7 +107,7 @@ namespace VRGIN.Core
         private bool _GrabRotationImmediateMode = true;
 
         public float RotationMultiplier { get { return _RotationMultiplier; } set { _RotationMultiplier = value; TriggerPropertyChanged("RotationMultiplier"); } }
-        private float _RotationMultiplier = -1f;
+        private float _RotationMultiplier = 1f;
 
         public event EventHandler<PropertyChangedEventArgs> PropertyChanged = delegate { };
 

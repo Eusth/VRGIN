@@ -354,18 +354,12 @@ namespace VRGIN.Controls.Tools
                         VR.Camera.SteamCam.origin.transform.position -= diffPos;
                         _ProspectedPlayArea.Height -= diffPos.y;
                         //VRLog.Info("Rotate: {0}", NormalizeAngle(diffRot.eulerAngles.y));
-                        if (!VR.Settings.GrabRotationImmediateMode && Controller.GetPress(ButtonMask.Trigger))
+                        if (!VR.Settings.GrabRotationImmediateMode && Controller.GetPress(ButtonMask.Trigger | ButtonMask.Touchpad))
                         {
-                            VR.Camera.SteamCam.origin.transform.RotateAround(VR.Camera.Head.position, Vector3.up, angleDiff);// Mathf.Max(1, Controller.velocity.sqrMagnitude) );
-                            _ProspectedPlayArea.Rotation += angleDiff;
+                            VR.Camera.SteamCam.origin.transform.RotateAround(VR.Camera.Head.position, Vector3.up, -angleDiff);
+                            _ProspectedPlayArea.Rotation -= angleDiff;
                         }
 
-                        // Handle rotation
-                        //_ProspectedPlayArea.Reset();
-                        //_ProspectedPlayArea.Rotation += diffRot.eulerAngles.y;
-                        //_ProspectedPlayArea.Position -= Vector3.ProjectOnPlane(diffPos, Vector3.up);
-                        //_ProspectedPlayArea.Height -= diffPos.y;
-                        //_ProspectedPlayArea.Apply();
                         _GripStartTime = 0; // To make sure that pos is not reset
                     }
                 }
@@ -381,7 +375,7 @@ namespace VRGIN.Controls.Tools
                 }
             }
             
-            if(VR.Settings.GrabRotationImmediateMode && Controller.GetPressUp(ButtonMask.Trigger))
+            if(VR.Settings.GrabRotationImmediateMode && Controller.GetPressUp(ButtonMask.Trigger | ButtonMask.Touchpad))
             {
                 // Rotate
                 var originalLookDirection = Vector3.ProjectOnPlane(transform.position - VR.Camera.Head.position, Vector3.up).normalized;
