@@ -91,5 +91,15 @@ namespace VRGIN.Core
         {
             return false;
         }
+
+        /// <summary>
+        /// Checks whether an effect is eligible for VR. 
+        /// </summary>
+        /// <param name="effect"></param>
+        /// <returns></returns>
+        public virtual bool IsAllowedEffect(MonoBehaviour effect)
+        {
+            return true;
+        }
     }
 }

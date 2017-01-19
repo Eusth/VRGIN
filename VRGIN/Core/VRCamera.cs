@@ -120,9 +120,9 @@ namespace VRGIN.Core
             }
 
             // Remove layers that are captured by other cameras (see VRGUI)
+            cullingMask |= LayerMask.GetMask("Default");
             cullingMask &= ~(LayerMask.GetMask(VR.Context.UILayer, VR.Context.InvisibleLayer));
             cullingMask &= ~(VR.Context.IgnoreMask);
-            cullingMask |= LayerMask.GetMask("Default");
             VRLog.Info("The camera sees {0}", string.Join(", ", UnityHelper.GetLayerNames(cullingMask)));
 
             // Apply to both the head camera and the VR camera
@@ -199,13 +199,19 @@ namespace VRGIN.Core
             // Rebuild
             foreach (var fx in blueprint.gameObject.GetCameraEffects())
             {
-                VRLog.Info("Copy FX: {0} (enabled={1})", fx.GetType().Name, fx.enabled);
-                var attachedFx = gameObject.CopyComponentFrom(fx);
-                if (attachedFx)
+                if (VR.Interpreter.IsAllowedEffect(fx))
                 {
-                    VRLog.Info("Attached!");
+                    VRLog.Info("Copy FX: {0} (enabled={1})", fx.GetType().Name, fx.enabled);
+                    var attachedFx = gameObject.CopyComponentFrom(fx);
+                    if (attachedFx)
+                    {
+                        VRLog.Info("Attached!");
+                    }
+                    attachedFx.enabled = fx.enabled;
+                } else
+                {
+                    VRLog.Info("Skipping image effect {0}", fx.GetType().Name);
                 }
-                attachedFx.enabled = fx.enabled;
             }
 
             VRLog.Info("That's all.");

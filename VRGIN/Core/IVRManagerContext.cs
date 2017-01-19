@@ -10,7 +10,7 @@ namespace VRGIN.Core
     public interface IVRManagerContext
     {
         /// <summary>
-        /// Gets the layer where the VR GUI should be placed. This is mainly used for raycasting and should ideally not be used by anything else.
+        /// Gets the layer where the VR GUI should be placed. This is mainly used for raycasting and should ideally not be used by anything else.  [Ignore Raycast]
         /// </summary>
         string GuiLayer { get; }
 
