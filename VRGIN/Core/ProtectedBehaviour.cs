@@ -97,7 +97,7 @@ namespace VRGIN.Core
             File.WriteAllText("performance.txt", builder.ToString());
         }
 
-        protected void Invoke(Action action, float delayInSeconds)
+        public void Invoke(Action action, float delayInSeconds)
         {
             StartCoroutine(_Invoke(action, delayInSeconds));
         }

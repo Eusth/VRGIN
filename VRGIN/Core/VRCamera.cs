@@ -156,6 +156,8 @@ namespace VRGIN.Core
                 //CopyFX(Blueprint);
 
                 Blueprint.cullingMask = 0;
+                Blueprint.nearClipPlane = Blueprint.farClipPlane = 0;
+
                 //Blueprint.targetTexture = _MiniTexture;
                 //Blueprint.gameObject.AddComponent<BlacklistThrottler>();
 
@@ -212,6 +214,8 @@ namespace VRGIN.Core
                 {
                     VRLog.Info("Skipping image effect {0}", fx.GetType().Name);
                 }
+
+                fx.enabled = false;
             }
 
             VRLog.Info("That's all.");
