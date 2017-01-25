@@ -8,6 +8,7 @@ using VRGIN.Core;
 using VRGIN.Helpers;
 using VRGIN.Native;
 using VRGIN.Visuals;
+using static SteamVR_Controller;
 using static VRGIN.Native.WindowsInterop;
 
 namespace VRGIN.Controls.Tools
@@ -111,13 +112,13 @@ namespace VRGIN.Controls.Tools
 
             var device = this.Controller;
 
-            if (device.GetPressDown(EVRButtonId.k_EButton_Axis0))
+            if (device.GetPressDown(ButtonMask.Touchpad | ButtonMask.Trigger))
             {
                 VR.Input.Mouse.LeftButtonDown();
                 pressDownTime = Time.unscaledTime;
             }
 
-            if (device.GetPressUp(EVRButtonId.k_EButton_Grip))
+            if (device.GetPressUp(ButtonMask.Grip))
             {
                 if (Gui)
                 {
@@ -129,19 +130,20 @@ namespace VRGIN.Controls.Tools
                 }
             }
 
-            if (device.GetTouchDown(EVRButtonId.k_EButton_Axis0))
+            if (device.GetTouchDown(ButtonMask.Touchpad))
             {
                 touchDownPosition = device.GetAxis();
                 touchDownMousePosition = MouseOperations.GetClientCursorPosition();
             }
-            if (device.GetTouch(EVRButtonId.k_EButton_Axis0) && (Time.unscaledTime - pressDownTime) > 0.3f)
+            if (device.GetTouch(ButtonMask.Touchpad) && (Time.unscaledTime - pressDownTime) > 0.3f)
             {
                 var pos = device.GetAxis();
-                var diff = pos - touchDownPosition;
-
-                _DeltaX += (diff.x * VRGUI.Width * 0.1);
-                _DeltaY += (-diff.y * VRGUI.Height * 0.2);
-
+                var diff = pos - (VR.HMD == HMDType.Oculus ? Vector2.zero : touchDownPosition);
+                var factor = VR.HMD == HMDType.Oculus ? Time.unscaledDeltaTime * 5 : 1f;
+                // We can only move by integral number of pixels, so accumulate them until we have an integral value
+                _DeltaX += (diff.x * VRGUI.Width * 0.1 * factor);
+                _DeltaY += (-diff.y * VRGUI.Height * 0.2 * factor);
+                
                 int deltaX = (int)(_DeltaX > 0 ? Math.Floor(_DeltaX) : Math.Ceiling(_DeltaX));
                 int deltaY = (int)(_DeltaY > 0 ? Math.Floor(_DeltaY) : Math.Ceiling(_DeltaY));
 
@@ -152,7 +154,7 @@ namespace VRGIN.Controls.Tools
                 touchDownPosition = pos;
             }
 
-            if (device.GetPressUp(EVRButtonId.k_EButton_Axis0))
+            if (device.GetPressUp(ButtonMask.Touchpad | ButtonMask.Trigger))
             {
                 VR.Input.Mouse.LeftButtonUp();
                 pressDownTime = 0;

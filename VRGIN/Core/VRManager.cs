@@ -25,6 +25,14 @@ namespace VRGIN.Core
         public static VRManager Manager { get { return VRManager.Instance; } }
         public static InputSimulator Input { get { return VRManager.Instance.Input; } }
         public static SpeechManager Speech { get { return VRManager.Instance.Speech; } }
+        public static HMDType HMD { get { return VRManager.Instance.HMD; } } 
+    }
+
+    public enum HMDType
+    {
+        Oculus,
+        Vive,
+        Other
     }
 
     public class ModeInitializedEventArgs : EventArgs
@@ -58,6 +66,8 @@ namespace VRGIN.Core
         public IVRManagerContext Context { get; private set; }
         public GameInterpreter Interpreter { get; private set; }
         public SpeechManager Speech { get; private set; }
+        public HMDType HMD { get; private set; }
+
         public event EventHandler<ModeInitializedEventArgs> ModeInitialized = delegate { };
 
         /// <summary>
@@ -127,9 +137,14 @@ namespace VRGIN.Core
 
         private static Type ModeType;
 
-
         protected override void OnAwake()
         {
+            var trackingSystem = SteamVR.instance.hmd_TrackingSystemName;
+            VRLog.Info("------------------------------------");
+            VRLog.Info(" Booting VR [{0}]", trackingSystem);
+            VRLog.Info("------------------------------------");
+            HMD = trackingSystem == "oculus" ? HMDType.Oculus : trackingSystem == "lighthouse" ? HMDType.Vive : HMDType.Other;
+
             Application.targetFrameRate = 90;
             Time.fixedDeltaTime = 1 / 90f;
             Application.runInBackground = true;
@@ -142,6 +157,7 @@ namespace VRGIN.Core
         }
         protected override void OnStart()
         {
+
             _CameraLoaded = false;
             Copy(Interpreter.FindCamera());
 
