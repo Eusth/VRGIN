@@ -26,7 +26,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;UNITY_5_3</DefineConstants>
+    <DefineConstants>TRACE;UNITY_5_3 UNITY_5_1</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -40,6 +40,10 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\Libs\System.Drawing.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="UnityEngine">
@@ -88,6 +92,11 @@
     <Compile Include="Core\VRSettings.cs" />
     <Compile Include="Helpers\Calculator.cs" />
     <Compile Include="Helpers\CameraConsumer.cs" />
+    <Compile Include="Helpers\Capture\CapturePanorama.cs" />
+    <Compile Include="Helpers\Capture\Internals\Icosphere.cs" />
+    <Compile Include="Helpers\Capture\Internals\ImageEffectCopyCamera.cs" />
+    <Compile Include="Helpers\Capture\Internals\ReadPanoConfig.cs" />
+    <Compile Include="Helpers\Capture\Internals\ScreenFadeControl.cs" />
     <Compile Include="Helpers\GameObjectExtensions.cs" />
     <Compile Include="Helpers\GuiScaler.cs" />
     <Compile Include="Helpers\KeyStroke.cs" />
@@ -101,6 +110,7 @@
     <Compile Include="Controls\IShortcut.cs" />
     <Compile Include="Controls\KeyboardShortcut.cs" />
     <Compile Include="Helpers\QuaternionExtensions.cs" />
+    <Compile Include="Helpers\VRCapturePanorama.cs" />
     <Compile Include="LeapMotion\Attachments\AttachmentController.cs" />
     <Compile Include="LeapMotion\Attachments\CameraFollower.cs" />
     <Compile Include="LeapMotion\Attachments\HandAttachments.cs" />
@@ -247,6 +257,7 @@
     <Content Include="SteamVR\Textures\workshop.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\capture" />
     <None Include="Resources\hands" />
     <None Include="Resources\steamvr" />
     <None Include="SteamVR\Prefabs\[CameraRig].prefab" />

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Linq;
 using UnityEngine;
 using VRGIN.Helpers;
 
@@ -190,21 +191,33 @@ namespace VRGIN.Core
         public void CopyFX(Camera blueprint)
         {
 
+            CopyFX(blueprint.gameObject, gameObject, true);
+
+            if (!SteamCam)
+            {
+                SteamCam = GetComponent<SteamVR_Camera>();
+            }
+            SteamCam.ForceLast();
+            SteamCam = GetComponent<SteamVR_Camera>();
+        }
+
+        private void CopyFX(GameObject source, GameObject target, bool disabledSourceFx = false)
+        {
             // Clean
-            foreach (var fx in gameObject.GetCameraEffects())
+            foreach (var fx in target.GetCameraEffects())
             {
                 DestroyImmediate(fx);
             }
-            int comps = gameObject.GetComponents<Component>().Length;
+            int comps = target.GetComponents<Component>().Length;
 
-            VRLog.Info("Copying FX to {0}...", gameObject.name);
+            VRLog.Info("Copying FX to {0}...", target.name);
             // Rebuild
-            foreach (var fx in blueprint.gameObject.GetCameraEffects())
+            foreach (var fx in source.GetCameraEffects())
             {
                 if (VR.Interpreter.IsAllowedEffect(fx))
                 {
                     VRLog.Info("Copy FX: {0} (enabled={1})", fx.GetType().Name, fx.enabled);
-                    var attachedFx = gameObject.CopyComponentFrom(fx);
+                    var attachedFx = target.CopyComponentFrom(fx);
                     if (attachedFx)
                     {
                         VRLog.Info("Attached!");
@@ -215,18 +228,12 @@ namespace VRGIN.Core
                     VRLog.Info("Skipping image effect {0}", fx.GetType().Name);
                 }
 
-                fx.enabled = false;
+                if (disabledSourceFx)
+                {
+                    fx.enabled = false;
+                }
             }
-
-            VRLog.Info("That's all.");
-
-            if(!SteamCam)
-            {
-                SteamCam = GetComponent<SteamVR_Camera>();
-            }
-            SteamCam.ForceLast();
-            SteamCam = GetComponent<SteamVR_Camera>();
-            VRLog.Info("{0} components before the additions, {1} after", comps, gameObject.GetComponents<Component>().Length);
+            VRLog.Info("{0} components before the additions, {1} after", comps, target.GetComponents<Component>().Length);
         }
 
         private void ApplyToCameras(CameraOperation operation)
@@ -249,6 +256,17 @@ namespace VRGIN.Core
         public void Refresh()
         {
             CopyFX(Blueprint);
+        }
+
+        internal Camera Clone()
+        {
+            var clone = new GameObject("VRGIN_Camera_Clone").CopyComponentFrom(SteamCam.GetComponent<Camera>());
+            CopyFX(SteamCam.gameObject, clone.gameObject);
+            clone.transform.position = transform.position;
+            clone.transform.rotation = transform.rotation;
+            clone.nearClipPlane = 0.01f;
+
+            return clone;
         }
     }
 }

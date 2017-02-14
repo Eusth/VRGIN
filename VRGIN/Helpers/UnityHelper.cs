@@ -55,14 +55,19 @@ namespace VRGIN.Helpers
             try
             {
                 VRLog.Info("Loading: {0} ({1})", name, key);
-                foreach (var asset in _AssetBundles[key].LoadAllAssets())
-                {
-                    VRLog.Info(asset.name);
-                }
+                //foreach (var asset in _AssetBundles[key].LoadAllAssets())
+                //{
+                //    VRLog.Info(asset.name);
+                //}
 
                 name = name.Replace("Custom/", "");
                 var loadedAsset = _AssetBundles[key].LoadAsset<T>(name);
-                return !typeof(Shader).IsAssignableFrom(typeof(T)) ? UnityEngine.Object.Instantiate<T>(loadedAsset) : loadedAsset;
+                if (!loadedAsset)
+                {
+                    VRLog.Error("Failed to load {0}", name);
+                }
+
+                return !typeof(Shader).IsAssignableFrom(typeof(T)) && !typeof(ComputeShader).IsAssignableFrom(typeof(T)) ? UnityEngine.Object.Instantiate<T>(loadedAsset) : loadedAsset;
             } catch(Exception e)
             {
                 VRLog.Error(e);

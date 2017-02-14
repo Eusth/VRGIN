@@ -190,7 +190,7 @@ public class SteamVR : System.IDisposable
 		return (error != ETrackedPropertyError.TrackedProp_Success) ? error.ToString() : "<unknown>";
 	}
 
-	float GetFloatProperty(ETrackedDeviceProperty prop)
+	public float GetFloatProperty(ETrackedDeviceProperty prop)
 	{
 		var error = ETrackedPropertyError.TrackedProp_Success;
 		return hmd.GetFloatTrackedDeviceProperty(OpenVR.k_unTrackedDeviceIndex_Hmd, prop, ref error);

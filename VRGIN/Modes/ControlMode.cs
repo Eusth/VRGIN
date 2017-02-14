@@ -45,8 +45,8 @@ namespace VRGIN.Modes
 
         public virtual void MoveToPosition(Vector3 targetPosition, Quaternion rotation = default(Quaternion), bool ignoreHeight = true)
         {
-            var targetForward = GetForwardVector(rotation);
-            var currentForward = GetForwardVector(VR.Camera.SteamCam.head.rotation);
+            var targetForward = Calculator.GetForwardVector(rotation);
+            var currentForward = Calculator.GetForwardVector(VR.Camera.SteamCam.head.rotation);
 
             VR.Camera.SteamCam.origin.rotation *= Quaternion.FromToRotation(currentForward, targetForward);
 
@@ -57,21 +57,6 @@ namespace VRGIN.Modes
             VR.Camera.SteamCam.origin.position += (targetPosition - myPosition);
         }
         
-        /// <summary>
-        /// Gets the "strongest" forward vector on the Y plane.
-        /// This might be a little roundabout, but it seems to work...
-        /// </summary>
-        /// <param name="rotation"></param>
-        /// <returns></returns>
-        private Vector3 GetForwardVector(Quaternion rotation)
-        {
-            var rotatedForward = rotation * Vector3.forward;
-            return new Vector3[] {
-                Vector3.ProjectOnPlane(rotatedForward, Vector3.up),
-                Vector3.ProjectOnPlane(rotation * (rotatedForward.y > 0f ? Vector3.down : Vector3.up), Vector3.up)
-            }.OrderByDescending(v => v.sqrMagnitude).First().normalized;
-        }
-
         public abstract ETrackingUniverseOrigin TrackingOrigin { get; }
 
         /// <summary>
@@ -113,6 +98,7 @@ namespace VRGIN.Modes
         protected override void OnStart()
         {
             CreateControllers();
+            InitializeScreenCapture();
 
             Shortcuts = CreateShortcuts();
             SteamVR_Render.instance.trackingSpace = TrackingOrigin;
@@ -132,6 +118,8 @@ namespace VRGIN.Modes
         }
 
         static int cnter = 0;
+        private VRCapturePanorama _CapturePanorama;
+
         /// <summary>
         /// Creates both controllers by using <see cref="CreateRightController"/> and <see cref="CreateLeftController"/>.
         /// Override those methods to change the controller implementation to be used.
@@ -356,6 +344,11 @@ namespace VRGIN.Modes
             Destroy(Left);
             Destroy(Right);
 
+            if (_CapturePanorama)
+            {
+                Destroy(_CapturePanorama);
+            }
+
             if (LeapMotion)
             {
                 DestroyImmediate(LeapMotion.gameObject);
@@ -451,6 +444,14 @@ namespace VRGIN.Modes
 
                 PlayerCamera.Remove();
             }
+        }
+
+        protected virtual void InitializeScreenCapture()
+        {
+            _CapturePanorama = VR.Camera.SteamCam.gameObject.AddComponent<VRCapturePanorama>();
+
+            _CapturePanorama.captureKey = KeyCode.Keypad0;
+            _CapturePanorama.useDefaultOrientation = false;
         }
 
         protected override void OnUpdate()

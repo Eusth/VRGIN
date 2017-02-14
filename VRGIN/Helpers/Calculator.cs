@@ -30,5 +30,20 @@ namespace VRGIN.Helpers
             var angleB = Mathf.Atan2(v2.x, v2.z) * Mathf.Rad2Deg;
             return Mathf.DeltaAngle(angleA, angleB);
         }
+
+        /// <summary>
+        /// Gets the "strongest" forward vector on the Y plane.
+        /// This might be a little roundabout, but it seems to work...
+        /// </summary>
+        /// <param name="rotation"></param>
+        /// <returns></returns>
+        public static Vector3 GetForwardVector(Quaternion rotation)
+        {
+            var rotatedForward = rotation * Vector3.forward;
+            return new Vector3[] {
+                Vector3.ProjectOnPlane(rotatedForward, Vector3.up),
+                Vector3.ProjectOnPlane(rotation * (rotatedForward.y > 0f ? Vector3.down : Vector3.up), Vector3.up)
+            }.OrderByDescending(v => v.sqrMagnitude).First().normalized;
+        }
     }
 }
