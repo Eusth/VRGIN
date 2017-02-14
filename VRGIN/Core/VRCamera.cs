@@ -258,10 +258,14 @@ namespace VRGIN.Core
             CopyFX(Blueprint);
         }
 
-        internal Camera Clone()
+        internal Camera Clone(bool copyEffects = true)
         {
             var clone = new GameObject("VRGIN_Camera_Clone").CopyComponentFrom(SteamCam.GetComponent<Camera>());
-            CopyFX(SteamCam.gameObject, clone.gameObject);
+
+            if (copyEffects)
+            {
+                CopyFX(SteamCam.gameObject, clone.gameObject);
+            }
             clone.transform.position = transform.position;
             clone.transform.rotation = transform.rotation;
             clone.nearClipPlane = 0.01f;

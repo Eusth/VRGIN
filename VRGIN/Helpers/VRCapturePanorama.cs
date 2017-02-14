@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using Valve.VR;
+using VRGIN.Controls;
 using VRGIN.Core;
 
 namespace VRGIN.Helpers
@@ -11,8 +12,9 @@ namespace VRGIN.Helpers
     class VRCapturePanorama : CapturePanorama.CapturePanorama
     {
         private Camera _Camera;
+        private IShortcut _Shortcut;
 
-        public VRCapturePanorama()
+        protected override void OnStart()
         {
             // Get shaders
             fadeMaterial = UnityHelper.LoadFromAssetBundle<Material>(Resource.capture, "Fade material");
@@ -20,10 +22,31 @@ namespace VRGIN.Helpers
             convertPanoramaStereoShader = UnityHelper.LoadFromAssetBundle<ComputeShader>(Resource.capture, "ConvertPanoramaStereoShader");
             textureToBufferShader = UnityHelper.LoadFromAssetBundle<ComputeShader>(Resource.capture, "TextureToBufferShader");
 
-            captureStereoscopic = true;
+            captureStereoscopic = VR.Settings.Capture.Stereoscopic;
             interpupillaryDistance = SteamVR.instance.GetFloatProperty(ETrackedDeviceProperty.Prop_UserIpdMeters_Float) * VR.Settings.IPDScale;
+            captureKey = KeyCode.None;
+
+            _Shortcut = new MultiKeyboardShortcut(VR.Settings.Capture.Shortcut, delegate
+            {
+
+                if (!Capturing)
+                {
+                    string filenameBase = String.Format("{0}_{1:yyyy-MM-dd_HH-mm-ss-fff}", Application.productName, DateTime.Now);
+                    VRLog.Info("Panorama capture key pressed, capturing " + filenameBase);
+                    CaptureScreenshotAsync(filenameBase);;
+                }
+            });
+
+            base.OnStart();
+
         }
 
+        protected override void OnUpdate()
+        {
+            base.OnUpdate();
+
+            _Shortcut.Evaluate();
+        }
 
         public override Camera[] GetCaptureCameras()
         {
@@ -45,20 +68,35 @@ namespace VRGIN.Helpers
             if (!_Camera)
             {
                 // Clone camera if need be
-                _Camera = VR.Camera.Clone();
+                _Camera = VR.Camera.Clone(VR.Settings.Capture.WithEffects);
                 _Camera.gameObject.SetActive(false);
+
+                if(VR.Settings.Capture.HideGUI)
+                {
+                    _Camera.cullingMask &= ~(LayerMask.GetMask(VR.Context.GuiLayer));
+                }
             }
 
             // Set camera position & orientation
             _Camera.transform.position = VR.Camera.Head.position;
 
-            var forward = Vector3.ProjectOnPlane(VR.Camera.Head.forward, Vector3.up).normalized;
-            if (forward.magnitude < 0.1)
+            if (VR.Settings.Capture.SetCameraUpright)
             {
-                forward = Vector3.forward;
+                var forward = Vector3.ProjectOnPlane(VR.Camera.Head.forward, Vector3.up).normalized;
+                if (forward.magnitude < 0.1)
+                {
+                    forward = Vector3.forward;
+                }
+                _Camera.transform.rotation = Quaternion.LookRotation(forward);
+            } else
+            {
+                _Camera.transform.rotation = VR.Camera.Head.rotation;
             }
-            _Camera.transform.rotation = Quaternion.LookRotation(forward);
 
+            //if(VR.Settings.Capture.HideControllers)
+            //{
+            //}
+            
             return true;
         }
 

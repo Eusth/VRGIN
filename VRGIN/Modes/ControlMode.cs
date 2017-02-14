@@ -449,9 +449,6 @@ namespace VRGIN.Modes
         protected virtual void InitializeScreenCapture()
         {
             _CapturePanorama = VR.Camera.SteamCam.gameObject.AddComponent<VRCapturePanorama>();
-
-            _CapturePanorama.captureKey = KeyCode.Keypad0;
-            _CapturePanorama.useDefaultOrientation = false;
         }
 
         protected override void OnUpdate()

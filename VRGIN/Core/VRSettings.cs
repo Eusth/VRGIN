@@ -132,6 +132,10 @@ namespace VRGIN.Core
         public virtual Shortcuts Shortcuts { get { return _Shortcuts; } protected set { _Shortcuts = value; } }
         private Shortcuts _Shortcuts = new Shortcuts();
 
+
+        public CaptureConfig Capture { get { return _CaptureConfig; } protected set { _CaptureConfig = value; } }
+        private CaptureConfig _CaptureConfig = new CaptureConfig();
+
         public event EventHandler<PropertyChangedEventArgs> PropertyChanged = delegate { };
 
         public VRSettings()
@@ -351,10 +355,17 @@ namespace VRGIN.Core
         public XmlKeyStroke ToggleRotationLock = new XmlKeyStroke("F5");
         public XmlKeyStroke ImpersonateApproximately = new XmlKeyStroke("Ctrl + X");
         public XmlKeyStroke ImpersonateExactly = new XmlKeyStroke("Ctrl + Shift + X");
-
-
     }
 
+    public class CaptureConfig
+    {
+        public XmlKeyStroke Shortcut = new XmlKeyStroke("Ctrl + F12");
+        public bool Stereoscopic = true;
+        public bool WithEffects = true;
+        public bool SetCameraUpright = true;
+        public bool HideGUI = false;
+        //public bool HideControllers = false;
+    }
     public class XmlKeyStroke
     {
         [XmlAttribute("on")]
