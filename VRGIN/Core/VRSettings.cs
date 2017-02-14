@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Xml.Linq;
 using System.Xml.Serialization;
 using UnityEngine;
 using static VRGIN.Visuals.GUIMonitor;
@@ -31,81 +32,96 @@ namespace VRGIN.Core
         /// <summary>
         /// Gets or sets the distance between the camera and the GUI at [0,0,0] [seated]
         /// </summary>
+        [XmlComment("The distance between the camera and the GUI at [0,0,0] [seated]")]
         public float Distance { get { return _Distance; } set { _Distance = Mathf.Clamp(value, 0.1f, 10f); TriggerPropertyChanged("Distance"); } }
         private float _Distance = 0.3f;
 
         /// <summary>
         /// Gets or sets the width of the arc the GUI takes up. [seated]
         /// </summary>
+        [XmlComment("The width of the arc the GUI takes up. [seated]")]
         public float Angle { get { return _Angle; } set { _Angle = Mathf.Clamp(value, 50f, 360f); TriggerPropertyChanged("Angle"); } }
         private float _Angle = 170f;
 
         /// <summary>
         /// Gets or sets the scale of the camera. The higher, the more gigantic the player is.
         /// </summary>
+        [XmlComment("Scale of the camera. The higher, the more gigantic the player is.")]
         public float IPDScale { get { return _IPDScale; } set { _IPDScale = Mathf.Clamp(value, 0.01f, 10f); TriggerPropertyChanged("IPDScale"); } }
         private float _IPDScale = 1f;
 
         /// <summary>
         /// Gets or sets the vertical offset of the GUI in meters. [seated]
         /// </summary>
+        [XmlComment("The vertical offset of the GUI in meters. [seated]")]
         public float OffsetY { get { return _OffsetY; } set { _OffsetY = value; TriggerPropertyChanged("OffsetY"); } }
         private float _OffsetY = 0f;
 
         /// <summary>
         /// Gets or sets by how many degrees the GUI is rotated (around the y axis) [seated]
         /// </summary>
+        [XmlComment("Degrees the GUI is rotated around the y axis [seated]")]
         public float Rotation { get { return _Rotation; } set { _Rotation = value; TriggerPropertyChanged("Rotation"); } }
         private float _Rotation = 0f;
 
         /// <summary>
         /// Gets or sets whether or not rumble is activated.
         /// </summary>
+        [XmlComment("Whether or not rumble is activated.")]
         public bool Rumble { get { return _Rumble; } set { _Rumble = value; TriggerPropertyChanged("Rumble"); } }
         private bool _Rumble = true;
 
         /// <summary>
         /// Gets or sets the render scale of the renderer. Increase for better quality but less performance, decrease for more performance but poor quality.
         /// </summary>
+        [XmlComment("The render scale of the renderer. Increase for better quality but less performance, decrease for more performance but poor quality. ]0..2]")]
         public float RenderScale { get { return _RenderScale; } set { _RenderScale = Mathf.Clamp(value, 0.1f, 4f); TriggerPropertyChanged("RenderScale"); } }
         private float _RenderScale = 1f;
 
+        [XmlComment("Whether or not to display anything on the mirror screen. (Broken)")]
         public bool MirrorScreen { get { return _MirrorScreen; } set { _MirrorScreen = value; TriggerPropertyChanged("MirrorScreen"); } }
         private bool _MirrorScreen = false;
 
         /// <summary>
         /// Gets or sets whether or not rotating around the horizontal axis is allowed.
         /// </summary>
+        [XmlComment("Whether or not rotating around the horizontal axis is allowed.")]
         public bool PitchLock { get { return _PitchLock; } set { _PitchLock = value; TriggerPropertyChanged("PitchLock"); } }
         private bool _PitchLock = true;
 
         /// <summary>
         /// Gets or sets the curviness of the monitor in seated mode.
         /// </summary>
+        [XmlComment("The curviness of the monitor in seated mode.")]
         public CurvinessState Projection { get { return _Projection; } set { _Projection = value; TriggerPropertyChanged("Projection"); } }
         private CurvinessState _Projection = CurvinessState.Curved;
         
         /// <summary>
         /// Gets or sets whether or not speech recognition is enabled.
         /// </summary>
+        [XmlComment("Whether or not speech recognition is enabled. Refer to the manual for details.")]
         public bool SpeechRecognition { get { return _SpeechRecognition; } set { _SpeechRecognition = value; TriggerPropertyChanged("SpeechRecognition"); } }
         private bool _SpeechRecognition = false;
         
         /// <summary>
         /// Gets or sets which locale to use for speech recognition. A dictionary file will automatically be generated at <i>UserData/dictionaries</i>.
         /// </summary>
+        [XmlComment("Locale to use for speech recognition. Make sure that you have installed the corresponding language pack. A dictionary file will automatically be generated at `UserData/dictionaries`.")]
         public string Locale { get { return _Locale; } set { _Locale = value; TriggerPropertyChanged("Locale"); } }
         private string _Locale = "en-US";
 
         /// <summary>
         /// Gets or sets whether or not Leap Motion support is activated.
         /// </summary>
+        [XmlComment("Whether or not Leap Motion support is activated.")]
         public bool Leap { get { return _Leap; } set { _Leap = value; TriggerPropertyChanged("Leap"); } }
         private bool _Leap = false;
 
+        [XmlComment("Determines the rotation mode. If enabled, pulling the trigger while grabbing will immediately rotate you. When disabled, doing the same thing will let you 'drag' the view.")]
         public bool GrabRotationImmediateMode { get { return _GrabRotationImmediateMode; } set { _GrabRotationImmediateMode = value; TriggerPropertyChanged("GrabRotationImmediateMode"); } }
         private bool _GrabRotationImmediateMode = true;
 
+        [XmlComment("How quickly the the view should rotate when doing so with the controllers.")]
         public float RotationMultiplier { get { return _RotationMultiplier; } set { _RotationMultiplier = value; TriggerPropertyChanged("RotationMultiplier"); } }
         private float _RotationMultiplier = 1f;
 
@@ -150,10 +166,38 @@ namespace VRGIN.Core
                     serializer.Serialize(stream, this);
                 }
 
+                PostProcess(path);
+
                 Path = path;
             }
 
             _OldSettings = this.MemberwiseClone() as VRSettings;
+        }
+
+        protected virtual void PostProcess(string path)
+        {
+            // Add comments
+            var doc = XDocument.Load(path);
+            foreach(var element in doc.Root.Elements())
+            {
+                var property = FindProperty(element.Name.LocalName);
+                if(property != null)
+                {
+                    var commentAttribute = property.GetCustomAttributes(typeof(XmlCommentAttribute), true).FirstOrDefault() as XmlCommentAttribute;
+                    if(commentAttribute != null)
+                    {
+                        element.AddBeforeSelf(new XComment(" " + commentAttribute.Value + " "));
+                    }
+                }
+            }
+            doc.Save(path);
+        }
+
+        private PropertyInfo FindProperty(string name)
+        {
+            return GetType()
+                .FindMembers(MemberTypes.Property, BindingFlags.Instance | BindingFlags.Public, Type.FilterName, name)
+                .FirstOrDefault() as PropertyInfo;
         }
 
         /// <summary>
@@ -261,7 +305,16 @@ namespace VRGIN.Core
                 }
             }
         } 
-
         
+    }
+
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
+    public class XmlCommentAttribute : Attribute
+    {
+        public XmlCommentAttribute(string value)
+        {
+            Value = value;
+        }
+        public string Value { get; set; }
     }
 }
