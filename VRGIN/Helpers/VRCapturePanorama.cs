@@ -15,7 +15,7 @@ namespace VRGIN.Helpers
         public VRCapturePanorama()
         {
             // Get shaders
-            fadeMaterial = UnityHelper.LoadFromAssetBundle<Material>(Resource.capture, "FadeMaterial");
+            fadeMaterial = UnityHelper.LoadFromAssetBundle<Material>(Resource.capture, "Fade material");
             convertPanoramaShader = UnityHelper.LoadFromAssetBundle<ComputeShader>(Resource.capture, "ConvertPanoramaShader");
             convertPanoramaStereoShader = UnityHelper.LoadFromAssetBundle<ComputeShader>(Resource.capture, "ConvertPanoramaStereoShader");
             textureToBufferShader = UnityHelper.LoadFromAssetBundle<ComputeShader>(Resource.capture, "TextureToBufferShader");

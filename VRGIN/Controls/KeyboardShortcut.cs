@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using VRGIN.Core;
 using VRGIN.Helpers;
 
 namespace VRGIN.Controls
@@ -18,6 +19,13 @@ namespace VRGIN.Controls
             KeyStroke = keyStroke;
             Action = action;
             CheckMode = checkMode;
+        }
+
+        public KeyboardShortcut(XmlKeyStroke keyStroke, Action action)
+        {
+            KeyStroke = keyStroke.GetKeyStrokes().FirstOrDefault();
+            Action = action;
+            CheckMode = keyStroke.CheckMode;
         }
 
         public void Evaluate()
@@ -55,6 +63,13 @@ namespace VRGIN.Controls
             KeyStrokes = new KeyStroke[] { keyStroke1, keyStroke2 };
             Action = action;
             CheckMode = checkMode;
+        }
+
+        public MultiKeyboardShortcut(XmlKeyStroke stroke, Action action)
+        {
+            KeyStrokes = stroke.GetKeyStrokes();
+            Action = action;
+            CheckMode = stroke.CheckMode;
         }
 
         public void Evaluate()

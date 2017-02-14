@@ -150,19 +150,19 @@ namespace VRGIN.Modes
         protected override IEnumerable<IShortcut> CreateShortcuts()
         {
             return new List<IShortcut>() {
-                new KeyboardShortcut(new KeyStroke("KeypadMinus"), MoveGUI(0.1f), KeyMode.Press),
-                new KeyboardShortcut(new KeyStroke("KeypadPlus"), MoveGUI(-.1f), KeyMode.Press),
-                new KeyboardShortcut(new KeyStroke("Ctrl + KeypadMinus"), delegate { VR.Settings.Angle += Time.deltaTime * 50f; }, KeyMode.Press),
-                new KeyboardShortcut(new KeyStroke("Ctrl + KeypadPlus"), delegate { VR.Settings.Angle -= Time.deltaTime * 50f; }, KeyMode.Press),
-                new KeyboardShortcut(new KeyStroke("Shift + KeypadMinus"), delegate { VR.Settings.Distance += Time.deltaTime * 0.1f; }, KeyMode.Press),
-                new KeyboardShortcut(new KeyStroke("Shift + KeypadPlus"), delegate { VR.Settings.Distance -= Time.deltaTime * 0.1f; }, KeyMode.Press),
-                new KeyboardShortcut(new KeyStroke("Ctrl + Shift + KeypadMinus"), delegate { VR.Settings.Rotation += Time.deltaTime * 50f; }, KeyMode.Press),
-                new KeyboardShortcut(new KeyStroke("Ctrl + Shift + KeypadPlus"), delegate { VR.Settings.Rotation -= Time.deltaTime * 50f; }, KeyMode.Press),
-                new KeyboardShortcut(new KeyStroke("F4"), ChangeProjection),
-                new KeyboardShortcut(new KeyStroke("F5"), ToggleRotationLock),
-                new KeyboardShortcut(new KeyStroke("Ctrl + X"), delegate { if(LockTarget == null || !LockTarget.IsValid) { Impersonate(VR.Interpreter.FindNextActorToImpersonate(), ImpersonationMode.Approximately); } else { Impersonate(null); } }),
-                new KeyboardShortcut(new KeyStroke("Ctrl + Shift + X"), delegate { if(LockTarget == null || !LockTarget.IsValid) { Impersonate(VR.Interpreter.FindNextActorToImpersonate(), ImpersonationMode.Exactly); } else { Impersonate(null); } }),
-                new KeyboardShortcut(new KeyStroke("F12"), Recenter)
+                new KeyboardShortcut(VR.Shortcuts.GUIRaise, MoveGUI(0.1f)),
+                new KeyboardShortcut(VR.Shortcuts.GUILower, MoveGUI(-.1f)),
+                new KeyboardShortcut(VR.Shortcuts.GUIIncreaseAngle, delegate { VR.Settings.Angle += Time.deltaTime * 50f; }),
+                new KeyboardShortcut(VR.Shortcuts.GUIDecreaseAngle, delegate { VR.Settings.Angle -= Time.deltaTime * 50f; }),
+                new KeyboardShortcut(VR.Shortcuts.GUIIncreaseDistance, delegate { VR.Settings.Distance += Time.deltaTime * 0.1f; }),
+                new KeyboardShortcut(VR.Shortcuts.GUIDecreaseDistance, delegate { VR.Settings.Distance -= Time.deltaTime * 0.1f; }),
+                new KeyboardShortcut(VR.Shortcuts.GUIRotateLeft, delegate { VR.Settings.Rotation += Time.deltaTime * 50f; }),
+                new KeyboardShortcut(VR.Shortcuts.GUIRotateRight, delegate { VR.Settings.Rotation -= Time.deltaTime * 50f; }),
+                new KeyboardShortcut(VR.Shortcuts.GUIChangeProjection, ChangeProjection),
+                new MultiKeyboardShortcut(VR.Shortcuts.ToggleRotationLock, ToggleRotationLock),
+                new MultiKeyboardShortcut(VR.Shortcuts.ImpersonateApproximately, delegate { if(LockTarget == null || !LockTarget.IsValid) { Impersonate(VR.Interpreter.FindNextActorToImpersonate(), ImpersonationMode.Approximately); } else { Impersonate(null); } }),
+                new MultiKeyboardShortcut(VR.Shortcuts.ImpersonateExactly, delegate { if(LockTarget == null || !LockTarget.IsValid) { Impersonate(VR.Interpreter.FindNextActorToImpersonate(), ImpersonationMode.Exactly); } else { Impersonate(null); } }),
+                new MultiKeyboardShortcut(VR.Shortcuts.GUIRecenter, Recenter)
             }.Concat(base.CreateShortcuts());
         }
 

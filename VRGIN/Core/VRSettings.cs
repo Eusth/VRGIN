@@ -8,6 +8,8 @@ using System.Text;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using UnityEngine;
+using VRGIN.Controls;
+using VRGIN.Helpers;
 using static VRGIN.Visuals.GUIMonitor;
 
 namespace VRGIN.Core
@@ -124,6 +126,11 @@ namespace VRGIN.Core
         [XmlComment("How quickly the the view should rotate when doing so with the controllers.")]
         public float RotationMultiplier { get { return _RotationMultiplier; } set { _RotationMultiplier = value; TriggerPropertyChanged("RotationMultiplier"); } }
         private float _RotationMultiplier = 1f;
+
+        //[XmlElement("VRGIN.Shortcuts")]
+        [XmlComment("Shortcuts used by VRGIN. Refer to https://docs.unity3d.com/ScriptReference/KeyCode.html for a list of available keys.")]
+        public virtual Shortcuts Shortcuts { get { return _Shortcuts; } protected set { _Shortcuts = value; } }
+        private Shortcuts _Shortcuts = new Shortcuts();
 
         public event EventHandler<PropertyChangedEventArgs> PropertyChanged = delegate { };
 
@@ -307,6 +314,71 @@ namespace VRGIN.Core
         } 
         
     }
+    
+    public class Shortcuts
+    {
+        public XmlKeyStroke ResetView = new XmlKeyStroke("F12");
+        public XmlKeyStroke ChangeMode = new XmlKeyStroke("Ctrl+C, Ctrl+C");
+        public XmlKeyStroke ShrinkWorld = new XmlKeyStroke("Alt + KeypadMinus", KeyMode.Press);
+        public XmlKeyStroke EnlargeWorld = new XmlKeyStroke("Alt + KeypadPlus", KeyMode.Press);
+        public XmlKeyStroke ToggleUserCamera = new XmlKeyStroke("Ctrl+C, Ctrl+V");
+        public XmlKeyStroke SaveSettings = new XmlKeyStroke("Alt + S");
+        public XmlKeyStroke LoadSettings = new XmlKeyStroke("Alt + L");
+        public XmlKeyStroke ResetSettings = new XmlKeyStroke("Ctrl + Alt + L");
+        public XmlKeyStroke ApplyEffects = new XmlKeyStroke("Ctrl + F5");
+
+        [XmlElement("GUI.Raise")]
+        public XmlKeyStroke GUIRaise = new XmlKeyStroke("KeypadMinus", KeyMode.Press);
+        [XmlElement("GUI.Lower")]
+        public XmlKeyStroke GUILower = new XmlKeyStroke("KeypadPlus", KeyMode.Press);
+        [XmlElement("GUI.IncreaseAngle")]
+        public XmlKeyStroke GUIIncreaseAngle = new XmlKeyStroke("Ctrl + KeypadMinus", KeyMode.Press);
+        [XmlElement("GUI.DecreaseAngle")]
+        public XmlKeyStroke GUIDecreaseAngle = new XmlKeyStroke("Ctrl + KeypadPlus", KeyMode.Press);
+        [XmlElement("GUI.IncreaseDistance")]
+        public XmlKeyStroke GUIIncreaseDistance = new XmlKeyStroke("Shift + KeypadMinus", KeyMode.Press);
+        [XmlElement("GUI.DecreaseDistance")]
+        public XmlKeyStroke GUIDecreaseDistance = new XmlKeyStroke("Shift + KeypadPlus", KeyMode.Press);
+        [XmlElement("GUI.RotateRight")]
+        public XmlKeyStroke GUIRotateRight= new XmlKeyStroke("Ctrl + Shift + KeypadMinus", KeyMode.Press);
+        [XmlElement("GUI.RotateLeft")]
+        public XmlKeyStroke GUIRotateLeft = new XmlKeyStroke("Ctrl + Shift + KeypadPlus", KeyMode.Press);
+        [XmlElement("GUI.ChangeProjection")]
+        public XmlKeyStroke GUIChangeProjection = new XmlKeyStroke("F4");
+        [XmlElement("GUI.Recenter")]
+        public XmlKeyStroke GUIRecenter = new XmlKeyStroke("F12");
+
+        public XmlKeyStroke ToggleRotationLock = new XmlKeyStroke("F5");
+        public XmlKeyStroke ImpersonateApproximately = new XmlKeyStroke("Ctrl + X");
+        public XmlKeyStroke ImpersonateExactly = new XmlKeyStroke("Ctrl + Shift + X");
+
+
+    }
+
+    public class XmlKeyStroke
+    {
+        [XmlAttribute("on")]
+        public KeyMode CheckMode { get; private set; }
+        
+        [XmlText]
+        public string Keys { get; private set; }
+
+        public XmlKeyStroke()
+        {
+        }
+
+        public XmlKeyStroke(string strokeString, KeyMode mode = KeyMode.PressUp)
+        {
+            CheckMode = mode;
+            Keys = strokeString;
+        }
+
+        public KeyStroke[] GetKeyStrokes()
+        {
+            return Keys.Split(',', '|').Select(part => new KeyStroke(part.Trim())).ToArray();
+        }
+    }
+    
 
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
     public class XmlCommentAttribute : Attribute

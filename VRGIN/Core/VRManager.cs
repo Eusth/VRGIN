@@ -22,6 +22,7 @@ namespace VRGIN.Core
         public static IVRManagerContext Context { get { return VRManager.Instance.Context; } }
         public static ControlMode Mode { get { return VRManager.Instance.Mode; } }
         public static VRSettings Settings { get { return Context.Settings; } }
+        public static Shortcuts Shortcuts { get { return Context.Settings.Shortcuts; } }
         public static VRManager Manager { get { return VRManager.Instance; } }
         public static InputSimulator Input { get { return VRManager.Instance.Input; } }
         public static SpeechManager Speech { get { return VRManager.Instance.Speech; } }

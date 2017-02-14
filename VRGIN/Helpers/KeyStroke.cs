@@ -14,7 +14,7 @@ namespace VRGIN.Helpers
         PressUp,
         Press
     }
-
+    
     public class KeyStroke
     {
 
