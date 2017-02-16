@@ -10,10 +10,12 @@ namespace VRGIN.Helpers
     public class CameraConsumer : IScreenGrabber
     {
         private RenderTexture _Texture;
+        private bool _SpareMainCamera;
+        private bool _SoftMode;
 
         public bool Check(Camera camera)
         {
-            return !camera.GetComponent("UICamera") && !camera.name.Contains("VR") && camera.targetTexture == null;
+            return !camera.GetComponent("UICamera") && !camera.name.Contains("VR") && camera.targetTexture == null && (!camera.CompareTag("MainCamera") || !_SpareMainCamera);
         }
 
         public IEnumerable<RenderTexture> GetTextures()
@@ -23,11 +25,22 @@ namespace VRGIN.Helpers
 
         public void OnAssign(Camera camera)
         {
-            camera.enabled = false;
+            if (_SoftMode)
+            {
+                camera.cullingMask = 0;
+                camera.nearClipPlane = 1;
+                camera.farClipPlane = 1;
+            }
+            else
+            {
+                camera.enabled = false;
+            }
         }
 
-        public CameraConsumer()
+        public CameraConsumer(bool spareMainCamera = false, bool softMode = false)
         {
+            _SoftMode = softMode;
+            _SpareMainCamera = spareMainCamera;
             _Texture = new RenderTexture(1, 1, 0);
         }
     }
