@@ -219,19 +219,28 @@ namespace VRGIN.Core
         /// <returns></returns>
         public static T Load<T>(string path) where T : VRSettings
         {
-            if(!File.Exists(path))
+            try
             {
-                var settings = Activator.CreateInstance<T>();
-                settings.Save(path);
-                return settings;
-            }  else { 
-             var serializer = new XmlSerializer(typeof(T));
-                using (var stream = new FileStream(path, FileMode.Open))
+                if (!File.Exists(path))
                 {
-                    var settings = serializer.Deserialize(stream) as T;
-                    settings.Path = path;
+                    var settings = Activator.CreateInstance<T>();
+                    settings.Save(path);
                     return settings;
                 }
+                else
+                {
+                    var serializer = new XmlSerializer(typeof(T));
+                    using (var stream = new FileStream(path, FileMode.Open))
+                    {
+                        var settings = serializer.Deserialize(stream) as T;
+                        settings.Path = path;
+                        return settings;
+                    }
+                }
+            } catch(Exception e)
+            {
+                VRLog.Error("Fatal exception occured while loading XML! (Make sure System.Xml exists!)");
+                throw e;
             }
         }
 

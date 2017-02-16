@@ -18,11 +18,18 @@ namespace VRGIN.Visuals
             StandardShader = CreateStandardShader();
             Sprite = CreateSprite();
 
-            if (!Sprite.shader) VRLog.Error("Could not load Sprite material!");
-            if (!Unlit.shader) VRLog.Error("Could not load Unlit material!");
-            if (!UnlitTransparent.shader) VRLog.Error("Could not load UnlitTransparent material!");
-            if (!UnlitTransparentCombined.shader) VRLog.Error("Could not load UnlitTransparentCombined material!");
+            if (!Unlit || !Unlit.shader) VRLog.Error("Could not load Unlit material!");
+            if (!UnlitTransparent || !UnlitTransparent.shader) VRLog.Error("Could not load UnlitTransparent material!");
+            if (!UnlitTransparentCombined || !UnlitTransparentCombined.shader) VRLog.Error("Could not load UnlitTransparentCombined material!");
             if (!StandardShader) VRLog.Error("Could not load StandardShader material!");
+
+            if (!Sprite || !Sprite.shader)
+            {
+                VRLog.Error("Could not load Sprite material!");
+
+                // Fall back to alternative material
+                Sprite = UnlitTransparent;
+            }
         }
         
         private Material CreateUnlitTransparentCombined()
