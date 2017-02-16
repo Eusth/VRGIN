@@ -68,6 +68,8 @@ namespace VRGIN.Core
         public GameInterpreter Interpreter { get; private set; }
         public SpeechManager Speech { get; private set; }
         public HMDType HMD { get; private set; }
+        private HashSet<Camera> _CheckedCameras = new HashSet<Camera>();
+
 
         public event EventHandler<ModeInitializedEventArgs> ModeInitialized = delegate { };
 
@@ -158,32 +160,51 @@ namespace VRGIN.Core
         }
         protected override void OnStart()
         {
-
-            _CameraLoaded = false;
-            Copy(Interpreter.FindCamera());
-
+            _CheckedCameras.Clear();
         }
 
         protected override void OnLevel(int level)
         {
-            _CameraLoaded = false;
-            Copy(Interpreter.FindCamera());
-            //StartCoroutine(Load());
+            _CheckedCameras.Clear();
         }
 
+        protected override void OnUpdate()
+        {
+            foreach(var camera in Camera.allCameras
+                .Except(_CheckedCameras)
+                .Where(OfInterest)
+                .ToList())
+            {
+                try
+                {
+                    Copy(camera);
+                } finally
+                {
+                    _CheckedCameras.Add(camera);
+                }
+            }
+        }
+
+        private bool OfInterest(Camera camera)
+        {
+            return !camera.GetComponent("UICamera") && !camera.name.Contains("VR") && camera.targetTexture == null;
+        }
 
         private void Copy(Camera camera)
         {
-            if (_CameraLoaded) return;
-            VRCamera.Instance.Copy(camera);
+            VRLog.Info("Copying camera!");
+            var vrCamera = VRSubCamera.Create(camera);
+            VRLog.Info("Copied camera!");
 
             if (!Mode && ModeType != null && ModeType.IsSubclassOf(typeof(ControlMode)))
             {
+                VRLog.Info("Making mode!");
+
                 Mode = VRCamera.Instance.gameObject.AddComponent(ModeType) as ControlMode;
                 Mode.ControllersCreated += OnControllersCreated;
-            }
+                VRLog.Info("Made mode!");
 
-            _CameraLoaded = true;
+            }
         }
 
         private void OnControllersCreated(object sender, EventArgs e)

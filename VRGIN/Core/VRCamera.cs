@@ -18,18 +18,120 @@ namespace VRGIN.Core
         }
     }
 
+    public class VRSubCamera : ProtectedBehaviour
+    {
+        public Camera Blueprint { get; protected set; }
+        public bool HasValidBlueprint { get; protected set; }
+        public SteamVR_Camera SteamCam { get; protected set; }
+
+        protected override void OnAwake()
+        {
+            VRLog.Info("Expand");
+
+            gameObject.AddComponent<SteamVR_Camera>();
+            SteamCam = GetComponent<SteamVR_Camera>();
+            SteamCam.Expand(); // Expand immediately!
+
+            if (!VR.Settings.MirrorScreen)
+            {
+                if(SteamCam.head.GetComponent<SteamVR_GameView>())
+                    Destroy(SteamCam.head.GetComponent<SteamVR_GameView>());
+                if(SteamCam.head.GetComponent<Camera>())
+                    Destroy(SteamCam.head.GetComponent<Camera>()); // Save GPU power
+            }
+        }
+        
+        public static VRSubCamera Create(Camera camera)
+        {
+            if(camera.gameObject.CompareTag("MainCamera"))
+            {
+                VRCamera.Instance.Copy(camera);
+                return VR.Camera;
+            }
+            else
+            {
+                VRLog.Info("VRCamera.Instance.transform.parent {0}", VRCamera.Instance.transform.parent);
+                var vrCam = UnityHelper.CreateGameObjectAsChild("VR_SubCamera", VR.Camera.Origin)
+                    .gameObject.AddComponent<VRSubCamera>();
+                vrCam.Copy(camera);
+                return vrCam;
+            }
+        }
+
+        protected override void OnUpdate()
+        {
+            base.OnUpdate();
+
+            if(!Blueprint)
+            {
+                Destroy(gameObject);
+            }
+        }
+
+        /// <summary>
+        /// Copies the values of a in-game camera to the VR camera.
+        /// </summary>
+        /// <param name="blueprint">The camera to copy.</param>
+        public virtual void Copy(Camera blueprint)
+        {
+            if (!blueprint) return;
+
+            VRLog.Info("Copying camera: {0}", blueprint ? blueprint.name : "NULL");
+            Blueprint = blueprint;
+
+            var currentCam = GetComponent<Camera>();
+            if(currentCam)
+            {
+                DestroyImmediate(currentCam);
+            }
+
+            // Copy camera
+            gameObject.CopyComponentFrom(blueprint);
+            var newCam = GetComponent<Camera>();
+
+            var cullingMask = newCam.cullingMask;
+
+            // Remove layers that are captured by other cameras (see VRGUI)
+            cullingMask |= LayerMask.GetMask("Default");
+            cullingMask &= ~(LayerMask.GetMask(VR.Context.UILayer, VR.Context.InvisibleLayer));
+            cullingMask &= ~(VR.Context.IgnoreMask);
+
+            newCam.cullingMask = cullingMask;
+
+            VRLog.Info("The camera sees {0}", string.Join(", ", UnityHelper.GetLayerNames(cullingMask)));
+
+
+            // Only execute this code when the blueprint is a different camera
+            HasValidBlueprint = Blueprint != GetComponent<Camera>();
+            if (HasValidBlueprint)
+            {
+                //StartCoroutine(ExecuteDelayed(delegate { CopyFX(Blueprint); }));
+                //CopyFX(Blueprint);
+
+                Blueprint.cullingMask = 0;
+                Blueprint.nearClipPlane = Blueprint.farClipPlane = 0;
+
+                //Blueprint.targetTexture = _MiniTexture;
+                //Blueprint.gameObject.AddComponent<BlacklistThrottler>();
+
+                // Highlander principle
+                var listener = Blueprint.GetComponent<AudioListener>();
+                if (listener)
+                {
+                    Destroy(listener);
+                }
+            }
+        }
+    }
+
     /// <summary>
     /// Handles the insertion of a OpenVR camera into an existing scene. The camera is controlled by a ControlMode.
     /// </summary>
-    public class VRCamera : ProtectedBehaviour
+    public class VRCamera : VRSubCamera
     {
         private delegate void CameraOperation(Camera camera);
 
         private static VRCamera _Instance;
-        public SteamVR_Camera SteamCam { get; private set; }
-        public Camera Blueprint { get; private set; }
-        private RenderTexture _MiniTexture;
-        public bool HasValidBlueprint { get; private set; }
 
         public Transform Origin
         {
@@ -60,6 +162,7 @@ namespace VRGIN.Core
             {
                 if (_Instance == null)
                 {
+                    VRLog.Info("instancing");
                     _Instance = new GameObject("VRGIN_Camera").AddComponent<AudioListener>().gameObject.AddComponent<VRCamera>();
                 }
                 return _Instance;
@@ -68,19 +171,10 @@ namespace VRGIN.Core
 
         protected override void OnAwake()
         {
-            // Dummy texture to let the old main camera render to
-            _MiniTexture = new RenderTexture(1, 1, 0);
-            _MiniTexture.Create();
 
-            gameObject.AddComponent<SteamVR_Camera>();
-            SteamCam = GetComponent<SteamVR_Camera>();
-            SteamCam.Expand(); // Expand immediately!
+            base.OnAwake();
 
-            if (!VR.Settings.MirrorScreen)
-            {
-                Destroy(SteamCam.head.GetComponent<SteamVR_GameView>());
-                Destroy(SteamCam.head.GetComponent<Camera>()); // Save GPU power
-            }
+            VRLog.Info("Awakening");
 
             // Set render scale to the value defined by the user
             SteamVR_Camera.sceneResolutionScale = VR.Settings.RenderScale;
@@ -92,96 +186,14 @@ namespace VRGIN.Core
             DontDestroyOnLoad(SteamCam.origin.gameObject);
         }
 
-        /// <summary>
-        /// Copies the values of a in-game camera to the VR camera.
-        /// </summary>
-        /// <param name="blueprint">The camera to copy.</param>
-        public void Copy(Camera blueprint)
+        public override void Copy(Camera blueprint)
         {
-            VRLog.Info("Copying camera: {0}", blueprint ? blueprint.name : "NULL");
-            Blueprint = blueprint ?? GetComponent<Camera>();
+            base.Copy(blueprint);
 
-            int cullingMask = Blueprint.cullingMask;
+            var newCam = GetComponent<Camera>();
+            newCam.nearClipPlane = Mathf.Min(newCam.nearClipPlane, 0.01f);
 
-            // If the camera is blind, set it to see everything instead
-            if (cullingMask == 0)
-            {
-                cullingMask = int.MaxValue;
-            }
-            else
-            {
-                // Apply additional culling masks
-                foreach (var subCamera in VR.Interpreter.FindSubCameras())
-                {
-                    if (!subCamera.name.Contains(SteamCam.baseName))
-                    {
-                        cullingMask |= subCamera.cullingMask;
-                    }
-                }
-            }
-
-            // Remove layers that are captured by other cameras (see VRGUI)
-            cullingMask |= LayerMask.GetMask("Default");
-            cullingMask &= ~(LayerMask.GetMask(VR.Context.UILayer, VR.Context.InvisibleLayer));
-            cullingMask &= ~(VR.Context.IgnoreMask);
-            VRLog.Info("The camera sees {0}", string.Join(", ", UnityHelper.GetLayerNames(cullingMask)));
-
-            // Apply to both the head camera and the VR camera
-            ApplyToCameras(targetCamera =>
-            {
-                targetCamera.nearClipPlane = 0.01f;
-                targetCamera.farClipPlane = Blueprint.farClipPlane;
-                targetCamera.cullingMask = cullingMask;
-                targetCamera.clearFlags = Blueprint.clearFlags == CameraClearFlags.Skybox ? CameraClearFlags.Skybox : CameraClearFlags.SolidColor;
-
-                targetCamera.backgroundColor = Blueprint.backgroundColor;
-
-                var skybox = Blueprint.GetComponent<Skybox>();
-                if (skybox != null)
-                {
-                    var vrSkybox = targetCamera.gameObject.GetComponent<Skybox>();
-                    if (vrSkybox == null) vrSkybox = vrSkybox.gameObject.AddComponent<Skybox>();
-
-                    vrSkybox.material = skybox.material;
-                }
-
-                // Hook
-                InitializeCamera(this, new InitializeCameraEventArgs(targetCamera, Blueprint));
-            });
-
-            // Only execute this code when the blueprint is a different camera
-            HasValidBlueprint = Blueprint != GetComponent<Camera>();
-            if (HasValidBlueprint)
-            {
-                //StartCoroutine(ExecuteDelayed(delegate { CopyFX(Blueprint); }));
-                //CopyFX(Blueprint);
-
-                Blueprint.cullingMask = 0;
-                Blueprint.nearClipPlane = Blueprint.farClipPlane = 0;
-
-                //Blueprint.targetTexture = _MiniTexture;
-                //Blueprint.gameObject.AddComponent<BlacklistThrottler>();
-
-                // Highlander principle
-                var listener = Blueprint.GetComponent<AudioListener>();
-                if (listener)
-                {
-                    Destroy(listener);
-                }
-            }
-        }
-
-        private IEnumerator ExecuteDelayed(Action action)
-        {
-            yield return null;
-            try
-            {
-                action();
-            }
-            catch (Exception e)
-            {
-                VRLog.Error(e);
-            }
+            InitializeCamera(this, new InitializeCameraEventArgs(newCam, blueprint));
         }
 
         /// <summary>
@@ -244,8 +256,7 @@ namespace VRGIN.Core
 
         protected override void OnUpdate()
         {
-            base.OnUpdate();
-
+            // Don't call onUpdate
             if (SteamCam.origin)
             {
                 // Make sure the scale is right
