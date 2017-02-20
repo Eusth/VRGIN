@@ -118,7 +118,10 @@ namespace VRGIN.Modes
         }
 
         static int cnter = 0;
+
+#if !UNITY_4_5
         private VRCapturePanorama _CapturePanorama;
+#endif
 
         /// <summary>
         /// Creates both controllers by using <see cref="CreateRightController"/> and <see cref="CreateLeftController"/>.
@@ -344,10 +347,12 @@ namespace VRGIN.Modes
             Destroy(Left);
             Destroy(Right);
 
+#if !UNITY_4_5
             if (_CapturePanorama)
             {
                 Destroy(_CapturePanorama);
             }
+#endif
 
             if (LeapMotion)
             {
@@ -448,8 +453,11 @@ namespace VRGIN.Modes
 
         protected virtual void InitializeScreenCapture()
         {
+#if !UNITY_4_5
             _CapturePanorama = VR.Camera.SteamCam.gameObject.AddComponent<VRCapturePanorama>();
+#endif
         }
+
 
         protected override void OnUpdate()
         {
