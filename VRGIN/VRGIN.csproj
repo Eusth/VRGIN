@@ -45,11 +45,11 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="UnityEngine">
       <HintPath>..\Libs\Unity 5.3.4\UnityEngine.dll</HintPath>
-      <Private>True</Private>
+      <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.UI">
       <HintPath>..\Libs\Unity 5.3.4\UnityEngine.UI.dll</HintPath>
-      <Private>True</Private>
+      <Private>False</Private>
     </Reference>
     <Reference Include="WindowsInput">
       <HintPath>..\Libs\WindowsInput.dll</HintPath>
@@ -218,39 +218,50 @@
     <Compile Include="Helpers\UnityHelper.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Images\cursor.png">
+    <ContentWithTargetPath Include="Libs\Plugins\Images\cursor.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\icon_play.png">
+      <TargetPath>Plugins\Images\cursor.png</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="Libs\Plugins\Images\icon_play.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\icon_settings.png">
+      <TargetPath>Plugins\Images\icon_play.png</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="Libs\Plugins\Images\icon_settings.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\icon_warp.png">
+      <TargetPath>Plugins\Images\icon_settings.png</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="Libs\Plugins\Images\icon_warp.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Libs\Data\Plugins\x86\LeapC.dll">
+      <TargetPath>Plugins\Images\icon_warp.png</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="Libs\Data\Plugins\x86\LeapC.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Libs\Data\Plugins\x86\openvr_api.dll">
+      <TargetPath>Data\Plugins\x86\LeapC.dll</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="Libs\Data\Plugins\x86\openvr_api.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Libs\Data\Plugins\x86_64\LeapC.dll">
+      <TargetPath>Data\Plugins\x86\openvr_api.dll</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="Libs\Data\Plugins\x86_64\LeapC.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Libs\Data\Plugins\x86_64\openvr_api.dll">
+      <TargetPath>Data\Plugins\x86_64\LeapC.dll</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="Libs\Data\Plugins\x86_64\openvr_api.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Libs\Plugins\System.Drawing.dll">
+      <TargetPath>Data\Plugins\x86_64\openvr_api.dll</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="Libs\Plugins\System.Drawing.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Libs\Plugins\VR\SpeechServer.exe">
+      <TargetPath>Plugins\System.Drawing.dll</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="Libs\Plugins\VR\SpeechServer.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Libs\Plugins\VR\SpeechTransport.dll">
+      <TargetPath>Plugins\VR\SpeechServer.exe</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="Libs\Plugins\VR\SpeechTransport.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+      <TargetPath>Plugins\VR\SpeechTransport.dll</TargetPath>
+    </ContentWithTargetPath>
     <Content Include="SteamVR\Textures\arrow.png" />
     <Content Include="SteamVR\Textures\background.png" />
     <Content Include="SteamVR\Textures\logo.png" />
@@ -293,12 +304,15 @@
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
-
-  <Target Name="AfterBuild">
+  -->
+  <!--<Target Name="AfterBuild">
     <ItemGroup>
-      <SpeechServer Include="..\SpeechServer\$(OutputPath)SpeechServer.exe" />
+      <Libs Include="$(OutputPath)Libs\**\*" />
+      -->
+  <!--<SpeechServer Include="..\SpeechServer\$(OutputPath)SpeechServer.exe" />-->
+  <!--
     </ItemGroup>
-    <Copy SourceFiles="@(SpeechServer)" DestinationFolder="$(OutputPath)Libs\Plugins\VR" />
-  </Target>
-    -->
+    <Move SourceFiles="@(Libs)" DestinationFolder="$(OutputPath)%(RecursiveDir)" />
+    <RemoveDir Directories="$(OutputPath)Libs" />
+  </Target>-->
 </Project>
