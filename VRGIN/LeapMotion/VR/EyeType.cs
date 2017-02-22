@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.VR;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif

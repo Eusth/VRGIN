@@ -9,7 +9,7 @@ using VRGIN.Core;
 
 namespace VRGIN.Helpers
 {
-    class VRCapturePanorama : CapturePanorama.CapturePanorama
+    public class VRCapturePanorama : CapturePanorama.CapturePanorama
     {
         private Camera _Camera;
         private IShortcut _Shortcut;
@@ -17,10 +17,10 @@ namespace VRGIN.Helpers
         protected override void OnStart()
         {
             // Get shaders
-            fadeMaterial = UnityHelper.LoadFromAssetBundle<Material>(Resource.capture, "Fade material");
-            convertPanoramaShader = UnityHelper.LoadFromAssetBundle<ComputeShader>(Resource.capture, "ConvertPanoramaShader");
-            convertPanoramaStereoShader = UnityHelper.LoadFromAssetBundle<ComputeShader>(Resource.capture, "ConvertPanoramaStereoShader");
-            textureToBufferShader = UnityHelper.LoadFromAssetBundle<ComputeShader>(Resource.capture, "TextureToBufferShader");
+            fadeMaterial = UnityHelper.LoadFromAssetBundle<Material>(ResourceManager.Capture, "Fade material");
+            convertPanoramaShader = UnityHelper.LoadFromAssetBundle<ComputeShader>(ResourceManager.Capture, "ConvertPanoramaShader");
+            convertPanoramaStereoShader = UnityHelper.LoadFromAssetBundle<ComputeShader>(ResourceManager.Capture, "ConvertPanoramaStereoShader");
+            textureToBufferShader = UnityHelper.LoadFromAssetBundle<ComputeShader>(ResourceManager.Capture, "TextureToBufferShader");
 
             captureStereoscopic = VR.Settings.Capture.Stereoscopic;
             interpupillaryDistance = SteamVR.instance.GetFloatProperty(ETrackedDeviceProperty.Prop_UserIpdMeters_Float) * VR.Settings.IPDScale;

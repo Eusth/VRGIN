@@ -221,7 +221,7 @@ namespace VRGIN.Modes
 #if UNITY_4_5
                 VRGIN.U46.U46.Resource.hands,
 #else
-                VRGIN.Resource.hands,
+                ResourceManager.Hands,
 #endif
                 "LoPoly_Rigged_Hand_" + handedness
             );

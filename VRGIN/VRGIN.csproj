@@ -39,7 +39,6 @@
       <HintPath>Libs\Plugins\VR\SpeechTransport.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
@@ -102,6 +101,7 @@
     <Compile Include="Helpers\MessengerExtensions.cs" />
     <Compile Include="Helpers\Profiler.cs" />
     <Compile Include="Helpers\RenderTextureExtensions.cs" />
+    <Compile Include="Helpers\ResourceManager.cs" />
     <Compile Include="Helpers\RumbleSession.cs" />
     <Compile Include="Helpers\SimpleJSON.cs" />
     <Compile Include="Controls\IShortcut.cs" />
@@ -250,7 +250,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>Data\Plugins\x86_64\openvr_api.dll</TargetPath>
     </ContentWithTargetPath>
-    <ContentWithTargetPath Include="Libs\Plugins\System.Drawing.dll">
+    <ContentWithTargetPath Include="Libs\Data\Managed\System.Drawing.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>Plugins\System.Drawing.dll</TargetPath>
     </ContentWithTargetPath>
@@ -262,15 +262,37 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>Plugins\VR\SpeechTransport.dll</TargetPath>
     </ContentWithTargetPath>
+    <ContentWithTargetPath Include="Libs\Data\Managed\System.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>Data\Managed\System.dll</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="Libs\Data\Managed\System.Xml.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>Data\Managed\System.Xml.dll</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="Libs\Data\Managed\System.Xml.Linq.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>Data\Managed\System.Xml.Linq.dll</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="Libs\Data\Managed\System.Configuration.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>Data\Managed\System.Configuration.dll</TargetPath>
+    </ContentWithTargetPath>
     <Content Include="SteamVR\Textures\arrow.png" />
     <Content Include="SteamVR\Textures\background.png" />
     <Content Include="SteamVR\Textures\logo.png" />
     <Content Include="SteamVR\Textures\workshop.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\capture" />
-    <None Include="Resources\hands" />
-    <None Include="Resources\steamvr" />
+    <None Include="Resources\capture_5_0" />
+    <None Include="Resources\capture_5_2" />
+    <None Include="Resources\capture_5_3" />
+    <None Include="Resources\hands_5_3" />
+    <None Include="Resources\steamvr_5_0" />
+    <None Include="Resources\steamvr_5_2" />
+    <None Include="Resources\steamvr_5_3" />
+    <None Include="Resources\capture_5_4" />
+    <None Include="Resources\steamvr_5_4" />
     <None Include="SteamVR\Prefabs\[CameraRig].prefab" />
     <None Include="SteamVR\Prefabs\[Status].prefab" />
     <None Include="SteamVR\Prefabs\[SteamVR].prefab" />

@@ -21,9 +21,9 @@ using PixelFormat = System.Drawing.Imaging.PixelFormat;
 using Process = System.Diagnostics.Process;
 using Rectangle = System.Drawing.Rectangle;
 using VRGIN.Helpers;
-#if UNITY_5_1
-using UnityEngine.VR;
-#endif
+//#if UNITY_5_1
+//using UnityEngine.VR;
+//#endif
 
 namespace CapturePanorama
 {
@@ -109,7 +109,7 @@ namespace CapturePanorama
                 case ImageFormat.PNG: return DrawingImageFormat.Png;
                 case ImageFormat.JPEG: return DrawingImageFormat.Jpeg;
                 case ImageFormat.BMP: return DrawingImageFormat.Bmp;
-                default: Debug.Assert(false); return DrawingImageFormat.Png;
+                default: /*Debug.Assert(false);*/ return DrawingImageFormat.Png;
             }
         }
 
@@ -120,7 +120,7 @@ namespace CapturePanorama
                 case ImageFormat.PNG: return "image/png";
                 case ImageFormat.JPEG: return "image/jpeg";
                 case ImageFormat.BMP: return "image/bmp";
-                default: Debug.Assert(false); return "";
+                default: /*Debug.Assert(false);*/ return "";
             }
         }
 
@@ -131,7 +131,7 @@ namespace CapturePanorama
                 case ImageFormat.PNG: return "png";
                 case ImageFormat.JPEG: return "jpg";
                 case ImageFormat.BMP: return "bmp";
-                default: Debug.Assert(false); return "";
+                default: /*Debug.Assert(false);*/ return "";
             }
         }
 
@@ -247,8 +247,8 @@ namespace CapturePanorama
                 CubemapFace.PositiveY, CubemapFace.NegativeY,
                 CubemapFace.PositiveZ, CubemapFace.NegativeZ };
 
-            for (int i = 0; i < faces.Length; i++)
-                Debug.Assert((int)faces[i] == i); // Required for ConvertPanoramaShader
+            //for (int i = 0; i < faces.Length; i++)
+            //    Debug.Assert((int)faces[i] == i); // Required for ConvertPanoramaShader
 
             panoramaHeight = panoramaWidth / 2;
 
@@ -634,12 +634,12 @@ namespace CapturePanorama
                 headOrientation = OVRManager.display.GetHeadPose(0.0).orientation;
             }
 #endif
-#if UNITY_5_1
-            if (UnityEngine.VR.VRSettings.enabled && UnityEngine.VR.VRSettings.loadedDevice != VRDeviceType.None)
-            {
-                headOrientation = InputTracking.GetLocalRotation(0);
-            }
-#endif
+//#if UNITY_5_1
+//            if (UnityEngine.VR.VRSettings.enabled && UnityEngine.VR.VRSettings.loadedDevice != VRDeviceType.None)
+//            {
+//                headOrientation = InputTracking.GetLocalRotation(0);
+//            }
+//#endif
 
             Log("Rendering camera views");
             foreach (Camera c in cameras)

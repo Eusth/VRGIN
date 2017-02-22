@@ -63,9 +63,9 @@ namespace VRGIN {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] capture {
+        internal static byte[] capture_5_0 {
             get {
-                object obj = ResourceManager.GetObject("capture", resourceCulture);
+                object obj = ResourceManager.GetObject("capture_5_0", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -73,9 +73,9 @@ namespace VRGIN {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] hands {
+        internal static byte[] capture_5_2 {
             get {
-                object obj = ResourceManager.GetObject("hands", resourceCulture);
+                object obj = ResourceManager.GetObject("capture_5_2", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -83,9 +83,69 @@ namespace VRGIN {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] steamvr {
+        internal static byte[] capture_5_3 {
             get {
-                object obj = ResourceManager.GetObject("steamvr", resourceCulture);
+                object obj = ResourceManager.GetObject("capture_5_3", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] capture_5_4 {
+            get {
+                object obj = ResourceManager.GetObject("capture_5_4", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] hands_5_3 {
+            get {
+                object obj = ResourceManager.GetObject("hands_5_3", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] steamvr_5_0 {
+            get {
+                object obj = ResourceManager.GetObject("steamvr_5_0", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] steamvr_5_2 {
+            get {
+                object obj = ResourceManager.GetObject("steamvr_5_2", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] steamvr_5_3 {
+            get {
+                object obj = ResourceManager.GetObject("steamvr_5_3", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] steamvr_5_4 {
+            get {
+                object obj = ResourceManager.GetObject("steamvr_5_4", resourceCulture);
                 return ((byte[])(obj));
             }
         }

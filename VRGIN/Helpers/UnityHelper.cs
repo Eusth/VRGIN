@@ -18,6 +18,9 @@ namespace VRGIN.Helpers
         private static AssetBundle _SteamVR;
         private static IDictionary<string, AssetBundle> _AssetBundles = new Dictionary<string, AssetBundle>();
 #endif
+        private static readonly MethodInfo _LoadFromMemory = typeof(AssetBundle).GetMethod("LoadFromMemory", new Type[] { typeof(byte[]) });
+        private static readonly MethodInfo _CreateFromMemory = typeof(AssetBundle).GetMethod("CreateFromMemoryImmediate", new Type[] { typeof(byte[]) });
+
 
         private static Dictionary<Color, RayDrawer> _Rays = new Dictionary<Color, RayDrawer>();
 
@@ -27,7 +30,7 @@ namespace VRGIN.Helpers
 #if UNITY_4_5
                 U46.U46.Resource.steamvr,
 #else
-                Resource.steamvr,
+                ResourceManager.SteamVR,
 #endif
                 name);
         }
@@ -49,7 +52,11 @@ namespace VRGIN.Helpers
             var key = GetKey(assetBundleBytes);
             if (!_AssetBundles.ContainsKey(key))
             {
-                _AssetBundles[key] = AssetBundle.LoadFromMemory(assetBundleBytes);
+                _AssetBundles[key] = LoadAssetBundle(assetBundleBytes);
+                if(_AssetBundles[key] == null)
+                {
+                    VRLog.Error("Looks like the asset bundle failed to load?");
+                }
             } 
 
             try
@@ -75,6 +82,22 @@ namespace VRGIN.Helpers
             }
 #endif
         }
+
+        private static AssetBundle LoadAssetBundle(byte[] bytes)
+        {
+            if (_LoadFromMemory != null)
+            {
+                return _LoadFromMemory.Invoke(null, new object[] { bytes }) as AssetBundle;
+            } else if(_CreateFromMemory != null)
+            {
+                return _CreateFromMemory.Invoke(null, new object[] { bytes }) as AssetBundle;
+            } else
+            {
+                VRLog.Error("Could not find a way to load AssetBundles!");
+                return null;
+            }
+        }
+
         private static string CalculateChecksum(byte[] byteToCalculate)
         {
             int checksum = 0;

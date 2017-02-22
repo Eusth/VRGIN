@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Leap;
 using System;
+using System.Reflection;
 
 namespace Leap.Unity {
   /** A basic Leap hand model constructed dynamically vs. using pre-existing geometry*/
@@ -54,6 +55,10 @@ namespace Leap.Unity {
 
     private Transform armFrontLeft, armFrontRight, armBackLeft, armBackRight;
     private Hand hand_;
+
+    private static MethodInfo _SetVertices = typeof(Mesh).GetMethod("SetVertices", BindingFlags.Instance | BindingFlags.Public);
+    private static PropertyInfo _Vertices = typeof(Mesh).GetProperty("vertices", BindingFlags.Instance | BindingFlags.Public);
+
 
     public override ModelType HandModelType {
       get {
@@ -355,11 +360,8 @@ namespace Leap.Unity {
         tris.Add((triStart + 1) % triCap);
       }
 
-#if UNITY_4_5
-      mesh.vertices = verts.ToArray();
-#else
-      mesh.SetVertices(verts);
-#endif
+      SetVertices(mesh, verts);
+
       mesh.SetIndices(tris.ToArray(), MeshTopology.Triangles, 0);
       mesh.RecalculateBounds();
       mesh.RecalculateNormals();
@@ -367,6 +369,21 @@ namespace Leap.Unity {
       mesh.UploadMeshData(true);
 
       return mesh;
+    }
+
+    // Reflection to support early versions of 5
+    private void SetVertices(Mesh mesh, List<Vector3> verts)
+    {
+        if(_SetVertices != null)
+        {
+            _SetVertices.Invoke(mesh, new object[] { verts });
+        } else if(_Vertices != null)
+        {
+            _Vertices.SetValue(mesh, verts, null);
+        } else
+        {
+            VRGIN.Core.VRLog.Error("Could not find a way to set mesh vertices!");
+        }
     }
   }
 }
