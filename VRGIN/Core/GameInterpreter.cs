@@ -6,6 +6,13 @@ using UnityEngine;
 
 namespace VRGIN.Core
 {
+
+    public enum CameraJudgement
+    {
+        Ignore,
+        SubCamera,
+        MainCamera
+    }
     /// <summary>
     /// Class that is responsible to collect all required data from the game 
     /// that is created or managed at runtime.
@@ -69,9 +76,35 @@ namespace VRGIN.Core
         /// <returns></returns>
         public virtual IEnumerable<Camera> FindSubCameras()
         {
-            yield break;
+            return Camera.allCameras.Where(c => c.targetTexture == null).Except(new Camera[] { Camera.main });
         }
 
+        public CameraJudgement JudgeCamera(Camera camera)
+        {
+            if(camera.name.Contains("VRGIN"))
+            {
+                return CameraJudgement.Ignore;
+            } else
+            {
+                return JudgeCameraInternal(camera);
+            }
+        }
+
+        protected virtual CameraJudgement JudgeCameraInternal(Camera camera)
+        {
+            if (camera.targetTexture == null)
+            {
+                if (camera.CompareTag("MainCamera"))
+                {
+                    return CameraJudgement.MainCamera;
+                }
+                else
+                {
+                    return CameraJudgement.SubCamera;
+                }
+            }
+            return CameraJudgement.Ignore;
+        }
         /// <summary>
         /// Checks whether the collider is to be interpreted as body part.
         /// </summary>

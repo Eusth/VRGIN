@@ -206,7 +206,6 @@ namespace VRGIN.Core
 #if !UNITY_4_5
             Cursor.lockState = CursorLockMode.Confined;
 #endif
-            UpdateCameras();
             EnsureCameraTargets();
 
             if (_Listeners > 0)
@@ -262,14 +261,14 @@ namespace VRGIN.Core
             if (!_ScreenGrabbers.Contains(grabber))
             {
                 _ScreenGrabbers.Insert(0, grabber);
-                _CheckedCameras.Clear();
+                RejudgeAll();
             }
         }
 
         public void RemoveGrabber(IScreenGrabber grabber)
         {
             _ScreenGrabbers.Remove(grabber);
-            _CheckedCameras.Clear();
+            RejudgeAll();
         }
 
         public IEnumerable<IScreenGrabber> ScreenGrabbers
@@ -280,21 +279,27 @@ namespace VRGIN.Core
             }
         }
 
-        private void UpdateCameras()
+        private void RejudgeAll()
         {
-            foreach(var camera in Camera.allCameras.Except(_CheckedCameras).ToList())
+            var cameras = _CheckedCameras.ToList();
+            foreach(var camera in cameras)
             {
-                VRLog.Info("Judging camera {0}", camera.name);
-                var grabber = FindCameraMapping(camera);
-                if(grabber != null)
-                {
-                    _CameraMappings[camera] = grabber;
-                    grabber.OnAssign(camera);
-
-                    VRLog.Info("Assigned camera {0} to {1}", camera.name, grabber);
-                }
-                _CheckedCameras.Add(camera);
+                AddCamera(camera);
             }
+        }
+
+        public void AddCamera(Camera camera)
+        {
+            VRLog.Info("Judging camera {0}", camera.name);
+            var grabber = FindCameraMapping(camera);
+            if (grabber != null)
+            {
+                _CameraMappings[camera] = grabber;
+                grabber.OnAssign(camera);
+
+                VRLog.Info("Assigned camera {0} to {1}", camera.name, grabber);
+            }
+            _CheckedCameras.Add(camera);
         }
 
         private void EnsureCameraTargets()

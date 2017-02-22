@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using VRGIN.Controls.Speech;
+using VRGIN.Helpers;
 using VRGIN.Modes;
 using VRGIN.Visuals;
 using WindowsInput;
@@ -70,6 +71,7 @@ namespace VRGIN.Core
         public HMDType HMD { get; private set; }
 
         public event EventHandler<ModeInitializedEventArgs> ModeInitialized = delegate { };
+        private HashSet<Camera> _CheckedCameras = new HashSet<Camera>();
 
         /// <summary>
         /// Creates the manager with a context and an interpeter.
@@ -121,11 +123,8 @@ namespace VRGIN.Core
                     DestroyImmediate(Mode);
                 }
 
-                if (_CameraLoaded)
-                {
-                    Mode = VRCamera.Instance.gameObject.AddComponent<T>();
-                    Mode.ControllersCreated += OnControllersCreated;
-                }
+                Mode = VRCamera.Instance.gameObject.AddComponent<T>();
+                Mode.ControllersCreated += OnControllersCreated;
             }
         }
 
@@ -158,32 +157,36 @@ namespace VRGIN.Core
         }
         protected override void OnStart()
         {
-
-            _CameraLoaded = false;
-            Copy(Interpreter.FindCamera());
-
         }
 
         protected override void OnLevel(int level)
         {
-            _CameraLoaded = false;
-            Copy(Interpreter.FindCamera());
+            _CheckedCameras.Clear();
             //StartCoroutine(Load());
         }
 
-
-        private void Copy(Camera camera)
+        protected override void OnUpdate()
         {
-            if (_CameraLoaded) return;
-            VRCamera.Instance.Copy(camera);
-
-            if (!Mode && ModeType != null && ModeType.IsSubclassOf(typeof(ControlMode)))
+            foreach(var camera in Camera.allCameras.Except(_CheckedCameras).ToList())
             {
-                Mode = VRCamera.Instance.gameObject.AddComponent(ModeType) as ControlMode;
-                Mode.ControllersCreated += OnControllersCreated;
+                _CheckedCameras.Add(camera);
+                var judgement = VR.Interpreter.JudgeCamera(camera);
+                VRLog.Info("Detected new camera {0} Action: {1}", camera.name, judgement);
+                switch (judgement)
+                {
+                    case CameraJudgement.MainCamera:
+                        VR.Camera.Copy(camera, true);
+                        break;
+                    case CameraJudgement.SubCamera:
+                        VR.Camera.Copy(camera, false);
+                        break;
+                    case CameraJudgement.Ignore:
+                        VR.GUI.AddCamera(camera);
+                        break;
+                }
             }
 
-            _CameraLoaded = true;
+            var cam = VR.Camera.GetComponent<Camera>();
         }
 
         private void OnControllersCreated(object sender, EventArgs e)

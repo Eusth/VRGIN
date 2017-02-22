@@ -1,4 +1,6 @@
-﻿using System;
+﻿//#define COLOR_SUPPORT
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -103,9 +105,6 @@ namespace VRGIN.Core
                         break;
                 }
 
-                var oldForegroundColor = Console.ForegroundColor;
-                var oldBackgroundColor = Console.BackgroundColor;
-
                 Console.ForegroundColor = foregroundColor;
                 Console.BackgroundColor = backgroundColor;
 #endif
@@ -117,8 +116,7 @@ namespace VRGIN.Core
                 }
 
 #if COLOR_SUPPORT
-                Console.ForegroundColor = oldForegroundColor;
-                Console.BackgroundColor = oldBackgroundColor;
+                Console.ResetColor();
 #endif
             }
             catch (Exception e)
