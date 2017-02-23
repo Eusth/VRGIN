@@ -92,6 +92,11 @@ namespace VRGIN.Core
         /// </summary>
         public RenderTexture uGuiTexture { get; private set; }
 
+        public bool IsInterested(Camera camera)
+        {
+            return FindCameraMapping(camera) != null;
+        }
+
         /// <summary>
         /// Gets the texture used for immediate GUI rendering. (Legacy)
         /// </summary>
@@ -103,6 +108,11 @@ namespace VRGIN.Core
 
         private Camera _VRGUICamera;
         private int _Listeners;
+
+        internal bool Owns(Camera cam)
+        {
+            return _CameraMappings.ContainsKey(cam);
+        }
 
         private IDictionary<Camera, IScreenGrabber> _CameraMappings = new Dictionary<Camera, IScreenGrabber>();
         private HashSet<Camera> _CheckedCameras = new HashSet<Camera>();
@@ -160,14 +170,18 @@ namespace VRGIN.Core
             DontDestroyOnLoad(gameObject);
         }
 
+        private bool IsUnprocessed(Canvas c)
+        {
+            return c.renderMode == RenderMode.ScreenSpaceOverlay 
+                || (c.renderMode == RenderMode.ScreenSpaceCamera && c.worldCamera != _VRGUICamera);
+        }
 
         protected void CatchCanvas()
         {
             _VRGUICamera.targetTexture = uGuiTexture;
             var canvasList = (_Registry.Keys as ICollection<Canvas>).Where(c => c).SelectMany(canvas => canvas.gameObject.GetComponentsInChildren<Canvas>()).ToList();
             //var canvasList = GameObject.FindObjectsOfType<Canvas>();
-            foreach (var canvas in canvasList
-                                        .Where(c => (c.renderMode == RenderMode.ScreenSpaceOverlay || c.renderMode == RenderMode.ScreenSpaceCamera) && c.worldCamera != _VRGUICamera))
+            foreach (var canvas in canvasList.Where(IsUnprocessed))
             {
                 if (VR.Interpreter.IsIgnoredCanvas(canvas)) continue;
 
@@ -182,6 +196,14 @@ namespace VRGIN.Core
                 foreach (var child in canvas.gameObject.GetComponentsInChildren<Transform>())
                 {
                     child.gameObject.layer = LayerMask.NameToLayer(VR.Context.UILayer);
+                }
+
+                if (VR.Context.EnforceDefaultGUIMaterials)
+                {
+                    foreach (var child in canvas.gameObject.GetComponentsInChildren<Graphic>())
+                    {
+                        child.material = child.defaultMaterial;
+                    }
                 }
 
                 if (VR.Context.GUIAlternativeSortingMode)

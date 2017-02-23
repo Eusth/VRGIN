@@ -278,20 +278,24 @@ namespace VRGIN.Helpers
                     }
                 }
 
-                //foreach (var prop in c.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public))
-                //{
-                //    try
-                //    {
-                //        var val = FieldToString(prop.Name, prop.GetValue(c, null));
-                //        if (val != null)
-                //        {
-                //            comp[prop.Name] = val;
-                //        }
-                //    } catch(Exception e)
-                //    {
-                //        Logger.Warn("Failed to get prop {0}", prop.Name);
-                //    }
-                //}
+                foreach (var prop in c.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public))
+                {
+                    try
+                    {
+                        if (prop.GetIndexParameters().Length == 0)
+                        {
+                            var val = FieldToString(prop.Name, prop.GetValue(c, null));
+                            if (val != null)
+                            {
+                                comp[prop.Name] = val;
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        VRLog.Warn("Failed to get prop {0}", prop.Name);
+                    }
+                }
 
                 components[c.GetType().Name] = comp;
             }
@@ -372,6 +376,25 @@ namespace VRGIN.Helpers
             {
                 VRLog.Warn("Prop/Field not found!");
                 return null;
+            }
+        }
+
+        public static void SaveTexture(RenderTexture rt, string pngOutPath)
+        {
+            var oldRT = RenderTexture.active;
+            try
+            {
+                var tex = new Texture2D(rt.width, rt.height, TextureFormat.RGB24, false);
+                RenderTexture.active = rt;
+                tex.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
+                tex.Apply();
+
+                File.WriteAllBytes(pngOutPath, tex.EncodeToPNG());
+                GameObject.Destroy(tex);
+            }
+            finally
+            {
+                RenderTexture.active = oldRT;
             }
         }
         

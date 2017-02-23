@@ -11,7 +11,9 @@ namespace VRGIN.Core
     {
         Ignore,
         SubCamera,
-        MainCamera
+        MainCamera,
+        GUI,
+        GUIAndCamera
     }
     /// <summary>
     /// Class that is responsible to collect all required data from the game 
@@ -92,9 +94,14 @@ namespace VRGIN.Core
 
         protected virtual CameraJudgement JudgeCameraInternal(Camera camera)
         {
+            bool guiInterested = VR.GUI.IsInterested(camera);
             if (camera.targetTexture == null)
             {
-                if (camera.CompareTag("MainCamera"))
+                if (guiInterested)
+                {
+                    return CameraJudgement.GUIAndCamera;
+                }
+                else if (camera.CompareTag("MainCamera"))
                 {
                     return CameraJudgement.MainCamera;
                 }
@@ -103,7 +110,7 @@ namespace VRGIN.Core
                     return CameraJudgement.SubCamera;
                 }
             }
-            return CameraJudgement.Ignore;
+            return guiInterested ? CameraJudgement.GUI : CameraJudgement.Ignore;
         }
         /// <summary>
         /// Checks whether the collider is to be interpreted as body part.

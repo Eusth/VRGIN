@@ -21,6 +21,31 @@ namespace VRGIN.Core
 
     public class CameraSlave : ProtectedBehaviour
     {
+        protected override void OnAwake()
+        {
+            base.OnAwake();
+
+            var camera = Camera;
+            if(!camera)
+            {
+                VRLog.Error("No camera found! {0}", name);
+                Destroy(this);
+                return;
+            }
+
+            nearClipPlane = camera.nearClipPlane;
+            farClipPlane = camera.farClipPlane;
+            clearFlags = camera.clearFlags;
+            renderingPath = camera.renderingPath;
+            clearStencilAfterLightingPass = camera.clearStencilAfterLightingPass;
+            depthTextureMode = camera.depthTextureMode;
+            layerCullDistances = camera.layerCullDistances;
+            layerCullSpherical = camera.layerCullSpherical;
+            useOcclusionCulling = camera.useOcclusionCulling;
+            backgroundColor = camera.backgroundColor;
+            cullingMask = camera.cullingMask;
+        }
+        
         public void OnEnable()
         {
             try
@@ -50,6 +75,18 @@ namespace VRGIN.Core
                 return GetComponent<Camera>();
             }
         }
+
+        public float nearClipPlane { get; private set; }
+        public float farClipPlane { get; private set; }
+        public CameraClearFlags clearFlags { get; private set; }
+        public RenderingPath renderingPath { get; private set; }
+        public bool clearStencilAfterLightingPass { get; private set; }
+        public DepthTextureMode depthTextureMode { get; private set; }
+        public float[] layerCullDistances { get; private set; }
+        public bool layerCullSpherical { get; private set; }
+        public bool useOcclusionCulling { get; private set; }
+        public Color backgroundColor { get; private set; }
+        public int cullingMask { get; private set; }
     }
 
     /// <summary>
@@ -65,12 +102,14 @@ namespace VRGIN.Core
         {
             get
             {
-                return _Blueprint && _Blueprint.isActiveAndEnabled ? _Blueprint : Slaves.First().Camera;
+                return _Blueprint && _Blueprint.isActiveAndEnabled ? _Blueprint : Slaves.Select(s => s.Camera).FirstOrDefault(c => !VR.GUI.Owns(c));
             }
         }
         private Camera _Blueprint { get; set; }
         private IList<CameraSlave> Slaves = new List<CameraSlave>();
         private RenderTexture _MiniTexture;
+        private const float MIN_FAR_CLIP_PLANE = 10f;
+
         public bool HasValidBlueprint { get { return Slaves.Count > 0; } }
 
         public Transform Origin
@@ -153,8 +192,8 @@ namespace VRGIN.Core
                 // Apply to both the head camera and the VR camera
                 ApplyToCameras(targetCamera =>
                 {
-                    targetCamera.nearClipPlane = 0.01f;
-                    targetCamera.farClipPlane = Blueprint.farClipPlane;
+                    targetCamera.nearClipPlane = 0.1f;
+                    targetCamera.farClipPlane = Mathf.Max(Blueprint.farClipPlane, MIN_FAR_CLIP_PLANE);
                     targetCamera.clearFlags = Blueprint.clearFlags == CameraClearFlags.Skybox ? CameraClearFlags.Skybox : CameraClearFlags.SolidColor;
                     targetCamera.renderingPath = Blueprint.renderingPath;
                     targetCamera.clearStencilAfterLightingPass = Blueprint.clearStencilAfterLightingPass;
@@ -205,27 +244,17 @@ namespace VRGIN.Core
             }
         }
 
-        private void MakeBlueprint(Camera cam)
-        {
-
-        }
-
         private void UpdateCameraConfig()
         {
 
-            var cameras = Slaves.Select(s => s.Camera).Where(c => c != null).ToList();
-
-
-            int cullingMask = cameras.Aggregate(0, (cull, cam) => cull | cam.cullingMask);
-
-            VRLog.Info("The camera sees pre {0}", string.Join(", ", UnityHelper.GetLayerNames(cullingMask)));
+            int cullingMask = Slaves.Aggregate(0, (cull, cam) => cull | cam.cullingMask);
 
             // Remove layers that are captured by other cameras (see VRGUI)
             cullingMask |= LayerMask.GetMask("Default");
             cullingMask &= ~(LayerMask.GetMask(VR.Context.UILayer, VR.Context.InvisibleLayer));
             cullingMask &= ~(VR.Context.IgnoreMask);
 
-            VRLog.Info("The camera sees {0}", string.Join(", ", UnityHelper.GetLayerNames(cullingMask)));
+            VRLog.Info("The camera sees {0} ({1})", string.Join(", ", UnityHelper.GetLayerNames(cullingMask)), string.Join(", ", Slaves.Select(s => s.name).ToArray()));
 
             GetComponent<Camera>().cullingMask = cullingMask;
         }
@@ -337,7 +366,6 @@ namespace VRGIN.Core
             VRLog.Info("Camera went online: {0}", slave.name);
             Slaves.Add(slave);
             UpdateCameraConfig();
-
         }
 
         internal void UnregisterSlave(CameraSlave slave)
@@ -345,7 +373,6 @@ namespace VRGIN.Core
             VRLog.Info("Camera went offline: {0}", slave.name);
             Slaves.Remove(slave);
             UpdateCameraConfig();
-
         }
     }
 }

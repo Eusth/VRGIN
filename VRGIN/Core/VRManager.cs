@@ -180,8 +180,14 @@ namespace VRGIN.Core
                     case CameraJudgement.SubCamera:
                         VR.Camera.Copy(camera, false);
                         break;
-                    case CameraJudgement.Ignore:
+                    case CameraJudgement.GUI:
                         VR.GUI.AddCamera(camera);
+                        break;
+                    case CameraJudgement.GUIAndCamera:
+                        VR.Camera.Copy(camera, false);
+                        VR.GUI.AddCamera(camera);
+                        break;
+                    case CameraJudgement.Ignore:
                         break;
                 }
             }

@@ -77,8 +77,13 @@ namespace VRGIN.Core
         float GuiFarClipPlane { get; }
 
         /// <summary>
-        /// Gets an additional multiplier to calculate an in-game unit to a meter.
+        /// Gets an additional multiplier to calculate an in-game unit to a meter. [1.0]
         /// </summary>
         float UnitToMeter { get; }
+
+        /// <summary>
+        /// Gets whether or not to enforce default materials on all Graphic elements. [false]
+        /// </summary>
+        bool EnforceDefaultGUIMaterials { get; }
     }
 }
