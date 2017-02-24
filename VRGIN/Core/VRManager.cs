@@ -27,7 +27,8 @@ namespace VRGIN.Core
         public static VRManager Manager { get { return VRManager.Instance; } }
         public static InputSimulator Input { get { return VRManager.Instance.Input; } }
         public static SpeechManager Speech { get { return VRManager.Instance.Speech; } }
-        public static HMDType HMD { get { return VRManager.Instance.HMD; } } 
+        public static HMDType HMD { get { return VRManager.Instance.HMD; } }
+        public static bool Active { get; set; }
     }
 
     public enum HMDType
@@ -83,6 +84,8 @@ namespace VRGIN.Core
         {
             if (_Instance == null)
             {
+                VR.Active = true;
+
                 _Instance = new GameObject("VRGIN_Manager").AddComponent<VRManager>();
                 _Instance.Context = context;
                 _Instance.Interpreter = _Instance.gameObject.AddComponent<T>();
@@ -97,7 +100,6 @@ namespace VRGIN.Core
 
                 // Save settings so the XML is up-to-date
                 VR.Settings.Save();
-
             }
             return _Instance;
         }
