@@ -162,7 +162,7 @@ namespace VRGIN.Modes
                 new MultiKeyboardShortcut(VR.Shortcuts.ToggleRotationLock, ToggleRotationLock),
                 new MultiKeyboardShortcut(VR.Shortcuts.ImpersonateApproximately, delegate { if(LockTarget == null || !LockTarget.IsValid) { Impersonate(VR.Interpreter.FindNextActorToImpersonate(), ImpersonationMode.Approximately); } else { Impersonate(null); } }),
                 new MultiKeyboardShortcut(VR.Shortcuts.ImpersonateExactly, delegate { if(LockTarget == null || !LockTarget.IsValid) { Impersonate(VR.Interpreter.FindNextActorToImpersonate(), ImpersonationMode.Exactly); } else { Impersonate(null); } }),
-                new MultiKeyboardShortcut(VR.Shortcuts.GUIRecenter, Recenter)
+                new MultiKeyboardShortcut(VR.Shortcuts.ResetView, Recenter)
             }.Concat(base.CreateShortcuts());
         }
 

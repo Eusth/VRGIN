@@ -358,8 +358,6 @@ namespace VRGIN.Core
         public XmlKeyStroke GUIRotateLeft = new XmlKeyStroke("Ctrl + Shift + KeypadPlus", KeyMode.Press);
         [XmlElement("GUI.ChangeProjection")]
         public XmlKeyStroke GUIChangeProjection = new XmlKeyStroke("F4");
-        [XmlElement("GUI.Recenter")]
-        public XmlKeyStroke GUIRecenter = new XmlKeyStroke("F12");
 
         public XmlKeyStroke ToggleRotationLock = new XmlKeyStroke("F5");
         public XmlKeyStroke ImpersonateApproximately = new XmlKeyStroke("Ctrl + X");
