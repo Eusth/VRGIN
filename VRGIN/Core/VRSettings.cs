@@ -239,7 +239,7 @@ namespace VRGIN.Core
                 }
             } catch(Exception e)
             {
-                VRLog.Error("Fatal exception occured while loading XML! (Make sure System.Xml exists!)");
+                VRLog.Error("Fatal exception occured while loading XML! (Make sure System.Xml exists!) {0}", e);
                 throw e;
             }
         }
