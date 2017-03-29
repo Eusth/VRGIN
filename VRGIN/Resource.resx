@@ -130,6 +130,9 @@
   <data name="capture_5_4" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>resources\capture_5_4;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="capture_5_5" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>resources\capture_5_5;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="hands_5_3" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>resources\hands_5_3;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -144,5 +147,8 @@
   </data>
   <data name="steamvr_5_4" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>resources\steamvr_5_4;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="steamvr_5_5" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>resources\steamvr_5_5;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

@@ -287,12 +287,14 @@
     <None Include="Resources\capture_5_0" />
     <None Include="Resources\capture_5_2" />
     <None Include="Resources\capture_5_3" />
+    <None Include="Resources\capture_5_5" />
     <None Include="Resources\hands_5_3" />
     <None Include="Resources\steamvr_5_0" />
     <None Include="Resources\steamvr_5_2" />
     <None Include="Resources\steamvr_5_3" />
     <None Include="Resources\capture_5_4" />
     <None Include="Resources\steamvr_5_4" />
+    <None Include="Resources\steamvr_5_5" />
     <None Include="SteamVR\Prefabs\[CameraRig].prefab" />
     <None Include="SteamVR\Prefabs\[Status].prefab" />
     <None Include="SteamVR\Prefabs\[SteamVR].prefab" />

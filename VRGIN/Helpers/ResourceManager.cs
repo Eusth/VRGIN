@@ -30,29 +30,24 @@ namespace VRGIN.Helpers
         {
             get
             {
-                Console.WriteLine("Platform: {0}bit", IntPtr.Size * 8);
                 if(VERSION.CompareTo("5.0") <= 0)
                 {
-                    VRLog.Info("5.0");
                     return Resource.steamvr_5_0;
                 }
                 if(VERSION.CompareTo("5.2") <= 0)
                 {
-                    VRLog.Info("5.2");
-
                     return Resource.steamvr_5_2;
                 }
                 if(VERSION.CompareTo("5.3") <= 0)
                 {
-                    VRLog.Info("5.3");
-
-                    VRLog.Info("5.3");
-
                     return Resource.steamvr_5_3;
                 }
-                VRLog.Info("5.4");
+                if(VERSION.CompareTo("5.4") <= 0)
+                {
+                    return Resource.steamvr_5_4;
+                }
 
-                return Resource.steamvr_5_4;
+                return Resource.steamvr_5_5;
             }
         }
 
@@ -72,7 +67,11 @@ namespace VRGIN.Helpers
                 {
                     return Resource.capture_5_3;
                 }
-                return Resource.capture_5_4;
+                if (VERSION.CompareTo("5.4") <= 0)
+                {
+                    return Resource.capture_5_4;
+                }
+                return Resource.capture_5_5;
             }
         }
 

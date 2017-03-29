@@ -103,6 +103,16 @@ namespace VRGIN {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] capture_5_5 {
+            get {
+                object obj = ResourceManager.GetObject("capture_5_5", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] hands_5_3 {
             get {
                 object obj = ResourceManager.GetObject("hands_5_3", resourceCulture);
@@ -146,6 +156,16 @@ namespace VRGIN {
         internal static byte[] steamvr_5_4 {
             get {
                 object obj = ResourceManager.GetObject("steamvr_5_4", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] steamvr_5_5 {
+            get {
+                object obj = ResourceManager.GetObject("steamvr_5_5", resourceCulture);
                 return ((byte[])(obj));
             }
         }
