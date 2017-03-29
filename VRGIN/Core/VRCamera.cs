@@ -177,7 +177,7 @@ namespace VRGIN.Core
         /// Copies the values of a in-game camera to the VR camera.
         /// </summary>
         /// <param name="blueprint">The camera to copy.</param>
-        public void Copy(Camera blueprint, bool master = false)
+        public void Copy(Camera blueprint, bool master = false, bool hasOtherConsumers = false)
         {
             VRLog.Info("Copying camera: {0}", blueprint ? blueprint.name : "NULL");
             if(blueprint.GetComponent<CameraSlave>())
@@ -218,7 +218,7 @@ namespace VRGIN.Core
 
             blueprint.gameObject.AddComponent<CameraSlave>();
             
-            if (blueprint != GetComponent<Camera>())
+            if (!hasOtherConsumers && blueprint != GetComponent<Camera>())
             {
                 //StartCoroutine(ExecuteDelayed(delegate { CopyFX(Blueprint); }));
                 //CopyFX(Blueprint);
@@ -250,7 +250,7 @@ namespace VRGIN.Core
             int cullingMask = Slaves.Aggregate(0, (cull, cam) => cull | cam.cullingMask);
 
             // Remove layers that are captured by other cameras (see VRGUI)
-            cullingMask |= LayerMask.GetMask("Default");
+            cullingMask |= VR.Interpreter.DefaultCullingMask;
             cullingMask &= ~(LayerMask.GetMask(VR.Context.UILayer, VR.Context.InvisibleLayer));
             cullingMask &= ~(VR.Context.IgnoreMask);
 

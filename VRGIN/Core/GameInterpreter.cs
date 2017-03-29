@@ -34,6 +34,13 @@ namespace VRGIN.Core
             }
         }
 
+        protected override void OnLevel(int level)
+        {
+            base.OnLevel(level);
+
+            VRLog.Info("Loaded level {0}", level);
+        }
+
         /// <summary>
         /// Finds the first actor who has no head (= is impersonated) or NULL.
         /// </summary>
@@ -140,6 +147,17 @@ namespace VRGIN.Core
         public virtual bool IsAllowedEffect(MonoBehaviour effect)
         {
             return true;
+        }
+
+        /// <summary>
+        /// Gets the default culling mask that is always shown. Use <see cref="VRCamera.UpdateCameraConfig"/> to enforce a refresh.
+        /// </summary>
+        public virtual int DefaultCullingMask
+        {
+            get
+            {
+                return LayerMask.GetMask("Default");
+            }
         }
     }
 }

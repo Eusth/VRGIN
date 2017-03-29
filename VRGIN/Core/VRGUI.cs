@@ -312,7 +312,7 @@ namespace VRGIN.Core
 
         public void AddCamera(Camera camera)
         {
-            VRLog.Info("Judging camera {0}", camera.name);
+            VRLog.Info("Trying to find a GUI mapping for camera {0}", camera.name);
             var grabber = FindCameraMapping(camera);
             if (grabber != null)
             {
@@ -333,9 +333,9 @@ namespace VRGIN.Core
                 if(!entry.Key)
                 {
                     removalList.Add(entry.Key);
-                } else if(entry.Key.targetTexture != entry.Value.GetTextures().First())
+                } else if(entry.Key.targetTexture != entry.Value.GetTextures().FirstOrDefault())
                 {
-                    entry.Key.targetTexture = entry.Value.GetTextures().First();
+                    entry.Key.targetTexture = entry.Value.GetTextures().FirstOrDefault();
                 }
             }
 
