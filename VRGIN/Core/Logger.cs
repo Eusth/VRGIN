@@ -19,17 +19,15 @@ namespace VRGIN.Core
     {
         private static string LOG_PATH = "vr.log";
         private static object _LOCK = new object();
+        private static StreamWriter S_Handle;
 
         static VRLog()
         {
-            if (File.Exists(LOG_PATH))
-            {
-                using (var file = File.OpenWrite(LOG_PATH))
-                {
-                    file.SetLength(0);
-                }
-            }
+            S_Handle = new StreamWriter(File.OpenWrite(LOG_PATH));
+            S_Handle.BaseStream.SetLength(0);
+            S_Handle.AutoFlush = true;
         }
+
         protected VRLog() { }
 
         public static LogMode Level = LogMode.Info;
@@ -82,7 +80,7 @@ namespace VRGIN.Core
         }
 
 
-        private static void Log(string text, object[] args, LogMode severity)
+        public static void Log(string text, object[] args, LogMode severity)
         {
             try
             {
@@ -112,7 +110,7 @@ namespace VRGIN.Core
                 lock (_LOCK)
                 {
                     Console.WriteLine(formatted);
-                    File.AppendAllText(LOG_PATH, formatted + "\n");
+                    S_Handle.WriteLine(formatted);
                 }
 
 #if COLOR_SUPPORT
