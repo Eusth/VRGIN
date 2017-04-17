@@ -49,7 +49,7 @@ namespace VRGIN.Core
         /// Gets or sets the scale of the camera. The higher, the more gigantic the player is.
         /// </summary>
         [XmlComment("Scale of the camera. The higher, the more gigantic the player is.")]
-        public float IPDScale { get { return _IPDScale; } set { _IPDScale = Mathf.Clamp(value, 0.01f, 10f); TriggerPropertyChanged("IPDScale"); } }
+        public float IPDScale { get { return _IPDScale; } set { _IPDScale = Mathf.Clamp(value, 0.01f, 50f); TriggerPropertyChanged("IPDScale"); } }
         private float _IPDScale = 1f;
 
         /// <summary>
