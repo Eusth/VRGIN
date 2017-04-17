@@ -224,7 +224,7 @@ namespace VRGIN.Core
                 //CopyFX(Blueprint);
 
                 blueprint.cullingMask = 0;
-                blueprint.nearClipPlane = Blueprint.farClipPlane = 0;
+                //blueprint.nearClipPlane = Blueprint.farClipPlane = 0;
 
                 //Blueprint.targetTexture = _MiniTexture;
                 //Blueprint.gameObject.AddComponent<BlacklistThrottler>();
@@ -280,7 +280,11 @@ namespace VRGIN.Core
         {
 
             CopyFX(blueprint.gameObject, gameObject, true);
+            FixEffectOrder();  
+        }
 
+        public void FixEffectOrder()
+        {
             if (!SteamCam)
             {
                 SteamCam = GetComponent<SteamVR_Camera>();
