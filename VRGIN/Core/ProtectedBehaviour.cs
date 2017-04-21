@@ -14,7 +14,7 @@ namespace VRGIN.Core
     /// </summary>
     public class ProtectedBehaviour : MonoBehaviour
     {
-        private static IDictionary<string, long> PerformanceTable = new Dictionary<string, long>();
+        private static IDictionary<string, double> PerformanceTable = new Dictionary<string, double>();
 
         private string GetKey(string method)
         {
@@ -67,15 +67,15 @@ namespace VRGIN.Core
                 //var key = GetKey(method.Name);
 
                 //var stopWatch = Stopwatch.StartNew();
-                
+
                 action();
 
                 //stopWatch.Stop();
-                //if(!PerformanceTable.ContainsKey(key))
+                //if (!PerformanceTable.ContainsKey(key))
                 //{
                 //    PerformanceTable[key] = 0L;
                 //}
-                //PerformanceTable[key] += stopWatch.ElapsedMilliseconds;
+                //PerformanceTable[key] += stopWatch.Elapsed.TotalMilliseconds;
             }
             catch (Exception ex)
             {
@@ -83,7 +83,7 @@ namespace VRGIN.Core
             }
         }
 
-        protected static void DumpTable()
+        public static void DumpTable()
         {
             Logger.Info("DUMP");
             var builder = new StringBuilder();
@@ -91,7 +91,7 @@ namespace VRGIN.Core
             var enumerator = PerformanceTable.GetEnumerator();
             while(enumerator.MoveNext())
             {
-                builder.AppendFormat("{1}ms: {0}\n", enumerator.Current.Key, enumerator.Current.Value);
+                builder.AppendFormat("{1}ms: {0}\n", enumerator.Current.Key, enumerator.Current.Value / Time.realtimeSinceStartup);
             }
 
             File.WriteAllText("performance.txt", builder.ToString());
