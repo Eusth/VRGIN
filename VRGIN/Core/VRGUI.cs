@@ -73,7 +73,9 @@ namespace VRGIN.Core
                     _Instance = new GameObject("VRGIN_GUI").AddComponent<VRGUI>();
 
 #if UNITY_4_5
-                    _Instance.gameObject.AddComponent<CursorBlocker>();
+                    if(VR.Context.ConfineMouse) {
+                        _Instance.gameObject.AddComponent<CursorBlocker>();
+                    }
 #endif
                     if (VR.Context.SimulateCursor)
                     {
@@ -226,7 +228,10 @@ namespace VRGIN.Core
         protected override void OnUpdate()
         {
 #if !UNITY_4_5
-            Cursor.lockState = CursorLockMode.Confined;
+            if (VR.Context.ConfineMouse)
+            {
+                Cursor.lockState = CursorLockMode.Confined;
+            }
 #endif
             EnsureCameraTargets();
 
