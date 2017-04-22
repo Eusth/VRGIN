@@ -482,10 +482,11 @@ public static class SteamVR_Utils
 
 	public static void QueueEventOnRenderThread(int eventID)
 	{
+        GL.IssuePluginEvent(SteamVR.Unity.GetRenderEventFunc(), eventID);
 #if (UNITY_5_0 || UNITY_5_1)
-		GL.IssuePluginEvent(eventID);
+        //GL.IssuePluginEvent(eventID);
 #elif (UNITY_5_2 || UNITY_5_3)
-		GL.IssuePluginEvent(SteamVR.Unity.GetRenderEventFunc(), eventID);
+		//GL.IssuePluginEvent(SteamVR.Unity.GetRenderEventFunc(), eventID);
 #endif
 	}
 }

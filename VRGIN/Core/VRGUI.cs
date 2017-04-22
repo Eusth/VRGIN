@@ -164,7 +164,9 @@ namespace VRGIN.Core
             _VRGUICamera.clearFlags = CameraClearFlags.SolidColor;
             _VRGUICamera.orthographic = true;
             _VRGUICamera.orthographicSize = halfHeight;
-
+            _VRGUICamera.useOcclusionCulling = false;
+            //_VRGUICamera.enabled = false;
+            
             _Graphics = typeof(GraphicRegistry).GetField("m_Graphics", BindingFlags.NonPublic | BindingFlags.Instance);
             _Registry = _Graphics.GetValue(GraphicRegistry.instance) as IDictionary;
 

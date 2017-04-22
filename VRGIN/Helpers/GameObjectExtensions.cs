@@ -27,7 +27,7 @@ namespace VRGIN.Helpers
 
         private static bool IsImageEffect(Type type)
         {
-            return type != null && (type.Name.Contains("Effect") || IsImageEffect(type.BaseType));
+            return type != null && (type.Name.EndsWith("Effect") || type.Name.Contains("AmbientOcclusion") || IsImageEffect(type.BaseType));
         }
 
         public static U CopyComponentFrom<T, U>(this GameObject destination, T original) where T : Component where U : T

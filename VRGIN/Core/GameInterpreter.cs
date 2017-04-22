@@ -90,7 +90,7 @@ namespace VRGIN.Core
 
         public CameraJudgement JudgeCamera(Camera camera)
         {
-            if(camera.name.Contains("VRGIN"))
+            if(camera.name.Contains("VRGIN") || camera.name == "poseUpdater")
             {
                 return CameraJudgement.Ignore;
             } else

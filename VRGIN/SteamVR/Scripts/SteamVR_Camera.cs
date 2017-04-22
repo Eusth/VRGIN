@@ -423,7 +423,7 @@ public class SteamVR_Camera : MonoBehaviour
 			SteamVR_Utils.QueueEventOnRenderThread(eventID);
 		}
 
-		Graphics.SetRenderTarget(dest);
+        Graphics.SetRenderTarget(dest);
 		SteamVR_Camera.blitMaterial.mainTexture = src;
 
 		GL.PushMatrix();

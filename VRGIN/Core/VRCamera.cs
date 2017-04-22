@@ -19,6 +19,46 @@ namespace VRGIN.Core
         }
     }
 
+    public class CameraKiller : ProtectedBehaviour
+    {
+        MonoBehaviour[] _CameraEffects = new MonoBehaviour[0];
+        Camera _Camera;
+
+        protected override void OnStart()
+        {
+            base.OnStart();
+            _CameraEffects = gameObject.GetCameraEffects().ToArray();
+            _Camera = GetComponent<Camera>();
+        }
+
+
+        public void OnPreCull()
+        {
+            _Camera.enabled = false;
+            //VRLog.Info("Disable");
+        }
+        
+        public void OnGUI()
+        {
+            if(Event.current.type == EventType.Repaint)
+            {
+                //VRLog.Info("Enable");
+
+                _Camera.enabled = true;
+            }
+        }
+        //protected override void OnUpdate()
+        //{
+        //    base.OnUpdate();
+
+        //    foreach(var fx in _CameraEffects.Where(fx => fx.enabled))
+        //    {
+        //        fx.enabled = false;
+        //        VRLog.Info("Disabled camera effect: {0}", fx.GetType().Name);
+        //    }
+        //}
+    }
+
     public class CameraSlave : ProtectedBehaviour
     {
         protected override void OnAwake()
@@ -170,7 +210,10 @@ namespace VRGIN.Core
             var legacyAnchor = new GameObject("CenterEyeAnchor");
             legacyAnchor.transform.SetParent(SteamCam.head);
 
+            GetComponent<Camera>().enabled = false;
+
             DontDestroyOnLoad(SteamCam.origin.gameObject);
+            
         }
 
         /// <summary>
@@ -201,7 +244,7 @@ namespace VRGIN.Core
                     targetCamera.layerCullDistances = Blueprint.layerCullDistances;
                     targetCamera.layerCullSpherical = Blueprint.layerCullSpherical;
                     targetCamera.useOcclusionCulling = Blueprint.useOcclusionCulling;
-                    targetCamera.hdr = Blueprint.hdr;
+                    targetCamera.hdr = false;
 
                     targetCamera.backgroundColor = Blueprint.backgroundColor;
 
@@ -225,6 +268,11 @@ namespace VRGIN.Core
                 //CopyFX(Blueprint);
 
                 blueprint.cullingMask = 0;
+                blueprint.depth = -9999;
+                blueprint.useOcclusionCulling = false;
+                blueprint.clearFlags = CameraClearFlags.Nothing;
+                blueprint.gameObject.AddComponent<CameraKiller>();
+                //blueprint.enabled = false;
                 //blueprint.nearClipPlane = Blueprint.farClipPlane = 0;
 
                 //Blueprint.targetTexture = _MiniTexture;
