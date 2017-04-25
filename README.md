@@ -15,7 +15,7 @@ VR injection framework for Unity -- helps you integrate VR into games that don't
 | Unity Version | Compatibility |
 | --------------|---------------|
 | < 4.6         | Unsupported (VRGIN makes use of `UnityEngine.UI.dll`. |
-| 4.6, 4.7      | Somewhat supported, but does not currently work out of the box. See [PlayClubVR](https://github.com/Eusth/PlayClubVR) for a functional example. |
+| 4.6, 4.7      | Somewhat supported, but does not work out of the box with the current master branch. See [PlayClubVR](https://github.com/Eusth/PlayClubVR) for a functional example that uses an older version of this framework. |
 | 5.0 - 5.5     | Supported. However, note that this does not currently leverage Unity's native OpenVR implementation (although you could relatively easily switch to it.) |
 
 
