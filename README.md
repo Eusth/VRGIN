@@ -12,4 +12,4 @@ VR injection framework for Unity -- helps you integrate VR into games that don't
 
 ## How to use it
 
-See [Hacking VR into a Unity game](https://github.com/Eusth/VRGIN/wiki/Hacking-VR-into-a-Unity-game)
+Use [the template](https://github.com/Eusth/VRGIN.Template) to get started. For some (somewhat outdated) insight behind the scenes,  see [Hacking VR into a Unity game](https://github.com/Eusth/VRGIN/wiki/Hacking-VR-into-a-Unity-game). For examples, take a look at my VR mods.
