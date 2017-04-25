@@ -8,7 +8,7 @@ VR injection framework for Unity -- helps you integrate VR into games that don't
 - There is a bunch of helper classes, e.g. for shortcuts and for rumble
 
 ## What it doesn't do
-- It does not take care of the injection into the DLL itself -- use either the Illusion Plugin Architecture or Rei Patcher for this.
+- It does not take care of the injection into the DLL itself -- use a DLL injection library for this, e.g. the [Illusion Plugin Architecture](https://github.com/Eusth/IPA) or Rei Patcher. Refer to [the template](https://github.com/Eusth/VRGIN.Template) for a project that's ready to build and use.
 
 ## How to use it
 
