@@ -253,7 +253,7 @@
     </ContentWithTargetPath>
     <ContentWithTargetPath Include="Libs\Data\Managed\System.Drawing.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>Plugins\System.Drawing.dll</TargetPath>
+      <TargetPath>Data\Managed\System.Drawing.dll</TargetPath>
     </ContentWithTargetPath>
     <ContentWithTargetPath Include="Libs\Plugins\VR\SpeechServer.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
