@@ -107,6 +107,7 @@
     <Compile Include="Controls\IShortcut.cs" />
     <Compile Include="Controls\KeyboardShortcut.cs" />
     <Compile Include="Helpers\QuaternionExtensions.cs" />
+    <Compile Include="Helpers\SteamVRDetector.cs" />
     <Compile Include="Helpers\VRCapturePanorama.cs" />
     <Compile Include="LeapMotion\Attachments\AttachmentController.cs" />
     <Compile Include="LeapMotion\Attachments\CameraFollower.cs" />
