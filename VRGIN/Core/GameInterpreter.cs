@@ -19,12 +19,16 @@ namespace VRGIN.Core
     /// Class that is responsible to collect all required data from the game 
     /// that is created or managed at runtime.
     /// </summary>
-    public abstract class GameInterpreter : ProtectedBehaviour
+    public class GameInterpreter : ProtectedBehaviour
     {
         /// <summary>
         /// Gets a list of actors in the game. Used frequently.
         /// </summary>
-        public abstract IEnumerable<IActor> Actors { get; }
+        public virtual IEnumerable<IActor> Actors { get
+            {
+                yield break;
+            }
+        }
 
         public virtual bool IsEveryoneHeaded
         {
