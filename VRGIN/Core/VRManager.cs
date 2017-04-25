@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
 using VRGIN.Controls.Speech;
-using VRGIN.Helpers;
 using VRGIN.Modes;
-using VRGIN.Visuals;
 using WindowsInput;
 
 namespace VRGIN.Core
@@ -193,8 +189,6 @@ namespace VRGIN.Core
                         break;
                 }
             }
-
-            var cam = VR.Camera.GetComponent<Camera>();
         }
 
         private void OnControllersCreated(object sender, EventArgs e)

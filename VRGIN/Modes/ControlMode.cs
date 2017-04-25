@@ -98,10 +98,10 @@ namespace VRGIN.Modes
         protected override void OnStart()
         {
             CreateControllers();
-            InitializeScreenCapture();
-
             Shortcuts = CreateShortcuts();
             SteamVR_Render.instance.trackingSpace = TrackingOrigin;
+
+            InitializeScreenCapture();
         }
 
         protected virtual void OnEnable()

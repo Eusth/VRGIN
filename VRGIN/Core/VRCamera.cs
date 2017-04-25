@@ -147,7 +147,6 @@ namespace VRGIN.Core
         }
         private Camera _Blueprint { get; set; }
         private IList<CameraSlave> Slaves = new List<CameraSlave>();
-        private RenderTexture _MiniTexture;
         private const float MIN_FAR_CLIP_PLANE = 10f;
 
         public bool HasValidBlueprint { get { return Slaves.Count > 0; } }
@@ -189,10 +188,8 @@ namespace VRGIN.Core
 
         protected override void OnAwake()
         {
-            // Dummy texture to let the old main camera render to
-            _MiniTexture = new RenderTexture(1, 1, 0);
-            _MiniTexture.Create();
-
+            VRLog.Info("Creating VR Camera");
+            gameObject.AddComponent<Camera>();
             gameObject.AddComponent<SteamVR_Camera>();
             SteamCam = GetComponent<SteamVR_Camera>();
             SteamCam.Expand(); // Expand immediately!
@@ -213,7 +210,6 @@ namespace VRGIN.Core
             GetComponent<Camera>().enabled = false;
 
             DontDestroyOnLoad(SteamCam.origin.gameObject);
-            
         }
 
         /// <summary>
@@ -235,7 +231,7 @@ namespace VRGIN.Core
                 // Apply to both the head camera and the VR camera
                 ApplyToCameras(targetCamera =>
                 {
-                    targetCamera.nearClipPlane = 0.1f;
+                    targetCamera.nearClipPlane = VR.Context.NearClipPlane;
                     targetCamera.farClipPlane = Mathf.Max(Blueprint.farClipPlane, MIN_FAR_CLIP_PLANE);
                     targetCamera.clearFlags = Blueprint.clearFlags == CameraClearFlags.Skybox ? CameraClearFlags.Skybox : CameraClearFlags.SolidColor;
                     targetCamera.renderingPath = Blueprint.renderingPath;
@@ -306,19 +302,6 @@ namespace VRGIN.Core
             VRLog.Info("The camera sees {0} ({1})", string.Join(", ", UnityHelper.GetLayerNames(cullingMask)), string.Join(", ", Slaves.Select(s => s.name).ToArray()));
 
             GetComponent<Camera>().cullingMask = cullingMask;
-        }
-
-        private IEnumerator ExecuteDelayed(Action action)
-        {
-            yield return null;
-            try
-            {
-                action();
-            }
-            catch (Exception e)
-            {
-                VRLog.Error(e);
-            }
         }
 
         /// <summary>

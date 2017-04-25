@@ -76,6 +76,11 @@ namespace VRGIN.Core
         float GuiFarClipPlane { get; }
 
         /// <summary>
+        /// NeatClipPlane to use for the camera. [e.g. 0.1]
+        /// </summary>
+        float NearClipPlane { get; }
+
+        /// <summary>
         /// Gets an additional multiplier to calculate an in-game unit to a meter. [1.0]
         /// </summary>
         float UnitToMeter { get; }
