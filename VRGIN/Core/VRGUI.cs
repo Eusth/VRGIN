@@ -177,7 +177,7 @@ namespace VRGIN.Core
         private bool IsUnprocessed(Canvas c)
         {
             return c.renderMode == RenderMode.ScreenSpaceOverlay 
-                || (c.renderMode == RenderMode.ScreenSpaceCamera && c.worldCamera != _VRGUICamera);
+                || (c.renderMode == RenderMode.ScreenSpaceCamera && c.worldCamera != _VRGUICamera && c.worldCamera.targetTexture == null);
         }
 
         protected void CatchCanvas()
