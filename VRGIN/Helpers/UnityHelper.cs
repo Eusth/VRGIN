@@ -212,14 +212,14 @@ namespace VRGIN.Helpers
             return copy as T;
         }
 
-        public static void DumpScene(string path)
+        public static void DumpScene(string path, bool onlyActive = false)
         {
             VRLog.Info("Dumping scene...");
 
             var rootArray = new JSONArray();
             foreach (var gameObject in UnityEngine.Object.FindObjectsOfType<GameObject>().Where(go => go.transform.parent == null))
             {
-                rootArray.Add(AnalyzeNode(gameObject));
+                rootArray.Add(AnalyzeNode(gameObject, onlyActive));
             }
 
             File.WriteAllText(path, rootArray.ToJSON(0));
@@ -240,7 +240,49 @@ namespace VRGIN.Helpers
             return UnityEngine.Object.FindObjectsOfType<GameObject>().Where(go => go.transform.parent == null);
         }
 
-        private static JSONClass AnalyzeNode(GameObject go)
+        public static JSONClass AnalyzeComponent(Component c)
+        {
+            var comp = new JSONClass();
+
+            foreach (var field in c.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public))
+            {
+                try
+                {
+                    var val = FieldToString(field.Name, field.GetValue(c));
+                    if (val != null)
+                    {
+                        comp[field.Name] = val;
+                    }
+                }
+                catch (Exception e)
+                {
+                    VRLog.Warn("Failed to get field {0}", field.Name);
+                }
+            }
+
+            foreach (var prop in c.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public))
+            {
+                try
+                {
+                    if (prop.GetIndexParameters().Length == 0)
+                    {
+                        var val = FieldToString(prop.Name, prop.GetValue(c, null));
+                        if (val != null)
+                        {
+                            comp[prop.Name] = val;
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    VRLog.Warn("Failed to get prop {0}", prop.Name);
+                }
+            }
+
+            return comp;
+        }
+
+        public static JSONClass AnalyzeNode(GameObject go, bool onlyActive = false)
         {
             var obj = new JSONClass();
 
@@ -260,51 +302,18 @@ namespace VRGIN.Helpers
                     VRLog.Warn("NULL component: " + c);
                     continue;
                 }
-                var comp = new JSONClass();
-
-                foreach (var field in c.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public))
-                {
-                    try
-                    {
-                        var val = FieldToString(field.Name, field.GetValue(c));
-                        if (val != null)
-                        {
-                            comp[field.Name] = val;
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        VRLog.Warn("Failed to get field {0}", field.Name);
-                    }
-                }
-
-                foreach (var prop in c.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public))
-                {
-                    try
-                    {
-                        if (prop.GetIndexParameters().Length == 0)
-                        {
-                            var val = FieldToString(prop.Name, prop.GetValue(c, null));
-                            if (val != null)
-                            {
-                                comp[prop.Name] = val;
-                            }
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        VRLog.Warn("Failed to get prop {0}", prop.Name);
-                    }
-                }
-
-                components[c.GetType().Name] = comp;
+               
+                components[c.GetType().Name] = AnalyzeComponent(c);
             }
 
 
             var children = new JSONArray();
             foreach (var child in go.Children())
             {
-                children.Add(AnalyzeNode(child));
+                if (!onlyActive || child.activeInHierarchy)
+                {
+                    children.Add(AnalyzeNode(child, onlyActive));
+                }
             }
 
             obj["Components"] = components;
@@ -384,7 +393,7 @@ namespace VRGIN.Helpers
             var oldRT = RenderTexture.active;
             try
             {
-                var tex = new Texture2D(rt.width, rt.height, TextureFormat.RGB24, false);
+                var tex = new Texture2D(rt.width, rt.height, TextureFormat.ARGB32, false);
                 RenderTexture.active = rt;
                 tex.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
                 tex.Apply();
