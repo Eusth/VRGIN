@@ -118,37 +118,25 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="capture_5_0" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\capture_5_0;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="capture_5_2" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\capture_5_2;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="capture_5_3" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\capture_5_3;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="capture_5_4" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\capture_5_4;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="capture_5_5" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\capture_5_5;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="hands_5_3" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>resources\hands_5_3;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="steamvr_5_0" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\steamvr_5_0;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="vrgin_5_0" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>resources\vrgin_5_0;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="steamvr_5_2" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\steamvr_5_2;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="vrgin_5_2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>resources\vrgin_5_2;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="steamvr_5_3" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\steamvr_5_3;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="vrgin_5_3" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>resources\vrgin_5_3;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="steamvr_5_4" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\steamvr_5_4;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="vrgin_5_4" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>resources\vrgin_5_4;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="steamvr_5_5" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\steamvr_5_5;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="vrgin_5_5" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>resources\vrgin_5_5;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="vrgin_5_6" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>resources\vrgin_5_6;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

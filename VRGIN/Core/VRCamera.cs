@@ -19,6 +19,16 @@ namespace VRGIN.Core
         }
     }
 
+    public class CopiedCameraEventArgs : EventArgs
+    {
+        public readonly Camera Camera;
+
+        public CopiedCameraEventArgs(Camera camera)
+        {
+            Camera = camera;
+        }
+    }
+
     public class CameraKiller : ProtectedBehaviour
     {
         MonoBehaviour[] _CameraEffects = new MonoBehaviour[0];
@@ -29,6 +39,12 @@ namespace VRGIN.Core
             base.OnStart();
             _CameraEffects = gameObject.GetCameraEffects().ToArray();
             _Camera = GetComponent<Camera>();
+
+
+            _Camera.cullingMask = 0;
+            _Camera.depth = -9999;
+            _Camera.useOcclusionCulling = false;
+            _Camera.clearFlags = CameraClearFlags.Nothing;
         }
 
 
@@ -37,10 +53,10 @@ namespace VRGIN.Core
             _Camera.enabled = false;
             //VRLog.Info("Disable");
         }
-        
+
         public void OnGUI()
         {
-            if(Event.current.type == EventType.Repaint)
+            if (Event.current.type == EventType.Repaint)
             {
                 //VRLog.Info("Enable");
 
@@ -167,9 +183,14 @@ namespace VRGIN.Core
             }
         }
         /// <summary>
-        /// Called when a camera is being initialized.
+        /// Called when the main camera has been initialized.
         /// </summary>
         public event EventHandler<InitializeCameraEventArgs> InitializeCamera = delegate { };
+
+        /// <summary>
+        /// Called when a camera is copied.
+        /// </summary>
+        public event EventHandler<CopiedCameraEventArgs> CopiedCamera = delegate { };
 
         /// <summary>
         /// Gets the current instance of VRCamera or creates one if need be.
@@ -219,11 +240,13 @@ namespace VRGIN.Core
         public void Copy(Camera blueprint, bool master = false, bool hasOtherConsumers = false)
         {
             VRLog.Info("Copying camera: {0}", blueprint ? blueprint.name : "NULL");
-            if(blueprint.GetComponent<CameraSlave>())
+
+            if (blueprint && blueprint.GetComponent<CameraSlave>())
             {
                 VRLog.Warn("Is already slave -- NOOP");
                 return;
             }
+
             if (master)
             {
                 _Blueprint = blueprint ?? GetComponent<Camera>();
@@ -256,29 +279,28 @@ namespace VRGIN.Core
 
             }
 
-            blueprint.gameObject.AddComponent<CameraSlave>();
-            
-            if (!hasOtherConsumers && blueprint != GetComponent<Camera>())
+            if(blueprint)
             {
-                //StartCoroutine(ExecuteDelayed(delegate { CopyFX(Blueprint); }));
-                //CopyFX(Blueprint);
-
-                blueprint.cullingMask = 0;
-                blueprint.depth = -9999;
-                blueprint.useOcclusionCulling = false;
-                blueprint.clearFlags = CameraClearFlags.Nothing;
-                blueprint.gameObject.AddComponent<CameraKiller>();
-                //blueprint.enabled = false;
-                //blueprint.nearClipPlane = Blueprint.farClipPlane = 0;
-
-                //Blueprint.targetTexture = _MiniTexture;
-                //Blueprint.gameObject.AddComponent<BlacklistThrottler>();
+                blueprint.gameObject.AddComponent<CameraSlave>();
 
                 // Highlander principle
                 var listener = blueprint.GetComponent<AudioListener>();
                 if (listener)
                 {
                     Destroy(listener);
+                }
+
+                if (!hasOtherConsumers && blueprint.targetTexture == null && VR.Interpreter.IsIrrelevantCamera(blueprint))
+                {
+                    //StartCoroutine(ExecuteDelayed(delegate { CopyFX(Blueprint); }));
+                    //CopyFX(Blueprint);
+
+                    blueprint.gameObject.AddComponent<CameraKiller>();
+                    //blueprint.enabled = false;
+                    //blueprint.nearClipPlane = Blueprint.farClipPlane = 0;
+
+                    //Blueprint.targetTexture = _MiniTexture;
+                    //Blueprint.gameObject.AddComponent<BlacklistThrottler>();
                 }
             }
 
@@ -287,6 +309,8 @@ namespace VRGIN.Core
                 // Hook
                 InitializeCamera(this, new InitializeCameraEventArgs(GetComponent<Camera>(), Blueprint));
             }
+
+            CopiedCamera(this, new CopiedCameraEventArgs(blueprint));
         }
 
         private void UpdateCameraConfig()

@@ -24,7 +24,7 @@ namespace VRGIN.Helpers
 
         private static Dictionary<Color, RayDrawer> _Rays = new Dictionary<Color, RayDrawer>();
 
-        internal static Shader GetShader(string name)
+        public static Shader GetShader(string name)
         {
             return LoadFromAssetBundle<Shader>(
 #if UNITY_4_5

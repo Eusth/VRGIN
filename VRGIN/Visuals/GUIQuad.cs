@@ -134,7 +134,7 @@ namespace VRGIN.Visuals
                 }
                 else
                 {
-                    renderer.material = VR.Context.Materials.Unlit;
+                    renderer.material = VR.Context.Materials.UnlitTransparent;
                     renderer.material.SetTexture("_MainTex", textures.FirstOrDefault());
                 }
             }

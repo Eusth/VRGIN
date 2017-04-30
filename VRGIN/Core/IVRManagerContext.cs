@@ -7,6 +7,12 @@ using VRGIN.Visuals;
 
 namespace VRGIN.Core
 {
+    public enum GUIType
+    {
+        uGUI,
+        IMGUI
+    }
+
     public interface IVRManagerContext
     {
         /// <summary>
@@ -94,5 +100,10 @@ namespace VRGIN.Core
         /// Whether or not to confine mouse within window. [true]
         /// </summary>
         bool ConfineMouse { get; }
+
+        /// <summary>
+        /// For which kind of GUI VRGIN should be optimized. [uGUI]
+        /// </summary>
+        GUIType PreferredGUI { get; }
     }
 }

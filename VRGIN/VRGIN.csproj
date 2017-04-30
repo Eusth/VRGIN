@@ -167,6 +167,11 @@
     <Compile Include="LeapMotion\VR\LeapVRTemporalWarping.cs" />
     <Compile Include="LeapMotion\VR\TemporalWarpingStatus.cs" />
     <Compile Include="LeapMotion\VR\VRHeightOffset.cs" />
+    <Compile Include="Resource.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resource.resx</DependentUpon>
+    </Compile>
     <Compile Include="Visuals\ArcRenderer.cs" />
     <Compile Include="Visuals\GUIMonitor.cs" />
     <Compile Include="Visuals\IMaterialPalette.cs" />
@@ -183,11 +188,6 @@
     <Compile Include="Native\WindowsInterop.cs" />
     <Compile Include="Visuals\GUIQuad.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Resource.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resource.resx</DependentUpon>
-    </Compile>
     <Compile Include="SteamVR\openvr_api.cs" />
     <Compile Include="SteamVR\Scripts\SteamVR.cs" />
     <Compile Include="SteamVR\Scripts\SteamVR_Camera.cs" />
@@ -285,17 +285,13 @@
     <Content Include="SteamVR\Textures\workshop.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\capture_5_0" />
-    <None Include="Resources\capture_5_2" />
-    <None Include="Resources\capture_5_3" />
-    <None Include="Resources\capture_5_5" />
     <None Include="Resources\hands_5_3" />
-    <None Include="Resources\steamvr_5_0" />
-    <None Include="Resources\steamvr_5_2" />
-    <None Include="Resources\steamvr_5_3" />
-    <None Include="Resources\capture_5_4" />
-    <None Include="Resources\steamvr_5_4" />
-    <None Include="Resources\steamvr_5_5" />
+    <None Include="Resources\vrgin_5_0" />
+    <None Include="Resources\vrgin_5_2" />
+    <None Include="Resources\vrgin_5_3" />
+    <None Include="Resources\vrgin_5_4" />
+    <None Include="Resources\vrgin_5_5" />
+    <None Include="Resources\vrgin_5_6" />
     <None Include="SteamVR\Prefabs\[CameraRig].prefab" />
     <None Include="SteamVR\Prefabs\[Status].prefab" />
     <None Include="SteamVR\Prefabs\[SteamVR].prefab" />

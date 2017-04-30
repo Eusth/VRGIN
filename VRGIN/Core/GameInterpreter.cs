@@ -163,5 +163,15 @@ namespace VRGIN.Core
                 return LayerMask.GetMask("Default");
             }
         }
+
+        /// <summary>
+        /// Whether or not it's save to disable this camera.
+        /// </summary>
+        /// <param name="blueprint"></param>
+        /// <returns></returns>
+        public virtual bool IsIrrelevantCamera(Camera blueprint)
+        {
+            return true;
+        }
     }
 }

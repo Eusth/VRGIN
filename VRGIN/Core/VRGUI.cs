@@ -151,9 +151,14 @@ namespace VRGIN.Core
             var halfWidth = Screen.width * 0.5f;
 
             _VRGUICamera = new GameObject("VRGIN_GUICamera").AddComponent<Camera>();
-            _VRGUICamera.transform.SetParent(transform);
-            _VRGUICamera.transform.position = new Vector3(halfWidth, halfHeight, -1f);
-            _VRGUICamera.transform.rotation = Quaternion.identity;
+            _VRGUICamera.transform.SetParent(transform, false);
+
+            if (VR.Context.PreferredGUI == GUIType.IMGUI)
+            {
+                _VRGUICamera.transform.position = new Vector3(halfWidth, halfHeight, -1f);
+                _VRGUICamera.transform.rotation = Quaternion.identity;
+                _VRGUICamera.orthographicSize = halfHeight;
+            }
 
             _VRGUICamera.cullingMask = VR.Context.UILayerMask;
             _VRGUICamera.depth = 1;
@@ -163,14 +168,11 @@ namespace VRGIN.Core
             _VRGUICamera.backgroundColor = Color.clear;
             _VRGUICamera.clearFlags = CameraClearFlags.SolidColor;
             _VRGUICamera.orthographic = true;
-            _VRGUICamera.orthographicSize = halfHeight;
             _VRGUICamera.useOcclusionCulling = false;
-            //_VRGUICamera.enabled = false;
             
             _Graphics = typeof(GraphicRegistry).GetField("m_Graphics", BindingFlags.NonPublic | BindingFlags.Instance);
             _Registry = _Graphics.GetValue(GraphicRegistry.instance) as IDictionary;
 
-            //GameObject.DontDestroyOnLoad(_VRGUICamera);
             DontDestroyOnLoad(gameObject);
         }
 
@@ -183,7 +185,7 @@ namespace VRGIN.Core
         protected void CatchCanvas()
         {
             _VRGUICamera.targetTexture = uGuiTexture;
-            var canvasList = (_Registry.Keys as ICollection<Canvas>).Where(c => c).SelectMany(canvas => canvas.gameObject.GetComponentsInChildren<Canvas>()).ToList();
+            var canvasList = (_Registry.Keys as ICollection<Canvas>).Where(c => c).ToList();
             //var canvasList = GameObject.FindObjectsOfType<Canvas>();
             foreach (var canvas in canvasList.Where(IsUnprocessed))
             {
@@ -196,10 +198,14 @@ namespace VRGIN.Core
                 canvas.worldCamera = _VRGUICamera;
 
                 // Make sure that all Canvas are in the UI layer
-                canvas.gameObject.layer = LayerMask.NameToLayer(VR.Context.UILayer);
-                foreach (var child in canvas.gameObject.GetComponentsInChildren<Transform>())
+                if (((1 << canvas.gameObject.layer) & VR.Context.UILayerMask) == 0)
                 {
-                    child.gameObject.layer = LayerMask.NameToLayer(VR.Context.UILayer);
+                    var uiLayer = LayerMask.NameToLayer(VR.Context.UILayer);
+                    canvas.gameObject.layer = uiLayer;
+                    foreach (var child in canvas.gameObject.GetComponentsInChildren<Transform>())
+                    {
+                        child.gameObject.layer = uiLayer;
+                    }
                 }
 
                 if (VR.Context.EnforceDefaultGUIMaterials)
