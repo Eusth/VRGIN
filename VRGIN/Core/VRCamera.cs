@@ -319,14 +319,10 @@ namespace VRGIN.Core
             if(_Blueprint && _Blueprint != _Camera && _Blueprint != blueprint)
             {
                 // We already have a main camera
-                var cameraSlave = _Blueprint.GetComponent<CameraSlave>();
-                if (cameraSlave) {
-                    int layerCountInOld = Convert.ToString(cameraSlave.cullingMask, 2).ToCharArray().Count(c => c == '1');
-                    int layerCountInNew = Convert.ToString(blueprint.cullingMask, 2).ToCharArray().Count(c => c == '1');
-                    if(layerCountInOld > layerCountInNew)
-                    {
-                        return false;
-                    }
+                if(_Blueprint.name == "Main Camera")
+                {
+                    VRLog.Info("Using {0} over {1} as main camera", _Blueprint.name, blueprint.name);
+                    return false;
                 }
             }
 
