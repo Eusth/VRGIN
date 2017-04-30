@@ -182,6 +182,9 @@ namespace VRGIN.Core
                 return SteamCam.head;
             }
         }
+
+        private Camera _Camera;
+
         /// <summary>
         /// Called when the main camera has been initialized.
         /// </summary>
@@ -210,7 +213,7 @@ namespace VRGIN.Core
         protected override void OnAwake()
         {
             VRLog.Info("Creating VR Camera");
-            gameObject.AddComponent<Camera>();
+            _Camera = gameObject.AddComponent<Camera>();
             gameObject.AddComponent<SteamVR_Camera>();
             SteamCam = GetComponent<SteamVR_Camera>();
             SteamCam.Expand(); // Expand immediately!
@@ -227,8 +230,6 @@ namespace VRGIN.Core
             // Needed for the Camera Modifications mod to work. It's an artifact from DK2 days
             var legacyAnchor = new GameObject("CenterEyeAnchor");
             legacyAnchor.transform.SetParent(SteamCam.head);
-
-            GetComponent<Camera>().enabled = false;
 
             DontDestroyOnLoad(SteamCam.origin.gameObject);
         }
@@ -247,9 +248,9 @@ namespace VRGIN.Core
                 return;
             }
 
-            if (master)
+            if (master && UseNewCamera(blueprint))
             {
-                _Blueprint = blueprint ?? GetComponent<Camera>();
+                _Blueprint = blueprint ?? _Camera;
 
                 // Apply to both the head camera and the VR camera
                 ApplyToCameras(targetCamera =>
@@ -311,6 +312,25 @@ namespace VRGIN.Core
             }
 
             CopiedCamera(this, new CopiedCameraEventArgs(blueprint));
+        }
+
+        private bool UseNewCamera(Camera blueprint)
+        {
+            if(_Blueprint && _Blueprint != _Camera && _Blueprint != blueprint)
+            {
+                // We already have a main camera
+                var cameraSlave = _Blueprint.GetComponent<CameraSlave>();
+                if (cameraSlave) {
+                    int layerCountInOld = Convert.ToString(cameraSlave.cullingMask, 2).ToCharArray().Count(c => c == '1');
+                    int layerCountInNew = Convert.ToString(blueprint.cullingMask, 2).ToCharArray().Count(c => c == '1');
+                    if(layerCountInOld > layerCountInNew)
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
 
         private void UpdateCameraConfig()
