@@ -173,5 +173,17 @@ namespace VRGIN.Core
         {
             return true;
         }
+
+        /// <summary>
+        /// Determines whether or not a camera is used to render the GUI. If you return true, this camera will render on top of the VRGUI camera.
+        /// Note that this is mainly used to deal with NGUI, but it can also come in handy iff there is a world-space uGUI canvas that is used like a screen-space one. Usually,
+        /// you should not need to tinker with this method.
+        /// </summary>
+        /// <param name="camera"></param>
+        /// <returns></returns>
+        public virtual bool IsUICamera(Camera camera)
+        {
+            return camera.GetComponent("UICamera");
+        }
     }
 }
