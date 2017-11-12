@@ -375,7 +375,7 @@ namespace VRGIN.Core
         public bool Check(Camera camera)
         {
             // We're only interested in these
-            return camera.GetComponent("UICamera");
+            return VR.Interpreter.IsUICamera(camera);
         }
 
         public IEnumerable<RenderTexture> GetTextures()
