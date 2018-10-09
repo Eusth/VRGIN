@@ -47,6 +47,8 @@ namespace VRGIN.Modes
 
         protected virtual void SyncCameras()
         {
+            if (!VRCamera.Instance.Blueprint) return;
+
             VRCamera.Instance.Blueprint.transform.position = VR.Camera.SteamCam.head.position;
             VRCamera.Instance.Blueprint.transform.rotation = VR.Camera.SteamCam.head.rotation;
         }
