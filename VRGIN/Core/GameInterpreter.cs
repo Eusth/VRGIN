@@ -165,6 +165,15 @@ namespace VRGIN.Core
         }
 
         /// <summary>
+        /// Gets a list of transforms that could be interesting for the user to ... look at.
+        /// </summary>
+        /// <returns></returns>
+        public virtual IEnumerable<Transform> FindInterestingTransforms()
+        {
+            return Enumerable.Empty<Transform>();
+        }
+
+        /// <summary>
         /// Whether or not it's save to disable this camera.
         /// </summary>
         /// <param name="blueprint"></param>

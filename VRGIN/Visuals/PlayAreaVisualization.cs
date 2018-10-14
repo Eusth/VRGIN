@@ -5,6 +5,7 @@ using System.Text;
 using UnityEngine;
 using Valve.VR;
 using VRGIN.Core;
+using VRGIN.Helpers;
 
 namespace VRGIN.U46.Visuals
 {
@@ -22,10 +23,10 @@ namespace VRGIN.U46.Visuals
 
             CreateArea();
             
-            Indicator = GameObject.CreatePrimitive(PrimitiveType.Sphere).transform;
+            Indicator = UnityHelper.CreatePrimitive(PrimitiveType.Sphere).transform;
             Indicator.SetParent(transform, false);
 
-            HeightIndicator = GameObject.CreatePrimitive(PrimitiveType.Cylinder).transform;
+            HeightIndicator = UnityHelper.CreatePrimitive(PrimitiveType.Cylinder).transform;
             HeightIndicator.SetParent(transform, false);
 
 
@@ -49,7 +50,7 @@ namespace VRGIN.U46.Visuals
 
         protected virtual void CreateArea()
         {
-            PlayArea = new GameObject("PlayArea").AddComponent<SteamVR_PlayArea>();
+            PlayArea = UnityHelper.CreateVisibleGameObject("PlayArea").AddComponent<SteamVR_PlayArea>();
             PlayArea.drawInGame = true;
             PlayArea.size = SteamVR_PlayArea.Size.Calibrated;
 
@@ -60,7 +61,7 @@ namespace VRGIN.U46.Visuals
 
         protected virtual Transform CreateClone()
         {
-            var model = new GameObject("Model").AddComponent<HMDLoader>();
+            var model = UnityHelper.CreateVisibleGameObject("Model").AddComponent<HMDLoader>();
             model.NewParent = PlayArea.transform;
 
             return model.transform;
@@ -68,7 +69,7 @@ namespace VRGIN.U46.Visuals
 
         internal static PlayAreaVisualization Create(PlayArea playArea=null)
         {
-            var visualization = new GameObject("Play Area Viszalization").AddComponent<PlayAreaVisualization>();
+            var visualization = UnityHelper.CreateVisibleGameObject("Play Area Viszalization").AddComponent<PlayAreaVisualization>();
             if (playArea != null)
             {
                 visualization.Area = playArea;

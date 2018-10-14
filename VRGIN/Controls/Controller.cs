@@ -171,7 +171,7 @@ namespace VRGIN.Controls
             gameObject.AddComponent<MenuHandler>();
 
             // Add model
-            Model = new GameObject("Model").AddComponent<SteamVR_RenderModel>();
+            Model = UnityHelper.CreateVisibleGameObject("Model").AddComponent<SteamVR_RenderModel>();
             Model.shader = VRManager.Instance.Context.Materials.StandardShader;
             if (!Model.shader)
             {
@@ -181,10 +181,7 @@ namespace VRGIN.Controls
             //Model.verbose = true;
 
 
-            if (Tools.Count > 0)
-            {
-                BuildCanvas();
-            }
+            BuildCanvas();
 
             // Add Physics
             Collider = new GameObject("Collider").AddComponent<BoxCollider>();
@@ -277,6 +274,16 @@ namespace VRGIN.Controls
                     tool.enabled = true;
                 }
             }
+
+            if(Tools.Count == 0)
+            {
+                // No need for these
+                Destroy(_AlphaConcealer);
+                Destroy(_Canvas.gameObject);
+                _Canvas = null;
+                _AlphaConcealer = null;
+            }
+
 
             _Started = true;
         }
@@ -428,7 +435,7 @@ namespace VRGIN.Controls
         private void BuildCanvas()
         {
 
-            var canvas = _Canvas = new GameObject().AddComponent<Canvas>();
+            var canvas = _Canvas = UnityHelper.CreateVisibleGameObject("ToolCanvas").AddComponent<Canvas>();
             canvas.renderMode = RenderMode.WorldSpace;
             canvas.transform.SetParent(transform, false);
 
@@ -440,7 +447,7 @@ namespace VRGIN.Controls
             canvas.transform.localRotation = Quaternion.Euler(30, 180, 180);
             canvas.transform.localScale = new Vector3(4.930151e-05f, 4.930148e-05f, 0);
 
-            canvas.gameObject.layer = 0;
+            canvas.gameObject.layer = LayerMask.NameToLayer(VR.Context.GuiLayer);
 
             // Hack for alpha order
             _AlphaConcealer = GameObject.CreatePrimitive(PrimitiveType.Sphere);
@@ -486,7 +493,7 @@ namespace VRGIN.Controls
 
             tool.Icon = img.gameObject;
             tool.Icon.SetActive(false);
-            tool.Icon.layer = 0;
+            tool.Icon.layer = LayerMask.NameToLayer(VR.Context.GuiLayer);
         }
 
         public Transform FindAttachPosition(params string[] names)

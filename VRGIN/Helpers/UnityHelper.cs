@@ -226,6 +226,20 @@ namespace VRGIN.Helpers
             VRLog.Info("Done!");
         }
 
+        public static GameObject CreateVisibleGameObject(string name)
+        {
+            var go = new GameObject(name);
+            go.layer = LayerMask.NameToLayer(VR.Context.GuiLayer);
+            return go;
+        }
+
+        public static GameObject CreatePrimitive(PrimitiveType primitive)
+        {
+            var go = GameObject.CreatePrimitive(primitive);
+            go.layer = LayerMask.NameToLayer(VR.Context.GuiLayer);
+            return go;
+        }
+
         public static void DumpObject(GameObject obj, string path)
         {
             VRLog.Info("Dumping object...");

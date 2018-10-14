@@ -7,6 +7,7 @@ using Valve.VR;
 using VRGIN.Controls;
 using VRGIN.Controls.Tools;
 using VRGIN.Core;
+using VRGIN.Helpers;
 using VRGIN.Native;
 using VRGIN.Visuals;
 using static VRGIN.Native.WindowsInterop;
@@ -50,7 +51,7 @@ namespace VRGIN.Controls.Handlers
                     VRLog.Error("Attach position not found for laser!");
                     attachPosition = transform;
                 }
-                Laser = new GameObject().AddComponent<LineRenderer>();
+                Laser = UnityHelper.CreateVisibleGameObject("Laser").AddComponent<LineRenderer>();
                 Laser.transform.SetParent(attachPosition, false);
                 Laser.material = Resources.GetBuiltinResource<Material>("Sprites-Default.mat");
                 Laser.material.renderQueue += 5000;

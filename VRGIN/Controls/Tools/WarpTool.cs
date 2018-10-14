@@ -72,7 +72,7 @@ namespace VRGIN.Controls.Tools
         protected override void OnAwake()
         {
             VRLog.Info("Awake!");
-            ArcRenderer = new GameObject("Arc Renderer").AddComponent<ArcRenderer>();
+            ArcRenderer = UnityHelper.CreateVisibleGameObject("Arc Renderer").AddComponent<ArcRenderer>();
             ArcRenderer.transform.SetParent(transform, false);
             ArcRenderer.gameObject.SetActive(false);
 
