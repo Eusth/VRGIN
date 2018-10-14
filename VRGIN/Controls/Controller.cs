@@ -144,13 +144,14 @@ namespace VRGIN.Controls
         protected virtual void OnLock()
         {
             ToolEnabled = false;
-            _AlphaConcealer.SetActive(false);
+
+            _AlphaConcealer?.SetActive(false);
         }
 
         protected virtual void OnUnlock()
         {
             ToolEnabled = true;
-            _AlphaConcealer.SetActive(true);
+            _AlphaConcealer?.SetActive(true);
         }
 
         protected virtual void OnDestroy()
@@ -179,7 +180,11 @@ namespace VRGIN.Controls
             Model.transform.SetParent(transform, false);
             //Model.verbose = true;
 
-            BuildCanvas();
+
+            if (Tools.Count > 0)
+            {
+                BuildCanvas();
+            }
 
             // Add Physics
             Collider = new GameObject("Collider").AddComponent<BoxCollider>();
@@ -329,16 +334,20 @@ namespace VRGIN.Controls
             }
         }
 
+        protected void ProcessLock()
+        {
+            if (_Lock != null && _Lock.IsInvalidating)
+            {
+                TryReleaseLock();
+            }
+        }
+
         protected override void OnUpdate()
         {
             base.OnUpdate();
             var device = SteamVR_Controller.Input((int)Tracking.index);
 
-            if (_Lock != null && _Lock.IsInvalidating)
-            {
-                TryReleaseLock();
-            }
-
+            ProcessLock();
             if (_Lock == null || !_Lock.IsValid)
             {
                 if (device.GetPressDown(EVRButtonId.k_EButton_ApplicationMenu))
@@ -371,7 +380,6 @@ namespace VRGIN.Controls
                         }
                     }
                     appButtonPressTime = null;
-
                 }
             }
         }
